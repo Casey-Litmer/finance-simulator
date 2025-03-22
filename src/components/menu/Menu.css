@@ -1,0 +1,54 @@
+
+.Menu {
+    /*background-color: rgb(185, 122, 39);*/
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    position: absolute;
+    border-radius: 0;
+}
+
+.Title {
+    height: 48px;
+    vertical-align: center;
+    border-radius: 0px;
+    border-style:inset;
+    border-width: 2px;
+    border-top: 0px;
+    border-right: 0px;
+    border-color: black;
+}
+
+.MenuContents {
+    display: flex;
+    flex-direction: column;
+}
+
+.MenuItemContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    padding-left: 16px;
+    margin-left: 16px;
+    margin-right: 16px;
+    position: relative;
+}
+
+.DropdownContainer {
+    flex-basis: 100%;
+    order: 1;
+    width: 100%;
+    
+    .MenuItemContainer {
+        margin-left: 8px;
+        margin-bottom: 2px;
+    }
+}
+
+.ScrollContainer {
+    overflow-y: auto;
+    white-space: nowrap;
+    scrollbar-width: "thin"; /*for FireFox*/
+    scrollbar-color: "rgba(0, 0, 0, 0.5) transparent";
+    height: 100%; 
+}

@@ -1,0 +1,20 @@
+
+
+.BoundSelectors {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100vw;
+    z-index: 101;
+    bottom: 0;
+
+    border-style: solid;
+    border-width: 1px;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+
+    .BoundSelector {
+        position: absolute;      
+    }
+}

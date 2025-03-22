@@ -1,0 +1,15 @@
+
+
+.DateSelector {
+    width: 70%;
+    display: flex;
+    padding-right: 0;
+    margin-right: 0px;   
+}
+
+
+.DataEntry {
+    margin-left: 8px;
+    margin-bottom: 8px;
+}
+

@@ -1,0 +1,53 @@
+import React, { useEffect, useState } from 'react';
+import { useSim } from '../../contexts/SimProvider';
+import Menu from '../../components/menu/Menu';
+import EventItem from './EventItem';
+import { EventTable } from '../../simulation/types';
+import { addToEventTable, makeEventQueue } from '../../simulation/helpers/eventTableMethods';
+import ScrollContainer from '../../components/menu/ScrollContainer';
+import AccountEvent from '../../simulation/events/Event';
+
+
+interface EventsMenuProps {
+    accountId?: number  
+}
+
+export default function EventsMenu(props: EventsMenuProps) {
+    const {accountId} = props;
+    const simulation = useSim();
+    const [openState, setOpenState] = useState(false);
+
+    //=========================================================================================
+    const eventIds = (accountId === undefined) ?
+        Object.keys(simulation.saveState.events).map(Number) :
+        simulation.saveState.accounts[accountId].eventIds;
+
+    const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
+        .map(evData => evData.event)
+        .filter(ev => eventIds.includes(ev.id));
+
+    //Use eventTableMethods to order by time/precedence like in the sim
+    let orderedEvents = {} as EventTable;
+    for (const ev of eventObjects) {
+        orderedEvents = addToEventTable(orderedEvents, ev as AccountEvent);
+    };
+        
+    //Squash list and map back to ids, components...
+    const orderedEventIds = makeEventQueue(orderedEvents).getItems().map((ev) => ev.id);
+    const eventItems = orderedEventIds.map((id) => <EventItem key={id} eventId={Number(id)}/>);
+
+    //=========================================================================================
+    //Close menu on empty
+    useEffect(() => {
+        if (!eventIds.length) setOpenState(false); 
+    }, [eventIds]);
+
+    //=========================================================================================
+    return (
+        <Menu title='Events' openState={openState} setOpenState={setOpenState}>
+            <ScrollContainer>
+                {eventItems}
+            </ScrollContainer>
+        </Menu>
+    );
+};
