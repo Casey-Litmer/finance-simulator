@@ -225,7 +225,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         const simData = runSim(simParams);
         setSimData(simData);
         //Start Worker
-        workerRef.current = new Worker(new URL('./simWorker.ts', import.meta.url));
+        workerRef.current = new Worker(new URL('./simWorker.ts', import.meta.url), {type: 'module'});
         workerRef.current.onmessage = (e) => setSimData(e.data.simData);
         return () => workerRef.current?.terminate();
     }, []);
