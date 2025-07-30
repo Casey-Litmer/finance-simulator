@@ -8,6 +8,7 @@ import BoundSelectors from './components/boundselector/BoundSelector';
 import Header from './components/header/Header';
 import { ThemeContextProvider } from './contexts/ThemeProvider';
 import { MenuProvider } from './contexts/MenuProvider';
+import { FileProvider } from './contexts/FileProvider';
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
           <TimeProvider>
             <SimProvider>
               <MenuProvider>
-                <FlexView/>
+                <FileProvider>
+                  <FlexView/>
+                </FileProvider>
               </MenuProvider>
             </SimProvider>
           </TimeProvider>

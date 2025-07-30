@@ -127,7 +127,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
         if (eventId === undefined) {
             simulation.addEvent(eventJSON);
         } else {
-            simulation.dispatchSaveState({events:{[eventId]:eventJSON}});
+            simulation.dispatchSaveState({partial: {events:{[eventId]:eventJSON}}});
         };
     };
 

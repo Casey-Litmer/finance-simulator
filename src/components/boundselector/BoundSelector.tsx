@@ -34,9 +34,9 @@ function BoundSelector({bound, style}: BoundSelectorProps) {
 
     const handleChange = (date: Date | null) => {   
         const newValue = convertTime(date, 'number');
-        simulation.dispatchSaveState(
+        simulation.dispatchSaveState({partial:
             (bound === 'min') ? {xDomain:{start: newValue}} : {xDomain:{stop: newValue}}    
-        );
+        });
     };
 
     return (

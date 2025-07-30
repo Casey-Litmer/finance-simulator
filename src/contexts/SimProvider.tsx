@@ -22,7 +22,7 @@ type ContextProviderProps = {
 
 type SimContextType = {
     saveState: SaveState;
-    dispatchSaveState: React.Dispatch<DeepPartial<SaveState>>;
+    dispatchSaveState: React.Dispatch<SaveStateReducerAction>;
     addAccount: (account: AccountJSON) => void;
     addEvent: (event: EventJSON) => void;
     deleteAccount: (accountId: number) => void;
@@ -30,6 +30,11 @@ type SimContextType = {
     dispatchDelete: () => void;
     getLastAccId: () => number;
     simData?: SimulationData;
+};
+
+type SaveStateReducerAction = {
+    partial: DeepPartial<SaveState>;
+    init?: boolean;
 };
 
 export const simContext = createContext({} as SimContextType);
@@ -41,14 +46,31 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     //Manually trigger a simRun
     const [forceRun, dispatchForceRun] = useReducer(x => 1-x, 0);
 
-    //=========================================================================================
+    //=================================================================================
+
+    ///////////////
+    // simWorker //
+    ///////////////
+
+    const workerRef = useRef<Worker | null>(null);
+
+    // Sim Worker Message
+    const invokeSimWorker = (saveState: SaveState) => {workerRef.current?.postMessage({saveState})};
+
+    //=================================================================================
     /**
      * Main dispatcher for updating saveState structure.
      * Any partial changes will be merged into the structure.
      * Automatically handles id reassignment on event change.
      */
-    const reduceSaveState = (prev: SaveState, partial: DeepPartial<SaveState>) => {
+    const reduceSaveState = (prev: SaveState, action: SaveStateReducerAction) => {
+        const { partial, init } = action;
         //If the events change, update the eventIds in accounts
+        if (init) {
+          invokeSimWorker(partial as SaveState);
+          //dispatchForceRun();
+          return partial as SaveState;
+        }
         if ('events' in partial) updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);
         return deepPartialReducer(prev, partial);
     };
@@ -104,11 +126,34 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         }
     });
 
-    //=========================================================================================
+    //=================================================================================
 
-    ///////////////////////////////
-    // Data Structure Management //
-    ///////////////////////////////
+    //////////////////
+    // Auto Sim Run //
+    //////////////////
+
+    // Simulation runs in a separate thread
+    useEffect(() => {
+        // Run with initial data bc worker takes a second to start
+        const simParams = simInitObjects(saveState);
+        const simData = runSim(simParams);
+        setSimData(simData);
+        // Start Worker
+        workerRef.current = new Worker(new URL('./simWorker.ts', import.meta.url), {type: 'module'});
+        workerRef.current.onmessage = (e) => setSimData(e.data.simData);
+        return () => workerRef.current?.terminate();
+    }, []);
+
+    // Invoke the worker on parameter changes
+    useEffect(
+      debounce(() => invokeSimWorker(saveState), 10), 
+    [saveState.accounts, saveState.events, saveState.xDomain, forceRun]);
+
+    //=================================================================================
+
+    /////////
+    // API //
+    /////////
 
     /**
      * Updates all accounts' eventIds with changes in events.
@@ -145,22 +190,22 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     /**Creates a new Record key before dispatching new account*/
     const addAccount = (account: AccountJSON) => {
         const lastId = Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
-        dispatchSaveState({
+        dispatchSaveState({ partial: {
             accounts: {[lastId + 1]: account},
             accountsDisplay: {[lastId + 1]: {
                 visible: true, 
                 line:{color:`hsl(${Math.random()*255}, 100%, 50%)`, dash:'solid'}
             }}
-        });
+        }});
     };
 
     /**Creates a new Record key before dispatching new event*/
     const addEvent = (event: EventJSON) => {
         const lastId = Math.max(...Object.keys(saveState.events).map(Number), ...[0]);
-        dispatchSaveState({events: {[lastId + 1]: event}});
+        dispatchSaveState({partial: {events: {[lastId + 1]: event}}});
     };
 
-    //=========================================================================================
+    //=================================================================================
     //// Deletion ///
 
     const [deletionQueue, setDeletionQueue] = useState<DispatchDeleteEvent[]>([]);
@@ -210,31 +255,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         return true;
     };
 
-    //=========================================================================================
-
-    /////////////
-    // runSim  //
-    /////////////
-
-    const workerRef = useRef<Worker | null>(null);
-
-    //Simulation runs in a separate thread
-    useEffect(() => {
-        //Run with initial data bc worker takes a second to start
-        const simParams = simInitObjects(saveState);
-        const simData = runSim(simParams);
-        setSimData(simData);
-        //Start Worker
-        workerRef.current = new Worker(new URL('./simWorker.ts', import.meta.url), {type: 'module'});
-        workerRef.current.onmessage = (e) => setSimData(e.data.simData);
-        return () => workerRef.current?.terminate();
-    }, []);
-
-    //Invoke the worker on parameter change
-    useEffect(debounce(() => workerRef.current?.postMessage({saveState}), 10), 
-        [saveState.accounts, saveState.events, saveState.xDomain, forceRun]);
-
-    //=========================================================================================
+    //=================================================================================
     return (
         <simContext.Provider
             value={{
@@ -254,7 +275,8 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     );
 };
 
-//=========================================================================================
+//=================================================================================
+
 export const useSim = () => {
     const context = useContext(simContext);
     // err handling pls

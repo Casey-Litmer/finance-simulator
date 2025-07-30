@@ -81,7 +81,7 @@ export default function NewAccountMenu(props: NewAccountMenuProps) {
         if (accountId === undefined) {
             simulation.addAccount(accountJSON);
         } else {
-            simulation.dispatchSaveState({accounts:{[accountId]:accountJSON}});
+            simulation.dispatchSaveState({partial: {accounts:{[accountId]:accountJSON}}});
         };
     };
 

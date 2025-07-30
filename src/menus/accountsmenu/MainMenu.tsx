@@ -15,72 +15,72 @@ import { ScatterLine } from 'plotly.js';
 
 
 interface MainMenuProps {
-    openState: boolean
-    setOpenState: React.Dispatch<React.SetStateAction<boolean>>
+  openState: boolean
+  setOpenState: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function MainMenu(props: MainMenuProps) {
-    //MainMenu is a bit different from other menus as the openState is elevated to the container
-    const {openState, setOpenState} = props;
-    const {openMenu} = useMenu();
-    const simulation = useSim();
-    const accounts = simulation.saveState.accounts;
+  //MainMenu is a bit different from other menus as the openState is elevated to the container
+  const { openState, setOpenState } = props;
+  const { openMenu } = useMenu();
+  const simulation = useSim();
+  const accounts = simulation.saveState.accounts;
 
-    //=========================================================================================
-    const totalLine = simulation.saveState.accountsDisplay[-1].line;
+  //=========================================================================================
+  const totalLine = simulation.saveState.accountsDisplay[-1].line;
 
-    const accountItems = Object.keys(accounts)
-        .filter(id => Number(id) >= 0)
-        .map(id => <AccountItem key={id} accountId={Number(id)}/>);
+  const accountItems = Object.keys(accounts)
+    .filter(id => Number(id) >= 0)
+    .map(id => <AccountItem key={id} accountId={Number(id)} />);
 
-    //=========================================================================================
-    const hasEvents = Object.keys(simulation.saveState.events).length > 0;
-    const hasAccounts = accountItems.length > 0;
+  //=========================================================================================
+  const hasEvents = Object.keys(simulation.saveState.events).length > 0;
+  const hasAccounts = accountItems.length > 0;
 
-    //=========================================================================================
-    const handleNewAccount = () => openMenu(<NewAccountMenu/>);
-    const handleAllEvents = () => openMenu(<EventsMenu/>);
-    const handleTotalColorCallback = (line: Partial<ScatterLine>) => {simulation.dispatchSaveState({accountsDisplay:{[-1]:{line}}})};
+  //=========================================================================================
+  const handleNewAccount = () => openMenu(<NewAccountMenu />);
+  const handleAllEvents = () => openMenu(<EventsMenu />);
+  const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState({ partial: { accountsDisplay: { [-1]: { line } } } }) };
 
-    //=========================================================================================
-    return (
-        <Menu title='Accounts'openState={openState} setOpenState={setOpenState}>
-            
-            <MenuDivider/>
-            
-            <MenuItemContainer>
-                <UtilityButton
-                    name='New Account'
-                    icon={Add}
-                    handleClick={handleNewAccount}
-                />
-                New Account
-            </MenuItemContainer>
+  //=========================================================================================
+  return (
+    <Menu title='Accounts' openState={openState} setOpenState={setOpenState}>
 
-            {hasEvents &&
-                <MenuItemContainer>
-                    <UtilityButton
-                        name="All Events"
-                        icon={KeyboardDoubleArrowRight}
-                        handleClick={handleAllEvents}
-                    />
-                    All Events
-                </MenuItemContainer>
-            }
+      <MenuDivider />
 
-            <MenuDivider/>
+      <MenuItemContainer>
+        <UtilityButton
+          name='New Account'
+          icon={Add}
+          handleClick={handleNewAccount}
+        />
+        New Account
+      </MenuItemContainer>
 
-            <MenuItemContainer sx={{height: 28}}>
-                <div style={{marginLeft:24}}>Total Balance</div>
-                <ColorSelect line={totalLine} callback={handleTotalColorCallback}/>
-                <VisibilityButton accountId={-1} sx={{top: '0px'}}/>
-            </MenuItemContainer>
+      {hasEvents &&
+        <MenuItemContainer>
+          <UtilityButton
+            name="All Events"
+            icon={KeyboardDoubleArrowRight}
+            handleClick={handleAllEvents}
+          />
+          All Events
+        </MenuItemContainer>
+      }
 
-            {hasAccounts && <MenuDivider/>}
+      <MenuDivider />
 
-            <ScrollContainer>
-                {accountItems}
-            </ScrollContainer>
-        </Menu>
-    );
+      <MenuItemContainer sx={{ height: 28 }}>
+        <div style={{ marginLeft: 24 }}>Total Balance</div>
+        <ColorSelect line={totalLine} callback={handleTotalColorCallback} />
+        <VisibilityButton accountId={-1} sx={{ top: '0px' }} />
+      </MenuItemContainer>
+
+      {hasAccounts && <MenuDivider />}
+
+      <ScrollContainer>
+        {accountItems}
+      </ScrollContainer>
+    </Menu>
+  );
 };
