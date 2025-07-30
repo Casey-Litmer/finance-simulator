@@ -68,7 +68,6 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         //If the events change, update the eventIds in accounts
         if (init) {
           invokeSimWorker(partial as SaveState);
-          //dispatchForceRun();
           return partial as SaveState;
         }
         if ('events' in partial) updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);

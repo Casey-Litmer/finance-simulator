@@ -31,7 +31,17 @@ export default function ColorSelect(props: ColorSelectProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [isPickingColor, setIsPickingColor] = useState(false);
 
-  //=========================================================================================
+  //=================================================================================
+  // Update Colors / Dashes
+
+  useEffect(() => {
+    setNewColor(color ?? `hsl(${Math.random()},1,1)`);
+    setNewDash(dash ?? 'solid');
+  }, [color, dash]);
+
+  //=================================================================================
+  // Handlers
+
   const handleClick = (e: any) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleColor = (c: Color) => {
@@ -42,9 +52,11 @@ export default function ColorSelect(props: ColorSelectProps) {
     setNewDash(e.target.value);
   };
 
-  //=========================================================================================
-  //Registers onMouseUp when outside the color picker
+  //=================================================================================
+  // Registers onMouseUp when outside the color picker
+
   useEffect(() => {
+    console.log(color, newColor)
     const handleMouseUp = () => {
       if (isPickingColor) {
         callback({ color: newColor });
@@ -55,8 +67,7 @@ export default function ColorSelect(props: ColorSelectProps) {
     return () => window.removeEventListener('mouseup', handleMouseUp);
   }, [isPickingColor, newColor]);
 
-
-  //=========================================================================================
+  //=================================================================================
   return (<>
     <UtilityButton
       name='Color'
