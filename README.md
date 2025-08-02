@@ -2,8 +2,8 @@
 
 TODO:
 
-- Remove total from switch transfer direction.
-- Check that the useEffect in SimProvider works on load
+- ~~Remove total from switch transfer direction.~~
+- ~~Check that the useEffect in SimProvider works on load~~
 
 1) move to tailwindcss
 2) Optimize events before start time

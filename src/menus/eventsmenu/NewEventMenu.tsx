@@ -76,7 +76,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
     .map((key, i) => (<option key={i} value={key}>{key}</option>));
 
   const otherAccounts = Object.keys(simulation.saveState.accounts)
-    .filter((key) => Number(key) !== currentAccountId)
+    .filter((key) => Number(key) !== currentAccountId && Number(key) >= 0);
 
   //=========================================================================================
   //Conditions
@@ -159,7 +159,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
-
+{/* Event Name */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Name
           <InputField
@@ -171,7 +171,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             convertOutput={nm => nm.length ? nm : undefined}
           />
         </MenuItemContainer>
-
+{/* Event Date */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Date
           <DateSelector
@@ -180,7 +180,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             selected={currentState.args.eventTime}
           />
         </MenuItemContainer>
-
+{/* Event Type */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Type
           <DropdownSelect
@@ -190,7 +190,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             {eventTypes}
           </DropdownSelect>
         </MenuItemContainer>
-
+{/* Event Value */}
         {(hasValue && !isChangeInterestRate) &&
           <MenuItemContainer sx={dataEntryStyles}>
             {`${eventTypeParameters.label}:`}
@@ -207,7 +207,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             />
           </MenuItemContainer>
         }
-
+{/* Event Rate (change interest rate) */}
         {(isChangeInterestRate) &&
           <MenuItemContainer sx={dataEntryStyles}>
             {`${eventTypeParameters.label}:`}
@@ -225,9 +225,10 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             />
           </MenuItemContainer>
         }
-
+{/* Transfers */}
         {(isTransfer && otherAccounts.length > 0) &&
           <>
+  {/* Transfer to */}
             <MenuItemContainer sx={dataEntryStyles}>
               Transfer To
               <DropdownSelect
@@ -235,7 +236,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
                 control={control}
                 convertInput={(accIds) => accIds[1]}
                 convertOutput={(accId) => [currentAccountId, Number(accId)]}
-                defaultValue={currentState.accountIds}
+                defaultValue={currentState.accountIds.filter( id => id >= 0 )}
               >
                 {otherAccounts.map((key) =>
                 (<option value={key}>
@@ -244,7 +245,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
                 }
               </DropdownSelect>
             </MenuItemContainer>
-
+  {/* Swap Transfer */} 
             <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
               Swap Transfer
               <UtilityButton
@@ -255,8 +256,9 @@ export default function NewEventMenu(props: NewEventMenuProps) {
             </MenuItemContainer>
           </>
         }
-
+{/* Periodic */}
         {(isPeriodic) && <>
+  {/* Period */}
           <MenuItemContainer sx={dataEntryStyles}>
             {`Period (${periodUnits})`}
             <InputField
@@ -271,7 +273,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
               defaultValue={currentState.args.eventPeriod ?? 7}
             />
           </MenuItemContainer>
-
+  {/* Period Mode */}
           <MenuItemContainer sx={dataEntryStyles}>
             Period Mode
             <DropdownSelect
@@ -284,7 +286,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
               {['constant', 'monthly'].map((mode) => <option value={mode}>{mode}</option>)}
             </DropdownSelect>
           </MenuItemContainer>
-
+  {/* Doesn't End */}
           <MenuItemContainer sx={dataEntryStyles}>
             Doesn't End
             <UtilityButton
@@ -293,8 +295,9 @@ export default function NewEventMenu(props: NewEventMenuProps) {
               handleClick={() => setValue('args.doesEnd', !doesEnd)}
             />
           </MenuItemContainer>
-
-          {(doesEnd) &&
+  {/* Does End */}
+          {(doesEnd) && <>
+    {/* End Date */}
             <MenuItemContainer sx={dataEntryStyles}>
               End Date
               <DateSelector
@@ -303,9 +306,9 @@ export default function NewEventMenu(props: NewEventMenuProps) {
                 selected={currentState.args.endTime ?? currentState.args.eventTime}
               />
             </MenuItemContainer>
-          }
+          </>}
         </>}
-
+{/* Save and Delete */}
         <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
           <SaveButton />
           {(eventId !== undefined) &&
