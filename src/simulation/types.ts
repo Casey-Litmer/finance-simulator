@@ -12,6 +12,7 @@ export type SaveState = {
     accounts: Record<number, AccountJSON>;
     events: Record<number, EventJSON>;
     accountsDisplay: Record<number, AccountDisplay>;
+    eventsDisplay: Record<number, EventDisplay>;
     xDomain: {start: number, stop: number, step: number};
 };
 
@@ -25,12 +26,16 @@ export type AccountJSON = {
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
-    accountIds: number[]
+    accountIds: number[];
 };
 
 export type AccountDisplay = {
     visible: boolean;
     line: Partial<ScatterLine>;
+};
+
+export type EventDisplay = {
+    active: boolean;
 };
 
 

@@ -52,7 +52,7 @@ export default function NewAccountMenu(props: NewAccountMenuProps) {
     //Hydration Station
     const accountTypes = Object.keys(AccountConstructorMap)
         .filter((key) => key !== 'Account')
-        .map((key) => (<option value={key}>{key}</option>));
+        .map((key,i) => (<option key={i} value={key}>{key}</option>));
 
     //=========================================================================================
     //Conditions

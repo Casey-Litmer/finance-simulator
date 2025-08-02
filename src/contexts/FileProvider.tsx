@@ -20,6 +20,8 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
   const { saveState, dispatchSaveState } = useSim();
   const [ graphName, setGraphName ] = useState<string>('New Graph');
 
+  //=================================================================================
+  // Util
 
   const stripExtension = (filename: string) => {
     return filename.endsWith('.json') ? filename.slice(0, filename.length - 5) : filename;
@@ -30,12 +32,10 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
 
   const handleSaveClick = () => {
     let filename = prompt("Enter filename:", `${stripExtension(graphName)}`) || undefined;
-    if (!filename) return;
-    
+    if (!filename) return; 
     const json = JSON.stringify(saveState, null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = `${filename}.json`; // filename from prompt
@@ -53,21 +53,17 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
       fileInputRef.current.value = ''; // <-- Clear previous file
       fileInputRef.current.click();
     };
-    //fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     console.log('LOAD', file)
     if (!file) return;
-
-
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
         const contents = event.target?.result;
         const parsed = JSON.parse(contents as string);
-        
         // Set sim save state
         dispatchSaveState({partial: parsed, init: true});
         setGraphName(stripExtension(file.name));

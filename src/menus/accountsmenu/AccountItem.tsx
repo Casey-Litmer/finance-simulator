@@ -61,7 +61,7 @@ export default function AccountItem(props: AccountItemProps) {
 
       <FixedText text={accountName} />
       <ColorSelect line={line} callback={handleColorCallback} />
-      <VisibilityButton accountId={accountId} />
+      <VisibilityButton type='account' id={accountId} />
 
       <DropdownContainer open={openDropdown}>
         <MenuItemContainer sx={ContainerSx}>

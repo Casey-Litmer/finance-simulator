@@ -7,7 +7,7 @@ import AccountEvent from '../../simulation/events/Event';
 import { EventTable } from '../../simulation/types';
 import { addToEventTable, makeEventQueue } from '../../simulation/helpers/eventTableMethods';
 import ScrollContainer from '../../components/menu/ScrollContainer';
-import MenuItemContainer from '../../components/menu/MenuItemContainer';
+import MenuItemContainer, { MenuDivider } from '../../components/menu/MenuItemContainer';
 import UtilityButton from '../../components/buttons/UtitlityButton';
 import { useMenu } from '../../contexts/MenuProvider';
 import NewEventMenu from './NewEventMenu';
@@ -67,14 +67,17 @@ export default function EventsMenu(props: EventsMenuProps) {
   return (
     <Menu title='Events' openState={openState} setOpenState={setOpenState}>
       <ScrollContainer>
-        {accountId !== undefined && <MenuItemContainer sx={ContainerSx}>
-          <UtilityButton
-            name='New Event'
-            icon={Add}
-            handleClick={handleNewEvent}
-          />
-          New Event
-        </MenuItemContainer>}
+        {accountId !== undefined && <>
+          <MenuItemContainer sx={ContainerSx}>
+            <UtilityButton
+              name='New Event'
+              icon={Add}
+              handleClick={handleNewEvent}
+            />
+            New Event
+          </MenuItemContainer>
+          <MenuDivider />
+        </>}
         {eventItems}
       </ScrollContainer>
     </Menu>

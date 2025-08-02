@@ -19,7 +19,7 @@ function eventStackLoop(pendingEvents: Deque<AccountEvent>, E: AccountState, acc
         if (!event) break;
 
         //An AccountState must be open to use a functor (unless it is the OpenAccount functor)
-        if (E.open || event instanceof OpenAccount) {
+        if ((E.open || event instanceof OpenAccount) && event.isActive) {
             loopState = event.Functor(E, account);
         };
             

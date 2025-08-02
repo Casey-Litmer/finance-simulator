@@ -18,29 +18,25 @@ export type EventConstructor<E extends AccountEvent = AccountEvent> = new (...ar
 
 //=========================================================================================
 export default class AccountEvent {
-
-    _precedence_: number;  //gets initialized in constructor now bc ts (bs) waits to initialize it >:(
-
+    _precedence_: number; 
     eventTime: number;
     currentTime: number;
     isGenerated: boolean;
     isConsumable: boolean = true;
+    isActive: boolean;
     accounts: Record<number, Account>;
     id: number;
     name: string | undefined;
-
     isPeriodic: boolean;
     eventPeriod: number;
     periodMode: string;
     endTime: number;
     
-    constructor(
-    {
+    constructor({
         _precedence_ = 10,
         isGenerated = false,
         isPeriodic = false,
-    }: EventSettings,
-    {
+    }: EventSettings, {
         eventTime = REF_TIME, 
         accounts = [], 
         eventPeriod = 28,
@@ -48,10 +44,13 @@ export default class AccountEvent {
         endTime = REF_TIME,
         doesEnd = false,
         id,
-        name
-    }: EventArguments
-    ) {      
+        name,
+        isActive = true
+    }: EventArguments ) {      
         this.eventTime = convertTime(eventTime, 'number');
+
+        //Active
+        this.isActive = isActive;
 
         //Mutable ref for PeriodicEvents
         this.currentTime = this.eventTime;
@@ -98,7 +97,7 @@ export default class AccountEvent {
      * @param E AccountState
      * @param account Account
      */
-    public Functor(E:AccountState, account:Account): boolean {
+    public Functor(E: AccountState, account: Account): boolean {
         return true;
     };
 

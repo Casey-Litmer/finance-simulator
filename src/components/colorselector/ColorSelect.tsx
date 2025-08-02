@@ -56,7 +56,6 @@ export default function ColorSelect(props: ColorSelectProps) {
   // Registers onMouseUp when outside the color picker
 
   useEffect(() => {
-    console.log(color, newColor)
     const handleMouseUp = () => {
       if (isPickingColor) {
         callback({ color: newColor });

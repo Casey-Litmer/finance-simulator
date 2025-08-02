@@ -2,7 +2,6 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckBoxOutlineBlank, CheckBoxOutlineBlankTwoTone, CheckBoxOutlined } from '@mui/icons-material';
 import { useSim } from '../../contexts/SimProvider';
-import { useTime } from '../../contexts/TimeProvider';
 import { DateSelector, DropdownSelect, InputField } from '../../components/dataentry/DataEntry';
 import Menu from '../../components/menu/Menu';
 import MenuItemContainer from '../../components/menu/MenuItemContainer';
@@ -11,7 +10,7 @@ import UtilityButton from '../../components/buttons/UtitlityButton';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import { EventJSON } from '../../simulation/types';
 import { EventConstructorMap } from '../../simulation/ConstructorMaps';
-import { convertTime } from '../../simulation/helpers/timeMethods';
+import { convertTime, getToday } from '../../simulation/helpers/timeMethods';
 
 
 
@@ -29,10 +28,11 @@ export default function NewEventMenu(props: NewEventMenuProps) {
   if (accountId === undefined && eventId === undefined) throw Error('An id must be provided');
 
   const simulation = useSim();
-  const today = useTime().today;
+  const today = getToday().time;
   const [openState, setOpenState] = useState(false);
 
-  const { handleSubmit,
+  const { 
+    handleSubmit,
     register,
     watch,
     setValue,
@@ -40,9 +40,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
     control,
     formState: { errors },
   } = useForm<EventJSON>({
-    //criteriaMode: 'all',
     mode: 'onChange',
-    //reValidateMode: "onChange",
     defaultValues: (eventId !== undefined) ?
       simulation.saveState.events[eventId] :
       {
@@ -75,7 +73,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
   //Hydration Station
   const eventTypes = Object.keys(EventConstructorMap)
     .filter((key) => key !== 'Event')
-    .map((key) => (<option value={key}>{key}</option>));
+    .map((key, i) => (<option key={i} value={key}>{key}</option>));
 
   const otherAccounts = Object.keys(simulation.saveState.accounts)
     .filter((key) => Number(key) !== currentAccountId)
@@ -270,7 +268,7 @@ export default function NewEventMenu(props: NewEventMenuProps) {
               })}
               convertOutput={Number}
               control={control}
-              defaultValue={currentState.args.eventPeriod}
+              defaultValue={currentState.args.eventPeriod ?? 7}
             />
           </MenuItemContainer>
 

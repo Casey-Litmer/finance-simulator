@@ -7,24 +7,35 @@ import { SxProps } from '@mui/material';
 
 
 interface VisibilityButtonProps {
-    accountId: number;
-    sx?: SxProps<Theme>;
+  id: number;
+  type: 'account' | 'event';
+  sx?: SxProps<Theme>;
 };
 
 export default function VisibilityButton(props: VisibilityButtonProps) {
-    const {accountId, sx} = props;
-    const simulation = useSim();
-    const visible = simulation.saveState.accountsDisplay[accountId].visible;
+  const { id, type, sx } = props;
+  const simulation = useSim();
 
-    const handleVisible = () => simulation.dispatchSaveState({partial: {accountsDisplay:{[accountId]: {visible: !visible}}}});
+  //=================================================================================
 
-    return (
-        <UtilityButton 
-            name='Visible'
-            icon = {visible ? 
-                CheckBoxOutlined : CheckBoxOutlineBlank}
-            handleClick={handleVisible}
-            sx={{position: 'absolute', right:'16px', ...sx}}
-        /> 
+  const visible = (type === 'account') ?
+    simulation.saveState.accountsDisplay[id].visible :
+    simulation.saveState.eventsDisplay[id].active;
+
+  const handleVisible = () => simulation.dispatchSaveState(
+    (type === 'account') ?
+      { partial: { accountsDisplay: { [id]: { visible: !visible } } } } :
+      { partial: { eventsDisplay: { [id]: { active: !visible } } } }
     );
+
+  //=================================================================================
+  return (
+    <UtilityButton
+      name='Visible'
+      icon={visible ?
+        CheckBoxOutlined : CheckBoxOutlineBlank}
+      handleClick={handleVisible}
+      sx={{ position: 'absolute', right: '16px', ...sx }}
+    />
+  );
 };

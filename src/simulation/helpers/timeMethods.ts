@@ -1,6 +1,9 @@
 import { DateTime } from "luxon";
 
 
+export type DateFloat = DateTime | number | Date;
+
+//=================================================================================
 
 /**
  * Converts DateTime to number of DAYS past since 1/1/2000.
@@ -41,6 +44,7 @@ export function floatToJsDate(t: number): Date {
     return floatToDateTime(t ? t+1 : REF_TIME+1).toJSDate();
 };
 
+//=================================================================================
 
 //Overloads
 export function convertTime(time: DateFloat | null, out: 'DateTime'): DateTime;
@@ -80,12 +84,25 @@ export function convertTime(
     throw new Error('Invalid input type for convertTime');
 };
 
-
+//=================================================================================
+// Global
 
 export const REF_DATE = DateTime.utc(2000, 1, 1);
 export const REF_TIME = dateTimeToFloat(REF_DATE);
-export type DateFloat = DateTime | number | Date;
 
+//=================================================================================
+
+/** 
+ * Today 
+ */
+export function getToday() {    
+    const todayDate = new Date();
+    return {
+        date: todayDate,
+        time: convertTime(todayDate, 'number'),
+        datetime: convertTime(todayDate, 'DateTime')
+    };
+};
 
 /**
  * Alternate display for Date
@@ -95,7 +112,6 @@ export function formatDatetime(date: DateFloat, mode: 'mdy' | 'ymd' | 'plot' = '
     const month = date_.month;
     const day = date_.day;
     const year = date_.year;
-
     switch (mode) {
         case 'mdy': return `${month}/${day}/${year}`;
         case 'ymd': return `${year}/${month}/${day}`.padEnd(15, ' ');
@@ -103,8 +119,7 @@ export function formatDatetime(date: DateFloat, mode: 'mdy' | 'ymd' | 'plot' = '
     };
 };
 
-
-
+//=================================================================================
 
 /**
  * Switches the behavior of adding a period `n` to a date (accepts float time).
@@ -121,26 +136,22 @@ export function formatDatetime(date: DateFloat, mode: 'mdy' | 'ymd' | 'plot' = '
  */
 export function addPeriod(t: number, n: number, mode = 'constant'): number {
     const _modes = ['constant', 'monthly'];
-
     const date = floatToDateTime(t);
     const month = date.month; 
     const day = date.day;
     const year = date.year;
-
     if (mode === 'constant') { 
         return dateTimeToFloat(date.plus({days: n}));
-
     } else if (mode === 'monthly') {
         const add_month = month + n - 1;
         const new_year = year + Math.floor(add_month/12);
         const new_month = add_month % 12 + 1;  //check for negative bullshits
 
         return dateTimeToFloat(DateTime.utc(new_year, new_month, day));
-
     } else {
         throw new Error(`
             ${mode} is not a mode! \n 
             Valid modes are: ${_modes}
-            `);
+        `);
     };
 };

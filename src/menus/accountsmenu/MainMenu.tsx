@@ -73,7 +73,7 @@ export default function MainMenu(props: MainMenuProps) {
       <MenuItemContainer sx={{ height: 28 }}>
         <div style={{ marginLeft: 24 }}>Total Balance</div>
         <ColorSelect line={totalLine} callback={handleTotalColorCallback} />
-        <VisibilityButton accountId={-1} sx={{ top: '0px' }} />
+        <VisibilityButton type='account' id={-1} sx={{ top: '0px' }} />
       </MenuItemContainer>
 
       {hasAccounts && <MenuDivider />}

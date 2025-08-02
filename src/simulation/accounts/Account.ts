@@ -1,7 +1,7 @@
 import AccountEvent from '../events/Event';
 import {
-    REF_DATE, 
-    dateTimeToFloat, 
+    REF_DATE,
+    dateTimeToFloat,
     formatDatetime,
     convertTime
 } from '../helpers/timeMethods';
@@ -9,7 +9,7 @@ import { addToEventTable } from '../helpers/eventTableMethods';
 import CompoundInterest from '../events/CompoundInterest';
 import { DateTime } from 'luxon';
 import Deque from '../helpers/Deque';
-import { EventTable, SimulationBundle} from '../types';
+import { EventTable, SimulationBundle } from '../types';
 import { AccountArguments } from './AccountInterfaces';
 
 
@@ -17,11 +17,11 @@ import { AccountArguments } from './AccountInterfaces';
 
 //manually create ids for accounts and increment value
 export let LAST_ACCOUNT_ID = 0;
-export function resetLastAccountID() {LAST_ACCOUNT_ID = 0}
+export function resetLastAccountID() { LAST_ACCOUNT_ID = 0 }
 
 
 //Meta constructor
-export type AccountConstructor<A extends Account = Account> = new (...args: any[]) => A; 
+export type AccountConstructor<A extends Account = Account> = new (...args: any[]) => A;
 
 
 export default class Account {
@@ -41,12 +41,12 @@ export default class Account {
     bundle: SimulationBundle;
 
     constructor({
-            name = undefined, 
-            initialBal = 0, 
-            openDate = REF_DATE, 
-            prorate = true, 
-            id
-        }: AccountArguments) {
+        name = undefined,
+        initialBal = 0,
+        openDate = REF_DATE,
+        prorate = true,
+        id
+    }: AccountArguments) {
 
         this.openDate = convertTime(openDate, 'DateTime');
         this.name = name ? name : 'Account ' + formatDatetime(this.openDate);
@@ -67,16 +67,16 @@ export default class Account {
         if (id !== undefined) {
             this.id = id;
         } else {
-            this.id = LAST_ACCOUNT_ID; 
+            this.id = LAST_ACCOUNT_ID;
             LAST_ACCOUNT_ID++;
         }
-        
+
         //Data used in simulation
         this.bundle = {
-            times: [], 
-            pendingEvents: new Deque<AccountEvent>(), 
-            remainingEvents: new Deque<AccountEvent>(), 
-            state:null
+            times: [],
+            pendingEvents: new Deque<AccountEvent>(),
+            remainingEvents: new Deque<AccountEvent>(),
+            state: null
         };
     }
 
@@ -104,16 +104,17 @@ export default class Account {
         tMin = tMin + (d - tMin) % Q;
 
         //Add all interest periods
-        const interestPeriods:EventTable = {};
+        const interestPeriods: EventTable = {};
 
         for (let t = tMin; t < tMax; t += Q) {
             interestPeriods[t] = [
                 new CompoundInterest({
-                    eventTime: t, 
+                    eventTime: t,
                     accounts: [this]
-            })];
-        }
+                })
+            ];
+        };
 
         return addToEventTable(this.events, interestPeriods);
-    }
-}
+    };
+};

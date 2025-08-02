@@ -14,7 +14,10 @@ export interface EventArguments {
     eventPeriod?: number;
     periodMode?: string;
     endTime?: DateFloat;
-    doesEnd?: boolean
+    doesEnd?: boolean;
+
+    //Visibility
+    isActive?: boolean;
 }
 
 //Event children may have to pass settings at some point.  Maybe nest it inside EventArguments?
