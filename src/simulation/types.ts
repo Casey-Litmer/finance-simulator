@@ -13,7 +13,8 @@ export type SaveState = {
     events: Record<number, EventJSON>;
     accountsDisplay: Record<number, AccountDisplay>;
     eventsDisplay: Record<number, EventDisplay>;
-    xDomain: {start: number, stop: number, step: number};
+    filter?: FilterJSON;                                   // TODO convert all to optional
+    xDomain: {start: number, stop: number, step: number};  //  Then have fallbacks
 };
 
 
@@ -36,6 +37,36 @@ export type AccountDisplay = {
 
 export type EventDisplay = {
     active: boolean;
+};
+
+// Sorting
+export type FilterJSON = {
+    filter: boolean;
+    filterBy: {
+        //
+        singular: boolean;
+        periodic: boolean;
+        //
+        name: string;
+        // 
+        deposit: boolean;
+        withdrawal: boolean;
+        transfer: boolean;
+        closeAccount: boolean;
+        changeInterestRate: boolean;
+        adjustment: boolean;
+        //
+        periodicDeposit: boolean;
+        periodicWithdrawal: boolean;
+        periodicTransfer: boolean;
+        //
+        range: {
+            after: boolean;
+            startTime: number;
+            before: boolean;
+            endTime: number;
+        };
+    };
 };
 
 

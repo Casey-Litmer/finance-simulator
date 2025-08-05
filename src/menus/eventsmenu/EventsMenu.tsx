@@ -11,7 +11,9 @@ import MenuItemContainer, { MenuDivider } from '../../components/menu/MenuItemCo
 import UtilityButton from '../../components/buttons/UtitlityButton';
 import { useMenu } from '../../contexts/MenuProvider';
 import NewEventMenu from './NewEventMenu';
-import { Add } from '@mui/icons-material';
+import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
+import { FilterMenu } from '../FilterMenu';
+import { filterEvents } from '../../utils';
 
 
 interface EventsMenuProps {
@@ -26,6 +28,7 @@ export default function EventsMenu(props: EventsMenuProps) {
   const [openState, setOpenState] = useState(false);
 
   //=================================================================================
+  // Styles
 
   const ContainerSx = {
     borderRadius: '4px',
@@ -33,10 +36,24 @@ export default function EventsMenu(props: EventsMenuProps) {
   };
 
   //=================================================================================
+  // Event Mapping
 
-  const eventIds = (accountId === undefined) ?
-    Object.keys(simulation.saveState.events).map(Number) :
-    simulation.saveState.accounts[accountId].eventIds;
+  console.log(simulation.saveState.events)
+
+  const filteredEvents = filterEvents(
+    (accountId === undefined) ? 
+    simulation.saveState.events : 
+    simulation.saveState.accounts[accountId].eventIds
+    .map(id => simulation.saveState.events[id])
+  , simulation.saveState.filter);
+
+  console.log('filtered', filteredEvents) //TODO this is turning into an array and getting the wrong keys
+
+  const eventIds = Object.keys(filteredEvents).map(Number);
+
+  //const eventIds = (accountId === undefined) ?
+  //  Object.keys(simulation.saveState.events).map(Number) :
+  //  simulation.saveState.accounts[accountId].eventIds;
 
   const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
     .map(evData => evData.event)
@@ -61,12 +78,27 @@ export default function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
 
+  const handleFilterMenu = () => { openMenu(<FilterMenu />) };
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
 
   //=================================================================================
   return (
     <Menu title='Events' openState={openState} setOpenState={setOpenState}>
       <ScrollContainer>
+{/* Filter */}
+        <MenuItemContainer>
+          <div style={{ flex: 1, flexDirection: 'row' }}>
+            <UtilityButton 
+              name='Filter Menu'
+              icon={KeyboardDoubleArrowRight}
+              handleClick={handleFilterMenu}
+            />
+          </div>
+        </MenuItemContainer>
+
+        <MenuDivider />
+
+{/* New Event */}        
         {accountId !== undefined && <>
           <MenuItemContainer sx={ContainerSx}>
             <UtilityButton
@@ -78,7 +110,10 @@ export default function EventsMenu(props: EventsMenuProps) {
           </MenuItemContainer>
           <MenuDivider />
         </>}
+
+{/* Events */}
         {eventItems}
+          
       </ScrollContainer>
     </Menu>
   );

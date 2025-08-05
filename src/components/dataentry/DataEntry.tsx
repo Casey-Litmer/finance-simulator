@@ -1,9 +1,9 @@
 import React, { CSSProperties, ReactNode } from 'react';
 import DatePicker from 'react-datepicker';
-import './DataEntry.css';
-import "react-datepicker/dist/react-datepicker.css";
 import { Control, Controller, FieldErrors, FieldValues, UseFormRegisterReturn } from 'react-hook-form';
 import { convertTime, DateFloat } from '../../simulation/helpers/timeMethods';
+import './DataEntry.css';
+import "react-datepicker/dist/react-datepicker.css";
 
 
 
@@ -12,7 +12,7 @@ interface FormHookProps {
   register?: UseFormRegisterReturn;
   control?: Control<any, any>
   convertInput?: (val: any) => any;
-  convertOutput?: (val: string) => any;
+  convertOutput?: (val: any) => any;
 };
 
 //=========================================================================================
@@ -49,6 +49,7 @@ interface DropdownSelectProps extends FormHookProps {
   style?: CSSProperties;
   defaultValue?: any;
 };
+
 export function DropdownSelect(props: DropdownSelectProps) {
   const {
     children,
@@ -89,12 +90,16 @@ export function DropdownSelect(props: DropdownSelectProps) {
 interface InputFieldProps extends FormHookProps {
   type: string;
   style?: CSSProperties;
-  defaultValue?: string | number;
+  className?: string;
+  defaultValue?: string | number | boolean;
   bounds?: { min?: number, max?: number };
 };
+
 /**Must pass defaultValue if using convertInput*/
 export function InputField(props: InputFieldProps) {
-  const { style,
+  const { 
+    style,
+    className,
     type,
     errors,
     register,
@@ -103,6 +108,8 @@ export function InputField(props: InputFieldProps) {
     convertInput = (val) => val,
     convertOutput = (val) => val
   } = props;
+
+  //=================================================================================
 
   //Prevent enter from submitting form here
   const handleEnter = (ev: React.KeyboardEvent<HTMLInputElement>) => {
@@ -117,15 +124,17 @@ export function InputField(props: InputFieldProps) {
       {...register}
       render={({ field }) => <>
         <input
-          className='DataEntry'
+          className={`DataEntry ${className}`}
           type={type}
           step='any'
           onKeyDown={handleEnter}
           autoComplete='off'
           style={style}
           defaultValue={convertInput(field.value ?? defaultValue)}
+          defaultChecked={(field.value && type === 'checkbox') ?? defaultValue}
           onChange={(e) => {
-            const output = convertOutput(e.target.value);
+            const value = type === 'checkbox' ? e.target.checked : e.target.value;
+            const output = convertOutput(value);
             field.onChange({ target: { value: output } });
           }}
         />

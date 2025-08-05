@@ -57,7 +57,6 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log('LOAD', file)
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
