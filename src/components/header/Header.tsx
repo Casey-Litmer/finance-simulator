@@ -12,30 +12,22 @@ export default function Header() {
   //=================================================================================
   return (
     <div
-      className='Header'
-      style={{
-        backgroundColor: palette.primary.top,
-        borderColor: palette.secondary.top,
-        height: HEADER_HEIGHT,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center'
-      }}
+      style={{height: HEADER_HEIGHT}}
+      className='
+        flex flex-row items-center
+        bg-primary-top
+        border-b-[1px] border-secondary-top
+      '
     >
 {/* File handling */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '0.5rem',
-        position: 'absolute',
-        left: '0.5rem',
-      }}>
+      <div className='absolute flex gap-[0.5rem] left-[0.5rem]'>
         {SaveButton()}
         {LoadButton()}
         {FileInput()}
       </div>
 {/* Graph Name */}
       <div style={{ margin: '0 auto' }}>
-        <p style={{ margin: 0 }}>{graphName}</p>
+        <p className='m-0'>{graphName}</p>
       </div>
     </div>
   );

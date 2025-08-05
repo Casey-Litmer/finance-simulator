@@ -38,19 +38,9 @@ export default App;
 
 function FlexView() {
   return (
-    <div id='flex-view' style = {{
-      display: 'flex',
-      flexDirection: 'column',
-      flex: 1,
-      height: '100vh'
-    }}>
+    <div aria-label='flex-view' className='flex flex-col h-screen' >
       <Header/>
-      <div id='menu-plot-view' style={{
-        display: 'flex',
-        flexDirection: 'row',
-        flex: 1,
-        height: '100%'
-      }}>
+      <div aria-label='menu-plot-view' className='flex flex-row h-full bg-black'>
         <MenuContainer />
         <SimPlot />
       </div>

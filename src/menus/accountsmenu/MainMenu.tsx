@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScatterLine } from 'plotly.js';
 import { useSim } from '../../contexts/SimProvider';
 import UtilityButton from '../../components/buttons/UtitlityButton';
 import AccountItem from './AccountItem';
@@ -11,7 +12,7 @@ import ScrollContainer from '../../components/menu/ScrollContainer';
 import { useMenu } from '../../contexts/MenuProvider';
 import VisibilityButton from '../../components/buttons/VisibilityButton';
 import ColorSelect from '../../components/colorselector/ColorSelect';
-import { ScatterLine } from 'plotly.js';
+
 
 
 interface MainMenuProps {
@@ -70,10 +71,10 @@ export default function MainMenu(props: MainMenuProps) {
 
       <MenuDivider />
 
-      <MenuItemContainer sx={{ height: 28 }}>
-        <div style={{ marginLeft: 24 }}>Total Balance</div>
+      <MenuItemContainer className='h-7'>
+        <div className='ml-6'>Total Balance</div>
         <ColorSelect line={totalLine} callback={handleTotalColorCallback} />
-        <VisibilityButton type='account' id={-1} sx={{ top: '0px' }} />
+        <VisibilityButton type='account' id={-1} className='top-0' />
       </MenuItemContainer>
 
       {hasAccounts && <MenuDivider />}

@@ -1,29 +1,29 @@
-import React from 'react'
-import './BoundSelector.css'
-import { useSim } from '../../contexts/SimProvider';
+import React from 'react';
 import DatePicker from 'react-datepicker';
+import './BoundSelector.css';
+import { useSim } from '../../contexts/SimProvider';
 import { convertTime } from '../../simulation/helpers/timeMethods';
 import { FOOTER_HEIGHT } from '../../globals/CONSTANTS';
-import { useTheme } from '@mui/material';
 
 
 
 export default function BoundSelectors() {
-  const { palette } = useTheme();
 
   //=================================================================================
-  return (
-    <div className='BoundSelectors' style={{
-      height: FOOTER_HEIGHT,
-      backgroundColor: palette.secondary.middle,
-      borderColor: palette.secondary.top
-    }}>
-      <BoundSelector bound='min' style={{ width: '64px', left: 32 }} />
-      <BoundSelector bound='max' style={{ width: '64px', right: 136 }} />
-    </div>
-  );
+  return (<div 
+    style={{height: FOOTER_HEIGHT}}
+    className='
+      relative flex items-center w-screen z-50 
+      border-t-[1px]
+      border-secondary-top bg-secondary-middle
+    '
+  >
+    <BoundSelector bound='min' style={{ width: '64px', left: 32 }} />
+    <BoundSelector bound='max' style={{ width: '64px', right: 136 }} />
+  </div>);
 };
 
+//=================================================================================
 
 interface BoundSelectorProps extends React.HTMLAttributes<HTMLDivElement> {
   bound: 'min' | 'max';
@@ -45,8 +45,8 @@ function BoundSelector({ bound, style }: BoundSelectorProps) {
 
   //=================================================================================
   return (
-    <label className='BoundSelector' style={style}>
-      <p style={{ margin: 0, whiteSpace: 'nowrap' }}>
+    <label className='absolute' style={style}>
+      <p className='m-0 whitespace-nowrap'>
         {`${(bound === 'min') ? 'Start' : 'End'} Date`}
       </p>
       <DatePicker

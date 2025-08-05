@@ -72,7 +72,9 @@ export default function ColorSelect(props: ColorSelectProps) {
       name='Color'
       icon={SquareIcon}
       handleClick={handleClick}
-      sx={{ position: 'absolute', right: '40px', scale: '80%', color: newColor.toString() }}
+      //sx={{ position: 'absolute', right: '40px', scale: '80%', color: newColor.toString() }}
+      style={{color: newColor.toString()}}
+      className='absolute right-10 scale-[80%]'
     />
     <Popover
       open={Boolean(anchorEl)}
@@ -83,23 +85,19 @@ export default function ColorSelect(props: ColorSelectProps) {
         horizontal: 48
       }}
     >
-      <div style={{ padding: '16px' }}>
+      <div className='p-4'>
         <HslStringColorPicker
-          style={{ position: 'relative' }}
+          className='relative'
           color={newColor.toString()}
           onChange={handleColor}
           onMouseDown={() => setIsPickingColor(true)}
         />
-        <div style={{ flexDirection: 'row', marginTop: '4px' }}>
-          <select
-            value={newDash}
-            onChange={handleDash}
-          >
+        <div className='flex flex-row mt-0.5'>
+          <select value={newDash} onChange={handleDash} >
             {dashes}
           </select>
           {'\u00A0 Line Style'}
         </div>
-
       </div>
     </Popover>
   </>);

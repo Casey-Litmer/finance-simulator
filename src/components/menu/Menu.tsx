@@ -1,10 +1,9 @@
-import React, { ReactNode, useEffect } from 'react'
-import './Menu.css'
+import React, { ReactNode, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { Paper, useTheme } from '@mui/material';
+import { useMenu } from '../../contexts/MenuProvider';
 import ExitButton from '../buttons/ExitButton';
 import { MENU_TITLE_HEIGHT } from '../../globals/CONSTANTS';
-import { useMenu } from '../../contexts/MenuProvider';
+import './Menu.css';
 
 
 
@@ -20,13 +19,13 @@ interface MenuProps {
 export default function Menu(props: MenuProps) {
   const { title, openState, setOpenState } = props;
   const { menuWidth, menuHeight, closeMenu } = useMenu();
-  const { palette } = useTheme();
 
   const menuContentsPadding = 32;
   const menuContentsHeight = menuHeight - MENU_TITLE_HEIGHT - menuContentsPadding;
 
   //=========================================================================================
-  //Fucking React, man...
+  
+  // Set openState on mount
   useEffect(() => {
     setOpenState(true)
   }, []);
@@ -47,27 +46,26 @@ export default function Menu(props: MenuProps) {
         ...springStyle,
         width: menuWidth,
       }}>
-      <Paper sx={{ backgroundColor: palette.primary.main }}>
-        <Paper className='Title' sx={{ backgroundColor: palette.primary.middle }}>
-
-          <h3 style={{ marginTop: 0, paddingTop: 12 }}>
-            {title}
-          </h3>
-
-          <ExitButton openState={openState} setOpenState={setOpenState}
-            sx={{ right: 16, top: 12 }} />
-        </Paper>
-
-        <Paper className='MenuContents'
-          sx={{
-            backgroundColor: palette.primary.main,
-            height: menuContentsHeight,
-            paddingTop: `${menuContentsPadding / 2}px`,
-            paddingBottom: `${menuContentsPadding / 2}px`
-          }}>
-          {props.children}
-        </Paper>
-      </Paper>
+{/* Title */}
+      <div className='Title'>
+        <h3 className='mt-0 pt-3'>
+          {title}
+        </h3>
+        <ExitButton className='right-4 top-3'
+          openState={openState} 
+          setOpenState={setOpenState}
+        />
+      </div>
+{/* Body */}
+      <div 
+        className='MenuContents'
+        style={{
+          height: menuContentsHeight,
+          paddingTop: `${menuContentsPadding / 2}px`,
+          paddingBottom: `${menuContentsPadding / 2}px`
+        }}>
+        {props.children}
+      </div>
     </animated.div>
   );
 };

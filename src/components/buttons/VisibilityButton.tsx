@@ -1,19 +1,16 @@
 import UtilityButton from './UtitlityButton';
 import { useSim } from '../../contexts/SimProvider';
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
-import { Theme } from '@emotion/react';
-import { SxProps } from '@mui/material';
-
 
 
 interface VisibilityButtonProps {
   id: number;
   type: 'account' | 'event';
-  sx?: SxProps<Theme>;
+  className?: string;
 };
 
 export default function VisibilityButton(props: VisibilityButtonProps) {
-  const { id, type, sx } = props;
+  const { id, type, className } = props;
   const simulation = useSim();
 
   //=================================================================================
@@ -32,10 +29,9 @@ export default function VisibilityButton(props: VisibilityButtonProps) {
   return (
     <UtilityButton
       name='Visible'
-      icon={visible ?
-        CheckBoxOutlined : CheckBoxOutlineBlank}
+      icon={visible ? CheckBoxOutlined : CheckBoxOutlineBlank}
       handleClick={handleVisible}
-      sx={{ position: 'absolute', right: '16px', ...sx }}
+      className={`absolute right-4 ${className}`}
     />
   );
 };

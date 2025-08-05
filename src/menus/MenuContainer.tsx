@@ -53,8 +53,9 @@ export default function MenuContainer() {
       }}>
 
       {!openState &&
-        <ExitButton openState={openState} setOpenState={setOpenState}
-          sx={{ top: 12, right: -32 }}
+        <ExitButton className='top-3 -right-8'
+          openState={openState} 
+          setOpenState={setOpenState}
         />}
 
       <MainMenu openState={openState} setOpenState={setOpenState} />

@@ -5,6 +5,7 @@
     border-top-right-radius: 32px;
     position: absolute;
     border-radius: 0;
+    background-color: var(--color-primary-main);
 }
 
 .Title {
@@ -16,11 +17,13 @@
     border-top: 0px;
     border-right: 0px;
     border-color: black;
+    background-color: var(--color-primary-top);
 }
 
 .MenuContents {
     display: flex;
     flex-direction: column;
+    background-color: var(--color-primary-middle);
 }
 
 .MenuItemContainer {
