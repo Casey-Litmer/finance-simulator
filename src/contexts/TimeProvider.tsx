@@ -5,7 +5,7 @@ type ContextProviderProps = {
 };
 
 type ContextType = {
-  today: number
+  today: number;
 };
 
 export const TimeContext = createContext({} as ContextType);

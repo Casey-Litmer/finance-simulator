@@ -1,10 +1,10 @@
-import React, { ReactNode, useEffect } from 'react'
-import './Menu.css'
+import React, { ReactNode, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Paper, useTheme } from '@mui/material';
 import ExitButton from '../buttons/ExitButton';
 import { MENU_TITLE_HEIGHT } from '../../globals/CONSTANTS';
 import { useMenu } from '../../contexts/MenuProvider';
+import './Menu.css';
 
 
 
