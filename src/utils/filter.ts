@@ -7,33 +7,27 @@ import { EventJSON, FilterJSON } from "src/simulation/types";
 export function filterEvents(events: Record<number, EventJSON>, settings?: FilterJSON): Record<number, EventJSON> {
   if (!settings?.filter) return events;
 
-  console.log(events)
-
   const result: Record<number, EventJSON> = {};
   const filterBy = settings.filterBy;
 
   for (const [id, event] of Object.entries(events)) {
     const args = event.args;
 
-    // ========== 1. Type Filtering ==========
+    // Filter By Type
     const type = event.eventType;
-
     if (!filterBy[typeToFilterKey(type)]) continue;
 
-    // ========== 2. Singular vs. Periodic Filtering ==========
-    //const isPeriodic = args.eventPeriod !== undefined;
+    // Filter By Single/Periodic
     const isPeriodic = type.includes('Periodic');
     if (isPeriodic && !filterBy.periodic) continue;
     if (!isPeriodic && !filterBy.singular) continue;
 
-    console.log(event.args.name, event.eventType, isPeriodic)
-
-    // ========== 3. Time Range Filtering ==========
+    // Filter By Time Range
     const time = convertTime(args.eventTime, 'number');
-    if (filterBy.range.after && time < filterBy.range.startTime) continue;
-    if (filterBy.range.before && time > filterBy.range.endTime) continue;
+    if (filterBy.range.after && time <= filterBy.range.startTime) continue;
+    if (filterBy.range.before && time >= filterBy.range.endTime) continue;
 
-    result[+id] = event;
+    result[Number(id)] = event;
   };
 
   return result;

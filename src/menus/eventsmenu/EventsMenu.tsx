@@ -35,25 +35,20 @@ export function EventsMenu(props: EventsMenuProps) {
   //=================================================================================
   // Event Mapping
 
-  //console.log(simulation.saveState.events)
-
+  // Filter eventJSON
   const filteredEvents = filterEvents(
     (accountId === undefined) ? 
-    simulation.saveState.events : 
-
-    simulation.saveState.accounts[accountId].eventIds
-    .map(id => simulation.saveState.events[id])
-    
+    simulation.saveState.events :                        // If all events
+    Object.fromEntries(                                  // If account events
+      simulation.saveState.accounts[accountId].eventIds
+      .map(id => [id, simulation.saveState.events[id]])  
+    )
   , simulation.saveState.filter);
 
-  //console.log('filtered', filteredEvents) //TODO this is turning into an array and getting the wrong keys
-
+  // Event ids
   const eventIds = Object.keys(filteredEvents).map(Number);
 
-  //const eventIds = (accountId === undefined) ?
-  //  Object.keys(simulation.saveState.events).map(Number) :
-  //  simulation.saveState.accounts[accountId].eventIds;
-
+  // Get all objects from the sim that pass the filter (non active events included)
   const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
     .map(evData => evData.event)
     .filter(ev => eventIds.includes(ev.id));
@@ -76,6 +71,7 @@ export function EventsMenu(props: EventsMenuProps) {
   }, [eventIds]);
 
   //=================================================================================
+  // Handlers
 
   const handleFilterMenu = () => { openMenu(<FilterMenu />) };
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
