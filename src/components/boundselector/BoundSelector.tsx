@@ -1,14 +1,14 @@
-import React from 'react'
-import './BoundSelector.css'
+import React from 'react';
+import './BoundSelector.css';
 import { useSim } from '../../contexts/SimProvider';
 import DatePicker from 'react-datepicker';
-import { convertTime } from '../../simulation/helpers/timeMethods';
+import { convertTime } from '../../utils/timeMethods';
 import { FOOTER_HEIGHT } from '../../globals/CONSTANTS';
 import { useTheme } from '@mui/material';
 
 
 
-export default function BoundSelectors() {
+export function BoundSelectors() {
   const { palette } = useTheme();
 
   //=================================================================================

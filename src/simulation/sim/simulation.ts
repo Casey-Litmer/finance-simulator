@@ -1,28 +1,25 @@
-import {dateTimeToFloat, REF_DATE} from '../helpers/timeMethods';
-import Account from '../accounts/Account';
-import AccountEvent from '../events/Event';
-import {addToEventTable, makeEventQueue, sliceQueueBeforeT} from '../helpers/eventTableMethods';
-import eventStackLoop from './eventStackLoop';
-import AccountState from './accountState';
-import makeIdTable from '../helpers/makeIdTable';
-import Deque from '../helpers/Deque';
+import { Account } from '../accounts';
+import { AccountEvent, OpenAccount } from '../events';
+import { 
+    addToEventTable, 
+    dateTimeToFloat, 
+    Deque, 
+    makeEventQueue, 
+    makeIdTable, 
+    REF_DATE, 
+    sliceQueueBeforeT 
+} from 'src/utils';
+import { AccountState } from './accountState';
+import { eventStackLoop } from './eventStackLoop';
 import {AccountsData, EventsData, SimParameters, SimulationData} from '../types';
-import OpenAccount from '../events/OpenAccount';
+
 
 
 export const ACCOUNTS: Account[] = [];
-export const ACCOUNTSTOTAL = new Account({name: "Total", openDate: REF_DATE, id:-1});
-export const DEFAULTDATA: SimulationData = {
-    timeDomain:[0], 
-    eventsData: {},
-    accountsData: {
-        '-1':{bals:[0], account: ACCOUNTSTOTAL}
-    }
-};
 
 //=========================================================================================
 //Main
-function runSim({xDomain, accounts, events}: SimParameters): SimulationData {
+export function runSim({xDomain, accounts, events}: SimParameters): SimulationData {
     //Get Raw Times
     const {start, stop, step} = xDomain;
 
@@ -73,14 +70,22 @@ function runSim({xDomain, accounts, events}: SimParameters): SimulationData {
             accountsData[account.id].bals.push(E.bal);
         };
     };
+
+    const accountsTotal = new Account({name: "Total", openDate: REF_DATE, id:-1});
+    //const DEFAULTDATA: SimulationData = {
+    //    timeDomain:[0], 
+    //    eventsData: {},
+    //    accountsData: {
+    //        '-1':{bals:[0], account: accountsTotal}
+    //    }
+    //};
     
     //add sum and other indicators here
-    accountsData[-1] = {bals: accountsSumTotal(accountsData, timeDomain), account: ACCOUNTSTOTAL};
+    accountsData[-1] = {bals: accountsSumTotal(accountsData, timeDomain), account: accountsTotal};
     
     return {timeDomain, accountsData, eventsData} as SimulationData;
 };
 
-export default runSim;
 
 //=========================================================================================
 /**

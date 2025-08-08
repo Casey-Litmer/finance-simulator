@@ -1,19 +1,17 @@
-import Account from "../accounts/Account";
-import AccountState from "../sim/accountState";
-import AccountEvent from "./Event";
+import { Account } from "../accounts";
+import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
+import { AccountState } from "../sim/accountState";
 
 
 
-
-export default class CompoundInterest extends AccountEvent {
+export class CompoundInterest extends AccountEvent {
 
     constructor(kwargs: EventArguments) {
         super({_precedence_: 1, isGenerated: true}, kwargs);
         this.isConsumable = false;
     };
 
-    
     public Functor(E: AccountState, account: Account): boolean {
         const t1 = this.eventTime;
         const t0 = E.t0;
@@ -25,6 +23,5 @@ export default class CompoundInterest extends AccountEvent {
         E.accruedInterest = 0;
 
         return true;
-    }
-
-}
+    };
+};

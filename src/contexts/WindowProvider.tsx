@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 
-
 type WindowContextProviderProps = {
   children: React.ReactNode;
 };

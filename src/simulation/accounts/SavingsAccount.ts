@@ -1,20 +1,20 @@
-import { convertTime, REF_DATE } from "../helpers/timeMethods";
+import { Account } from "./Account";
 import { AccountArguments } from "./AccountInterfaces";
-import Account from "./Account";
+import { convertTime, REF_DATE } from "src/utils";
 
 
 
-
-export default class SavingsAccount extends Account {
+export class SavingsAccount extends Account {
     constructor({
         interestRate = 0,
         interestPeriod = 1,
         periodStart = REF_DATE,
-        ...kwargs}: AccountArguments) {
-            super(kwargs);
+        ...kwargs
+    }: AccountArguments) {
+        super(kwargs);
 
-            this.interestPeriod = interestPeriod;
-            this.interestRate = interestRate;
-            this.periodStart = convertTime(periodStart, 'DateTime');
-        }
+        this.interestPeriod = interestPeriod;
+        this.interestRate = interestRate;
+        this.periodStart = convertTime(periodStart, 'DateTime');
+    };
 };

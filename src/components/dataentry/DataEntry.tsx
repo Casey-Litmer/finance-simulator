@@ -1,9 +1,9 @@
 import React, { CSSProperties, ReactNode } from 'react';
-import DatePicker from 'react-datepicker';
 import { Control, Controller, FieldErrors, FieldValues, UseFormRegisterReturn } from 'react-hook-form';
-import { convertTime, DateFloat } from '../../simulation/helpers/timeMethods';
+import DatePicker from 'react-datepicker';
 import './DataEntry.css';
 import "react-datepicker/dist/react-datepicker.css";
+import { convertTime, DateFloat } from 'src/utils';
 
 
 

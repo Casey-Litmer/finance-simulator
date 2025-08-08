@@ -5,7 +5,7 @@ import './Header.css';
 
 
 
-export default function Header() {
+export function Header() {
   const { palette } = useTheme();
   const { SaveButton, LoadButton, FileInput, graphName } = useFile();
 

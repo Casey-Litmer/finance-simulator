@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { HslStringColorPicker } from "react-colorful";
 import { Popover } from '@mui/material';
 import SquareIcon from '@mui/icons-material/Square';
-import UtilityButton from '../buttons/UtitlityButton';
 import { Color, ScatterLine } from 'plotly.js';
+import { UtilityButton } from '../buttons';
 
 
 
@@ -23,7 +23,7 @@ interface ColorSelectProps {
   callback: (line: Partial<ScatterLine>) => void;
 };
 
-export default function ColorSelect(props: ColorSelectProps) {
+export function ColorSelect(props: ColorSelectProps) {
   const { line, callback } = props;
   const { color, dash } = line;
   const [newDash, setNewDash] = useState(dash ?? 'solid');

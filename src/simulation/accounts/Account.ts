@@ -1,16 +1,15 @@
-import AccountEvent from '../events/Event';
+import { DateTime } from 'luxon';
+import { AccountEvent, CompoundInterest } from '../events';
+import { AccountArguments } from './AccountInterfaces';
 import {
     REF_DATE,
     dateTimeToFloat,
     formatDatetime,
-    convertTime
-} from '../helpers/timeMethods';
-import { addToEventTable } from '../helpers/eventTableMethods';
-import CompoundInterest from '../events/CompoundInterest';
-import { DateTime } from 'luxon';
-import Deque from '../helpers/Deque';
+    convertTime,
+    addToEventTable,
+    Deque
+} from 'src/utils';
 import { EventTable, SimulationBundle } from '../types';
-import { AccountArguments } from './AccountInterfaces';
 
 
 
@@ -24,7 +23,7 @@ export function resetLastAccountID() { LAST_ACCOUNT_ID = 0 }
 export type AccountConstructor<A extends Account = Account> = new (...args: any[]) => A;
 
 
-export default class Account {
+export class Account {
     name: string;
     initialBal: number;
     openDate: DateTime;
@@ -91,7 +90,7 @@ export default class Account {
      */
     public addEvent(event: AccountEvent): void {
         this.events = addToEventTable(this.events, event);
-    }
+    };
 
 
     //Overwritten by CheckingAccount to do nothing :)

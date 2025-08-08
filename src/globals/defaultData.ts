@@ -1,4 +1,4 @@
-import { getToday, REF_TIME } from "../simulation/helpers/timeMethods";
+import { getToday, REF_TIME } from "../utils/timeMethods";
 import { AccountDisplay, AccountJSON, EventJSON } from "../simulation/types";
 
 

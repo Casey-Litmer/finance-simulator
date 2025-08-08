@@ -1,7 +1,7 @@
 import React from 'react'
-import UtilityButton from './UtitlityButton';
-import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight } from '@mui/icons-material';
 import { SxProps, Theme } from '@mui/material';
+import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight } from '@mui/icons-material';
+import { UtilityButton } from './UtitlityButton';
 
 
 
@@ -11,7 +11,7 @@ interface ExitButtonProps {
   setOpenState: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function ExitButton(props: ExitButtonProps) {
+export function ExitButton(props: ExitButtonProps) {
   const { openState, setOpenState, sx } = props;
 
   const handleCancel = () => setOpenState((prev) => !prev);

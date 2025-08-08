@@ -1,19 +1,16 @@
-import { PlotData } from "plotly.js";
-import Plot from 'react-plotly.js';
-import { SimulationData } from "../simulation/types";
 import { useEffect, useMemo, useState } from "react";
-import { useSim } from "../contexts/SimProvider";
-import { formatDatetime } from "../simulation/helpers/timeMethods";
+import Plot from 'react-plotly.js';
+import { PlotData } from "plotly.js";
 import { useTheme } from "@mui/material";
-import { useWindow } from "../contexts/WindowProvider";
-import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "../globals/CONSTANTS";
-import { useMenu } from "../contexts/MenuProvider";
+import { useMenu, useSim, useWindow } from 'src/contexts';
+import { formatDatetime } from "src/utils";
+import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
+import { SimulationData } from "src/simulation/types";
 
 
 
 
-
-const SimPlot = () => {
+export const SimPlot = () => {
   const { palette } = useTheme();
   const { windowHeight, windowWidth } = useWindow();
   const [plotWidth, setPlotWidth] = useState(0);
@@ -146,4 +143,3 @@ const SimPlot = () => {
   );
 };
 
-export default SimPlot;

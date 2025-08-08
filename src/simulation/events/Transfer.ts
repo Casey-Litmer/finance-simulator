@@ -1,14 +1,12 @@
-import AccountEvent from "./Event";
-import Account from "../accounts/Account";
-import AccountState from "../sim/accountState";
-import eventStackLoop from "../sim/eventStackLoop";
-import { EventArguments, } from "./EventInterfaces";
+import { Account } from "../accounts";
+import { AccountEvent } from "./Event";
+import { EventArguments } from "./EventInterfaces";
+import { AccountState } from "../sim/accountState";
+import { eventStackLoop } from "../sim";
 
 
 
-
-
-export default class Transfer extends AccountEvent {
+export class Transfer extends AccountEvent {
 
     transferAmount: number;
     from: Account;
@@ -23,7 +21,6 @@ export default class Transfer extends AccountEvent {
         this.to = accounts[1];
 
     };
-
     
     public Functor(E: AccountState, account: Account): boolean {
         //Receiving account
@@ -40,8 +37,7 @@ export default class Transfer extends AccountEvent {
                 this.approveTransfer = true;
                 eventStackLoop(fromPendingEvents, from_E!, this.from);
                 return true;
-            }
-        
+            };
         //Sending Account
         } else if (account === this.from) {
             if (E.addBal(-this.transferAmount) >= 0) {
@@ -57,16 +53,15 @@ export default class Transfer extends AccountEvent {
                     this.approveTransfer = true;
                     eventStackLoop(toPendingEvents, to_E!, this.to);
                     return true;
-                }
+                };
             } else {
                 const approved = this.approveTransfer;
                 this.approveTransfer = false;
                 return !approved;
-            }
-        }
-        
+            };
+        };
         return true;
-    }
+    };
 
 
     private applyTransfer(): void {
@@ -87,6 +82,5 @@ export default class Transfer extends AccountEvent {
         //Transfer balances
         to_E!.bal = to_E!.addBal(this.transferAmount);
         from_E!.bal = from_E!.addBal(-this.transferAmount);
-    }
-
-}
+    };
+};

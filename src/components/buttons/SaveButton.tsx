@@ -10,7 +10,7 @@ interface SaveButtonProps {
   text?: string;
 };
 
-export default function SaveButton(props: SaveButtonProps) {
+export function SaveButton(props: SaveButtonProps) {
 
   const { sx, text } = props;
 

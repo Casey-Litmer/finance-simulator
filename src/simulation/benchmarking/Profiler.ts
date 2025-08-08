@@ -1,6 +1,4 @@
 
-
-
 // Create a table (object or map) to track function times
 let functionTimeTable: { [key: string]: number } = {};
 

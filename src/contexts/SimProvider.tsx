@@ -1,11 +1,9 @@
-import { createContext, useContext, useEffect, useReducer, useRef, useState } from 'react';
-import { AccountJSON, EventJSON, SaveState, SimulationData } from '../simulation/types';
-import simInitObjects from '../simulation/sim/simInitObjects';
-import runSim from '../simulation/sim/simulation';
-import { DeepPartial, deepPartialReducer } from '../deepPartial';
-import { debounce } from 'lodash';
-import { defaultSaveState } from '../globals';
-
+import { debounce } from "lodash";
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
+import { DeepPartial, deepPartialReducer } from "src/deepPartial";
+import { defaultSaveState } from "src/globals";
+import { runSim, simInitObjects } from "src/simulation";
+import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/simulation/types";
 
 
 

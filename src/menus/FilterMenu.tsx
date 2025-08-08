@@ -1,21 +1,19 @@
-import { useState } from 'react';
-import Menu from '../components/menu/Menu';
-import ScrollContainer from '../components/menu/ScrollContainer';
-import { useSim } from '../contexts/SimProvider';
-import MenuItemContainer, { MenuDivider } from '../components/menu/MenuItemContainer';
-import { useForm } from 'react-hook-form';
-import { FilterJSON } from '../simulation/types';
-import { getToday } from '../simulation/helpers/timeMethods';
-import { DateSelector, InputField } from '../components/dataentry/DataEntry';
-import '../index.css';  
-import SaveButton from '../components/buttons/SaveButton';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { SaveButton } from "src/components/buttons";
+import { DateSelector, InputField } from "src/components/dataentry";
+import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
+import { useSim } from "src/contexts";
+import { FilterJSON } from "src/simulation/types";
+import { getToday } from "src/utils";
+
 
 
 interface FilterMenuProps {
 
 };
 
-const FilterMenu = (props: FilterMenuProps) => {
+export const FilterMenu = (props: FilterMenuProps) => {
   const { } = props;
   const simulation = useSim();
   const [openState, setOpenState] = useState(false);
@@ -231,5 +229,3 @@ const FilterMenu = (props: FilterMenuProps) => {
     </Menu>
   );
 };
-
-export { FilterMenu };

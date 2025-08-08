@@ -1,13 +1,13 @@
-import Account from '../accounts/Account';
-import makeIdTable from '../helpers/makeIdTable';
+import { Account } from '../accounts';
 import {
     REF_TIME, 
     addPeriod,
-    convertTime
-} from '../helpers/timeMethods';
+    convertTime,
+    makeIdTable
+} from 'src/utils';
 import { EventTable } from '../types';
 import { EventArguments, EventSettings } from './EventInterfaces';
-import AccountState from '../sim/accountState';
+import { AccountState } from '../sim/accountState';
 
 
 
@@ -17,7 +17,7 @@ export const EVENTS: AccountEvent[] = [];
 export type EventConstructor<E extends AccountEvent = AccountEvent> = new (...args: any[]) => E; 
 
 //=========================================================================================
-export default class AccountEvent {
+export class AccountEvent {
     _precedence_: number; 
     eventTime: number;
     currentTime: number;

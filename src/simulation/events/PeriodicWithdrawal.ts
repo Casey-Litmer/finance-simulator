@@ -1,11 +1,10 @@
-import { EventArguments, } from "./EventInterfaces";
-import Withdrawal from "./Withdrawal";
+import { Withdrawal } from "./Withdrawal";
+import { EventArguments } from "./EventInterfaces";
 
 
 
 
-
-export default class PeriodicWithdrawal extends Withdrawal{
+export class PeriodicWithdrawal extends Withdrawal {
     constructor(kwargs: EventArguments) {
         super(kwargs);
         this.isPeriodic = true;

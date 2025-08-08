@@ -1,11 +1,11 @@
-import Account from "../accounts/Account";
+import { Account } from "../accounts";
 import { AccountConstructorMap, EventConstructorMap } from "../ConstructorMaps";
 import { SaveState, SimParameters } from "../types";
 
 
 
 /*Converts JSON to valid simulation parameters involving dynamic objects.*/
-const simInitObjects = (saveState: SaveState): SimParameters => {
+export const simInitObjects = (saveState: SaveState): SimParameters => {
     //  Record<number, AccountsJSON> => Record<number, Account>
     const accounts = {} as Record<number, Account>;
     Object.entries(saveState.accounts).forEach(([key, account]) => {
@@ -33,5 +33,3 @@ const simInitObjects = (saveState: SaveState): SimParameters => {
 
     return {...saveState, accounts: Object.values(accounts), events};
 };
-
-export default simInitObjects;

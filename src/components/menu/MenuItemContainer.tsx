@@ -4,13 +4,12 @@ import { Divider, Paper, SxProps, useTheme } from '@mui/material';
 
 
 
-
 interface MenuItemContainerProps {
   children: ReactNode;
   sx?: SxProps<Theme>;
 };
 
-export default function MenuItemContainer(props: MenuItemContainerProps) {
+export function MenuItemContainer(props: MenuItemContainerProps) {
   const { children, sx } = props;
   return (
     <Paper

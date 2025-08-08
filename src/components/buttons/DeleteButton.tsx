@@ -13,7 +13,7 @@ interface DeleteButtonProps {
   onClick: () => void;
 };
 
-export default function DeleteButton(props: DeleteButtonProps) {
+export function DeleteButton(props: DeleteButtonProps) {
   const { sx, text, onClick } = props;
   const [showValidation, setShowValidation] = useState(false);
 

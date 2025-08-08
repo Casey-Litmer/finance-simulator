@@ -1,4 +1,4 @@
-import { convertTime, DateFloat } from "../simulation/helpers/timeMethods";
+import { convertTime, DateFloat } from "./timeMethods";
 import { EventJSON, FilterJSON } from "../simulation/types";
 
 
@@ -25,6 +25,8 @@ export function filterEvents(events: Record<number, EventJSON>, settings?: Filte
     const isPeriodic = type.includes('Periodic');
     if (isPeriodic && !filterBy.periodic) continue;
     if (!isPeriodic && !filterBy.singular) continue;
+
+    console.log(event.args.name, event.eventType, isPeriodic)
 
     // ========== 3. Time Range Filtering ==========
     const time = convertTime(args.eventTime, 'number');

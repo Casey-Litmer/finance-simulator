@@ -4,7 +4,7 @@ import AccountState from "./sim/accountState";
 import Account from "./accounts/Account";
 import { AccountArguments } from "./accounts/AccountInterfaces";
 import { EventArguments } from "./events/EventInterfaces";
-import Deque from "./helpers/Deque";
+import Deque from "../utils/Deque";
 
 
 

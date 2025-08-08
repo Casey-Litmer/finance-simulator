@@ -1,14 +1,11 @@
 import './App.css';
-import SimPlot from './plot/Plot';
-import { SimProvider } from './contexts/SimProvider';
-import { TimeProvider } from './contexts/TimeProvider';
-import { WindowProvider } from './contexts/WindowProvider';
-import MenuContainer from './menus/MenuContainer';
-import BoundSelectors from './components/boundselector/BoundSelector';
-import Header from './components/header/Header';
-import { ThemeContextProvider } from './contexts/ThemeProvider';
-import { MenuProvider } from './contexts/MenuProvider';
-import { FileProvider } from './contexts/FileProvider';
+import { FileProvider, MenuProvider, SimProvider, ThemeContextProvider, TimeProvider, WindowProvider } from './contexts';
+import { Header } from './components/header';
+import { BoundSelectors } from './components/boundselector';
+import { MenuContainer } from './menus';
+import { SimPlot } from './plot';
+
+
 
 function App() {
   return (
@@ -54,7 +51,7 @@ function FlexView() {
         <MenuContainer />
         <SimPlot />
       </div>
-      <BoundSelectors/>
+      <BoundSelectors />
     </div>
   );
 };

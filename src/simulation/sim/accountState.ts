@@ -1,6 +1,6 @@
 
 
-export default class AccountState {
+export class AccountState {
     bal: number | null = 0;
     t0: number = 0;
     r: number = 0;

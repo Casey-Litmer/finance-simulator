@@ -1,25 +1,22 @@
-import React from 'react';
-import { useSim } from '../../contexts/SimProvider';
-import UtilityButton from '../../components/buttons/UtitlityButton';
-import AccountItem from './AccountItem';
-import MenuItemContainer, { MenuDivider } from '../../components/menu/MenuItemContainer';
-import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
-import Menu from '../../components/menu/Menu';
-import EventsMenu from '../eventsmenu/EventsMenu';
-import NewAccountMenu from '../accountsmenu/NewAccountMenu';
-import ScrollContainer from '../../components/menu/ScrollContainer';
-import { useMenu } from '../../contexts/MenuProvider';
-import VisibilityButton from '../../components/buttons/VisibilityButton';
-import ColorSelect from '../../components/colorselector/ColorSelect';
-import { ScatterLine } from 'plotly.js';
+import { ScatterLine } from "plotly.js";
+import { Add, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { useMenu, useSim } from "src/contexts";
+import { AccountItem } from "./AccountItem";
+import { NewAccountMenu } from "./NewAccountMenu";
+import { EventsMenu } from "../eventsmenu";
+import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
+import { UtilityButton, VisibilityButton } from "src/components/buttons";
+import { ColorSelect } from "src/components/colorselector";
+
+
 
 
 interface MainMenuProps {
-  openState: boolean
-  setOpenState: React.Dispatch<React.SetStateAction<boolean>>
-}
+  openState: boolean;
+  setOpenState: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-export default function MainMenu(props: MainMenuProps) {
+export function MainMenu(props: MainMenuProps) {
   //MainMenu is a bit different from other menus as the openState is elevated to the container
   const { openState, setOpenState } = props;
   const { openMenu } = useMenu();

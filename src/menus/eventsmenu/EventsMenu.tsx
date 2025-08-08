@@ -1,26 +1,23 @@
-import { useEffect, useState } from 'react';
-import { useTheme } from '@mui/material';
-import { useSim } from '../../contexts/SimProvider';
-import Menu from '../../components/menu/Menu';
-import EventItem from './EventItem';
-import AccountEvent from '../../simulation/events/Event';
-import { EventTable } from '../../simulation/types';
-import { addToEventTable, makeEventQueue } from '../../simulation/helpers/eventTableMethods';
-import ScrollContainer from '../../components/menu/ScrollContainer';
-import MenuItemContainer, { MenuDivider } from '../../components/menu/MenuItemContainer';
-import UtilityButton from '../../components/buttons/UtitlityButton';
-import { useMenu } from '../../contexts/MenuProvider';
-import NewEventMenu from './NewEventMenu';
-import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
-import { FilterMenu } from '../FilterMenu';
-import { filterEvents } from '../../utils';
+import { useEffect, useState } from "react";
+import { useTheme } from "@mui/material";
+import { Add, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { useMenu, useSim } from "src/contexts";
+import { addToEventTable, filterEvents, makeEventQueue } from "src/utils";
+import { EventItem } from "./EventItem";
+import { FilterMenu } from "../FilterMenu";
+import { NewEventMenu } from "./NewEventMenu";
+import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
+import { UtilityButton } from "src/components/buttons";
+import { AccountEvent } from "src/simulation/events";
+import { EventTable } from "src/simulation/types";
+
 
 
 interface EventsMenuProps {
   accountId?: number
 }
 
-export default function EventsMenu(props: EventsMenuProps) {
+export function EventsMenu(props: EventsMenuProps) {
   const { accountId } = props;
   const simulation = useSim();
   const { palette } = useTheme();
@@ -88,7 +85,7 @@ export default function EventsMenu(props: EventsMenuProps) {
 {/* Filter */}
         <MenuItemContainer>
           <div style={{ flex: 1, flexDirection: 'row' }}>
-            <UtilityButton 
+            <UtilityButton
               name='Filter Menu'
               icon={KeyboardDoubleArrowRight}
               handleClick={handleFilterMenu}

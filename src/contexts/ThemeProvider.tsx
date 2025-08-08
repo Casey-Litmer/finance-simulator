@@ -1,6 +1,6 @@
-import { Theme, ThemeProvider, useMediaQuery } from '@mui/material';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { darkTheme, lightTheme } from '../globals/appTheme';
+import { Theme, ThemeProvider, useMediaQuery } from '@mui/material';
+import { darkTheme, lightTheme } from 'src/globals';
 
 
 

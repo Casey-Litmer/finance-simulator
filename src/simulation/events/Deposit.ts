@@ -1,12 +1,10 @@
-import Account from "../accounts/Account";
-import AccountState from "../sim/accountState";
-import AccountEvent from "./Event";
+import { Account } from "../accounts";
+import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
+import { AccountState } from "../sim/accountState";
 
 
-
-
-export default class Deposit extends AccountEvent {
+export class Deposit extends AccountEvent {
 
     depositAmount: number;
 
@@ -15,7 +13,6 @@ export default class Deposit extends AccountEvent {
         this.depositAmount = value;
     };
 
-    
     public Functor(E: AccountState, account: Account): boolean {
         const t1 = this.eventTime;
         const t0 = E.t0;
@@ -25,6 +22,5 @@ export default class Deposit extends AccountEvent {
         E.bal = E.addBal(this.depositAmount);
 
         return true;
-    }
-
-}
+    };
+};

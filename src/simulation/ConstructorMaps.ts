@@ -1,16 +1,17 @@
-import Account, { AccountConstructor } from "./accounts/Account"
-import CheckingAccount from "./accounts/CheckingAccount"
-import SavingsAccount from "./accounts/SavingsAccount"
-import Adjustment from "./events/Adjustment"
-import ChangeInterestRate from "./events/ChangeInterestRate"
-import CloseAccount from "./events/CloseAccount"
-import Deposit from "./events/Deposit"
-import AccountEvent, { EventConstructor } from "./events/Event"
-import PeriodicDeposit from "./events/PeriodicDeposit"
-import PeriodicTransfer from "./events/PeriodicTransfer"
-import PeriodicWithdrawal from "./events/PeriodicWithdrawal"
-import Transfer from "./events/Transfer"
-import Withdrawal from "./events/Withdrawal"
+import { Account, AccountConstructor, CheckingAccount, SavingsAccount } from "./accounts"
+import { AccountEvent, 
+    Adjustment, 
+    ChangeInterestRate, 
+    CloseAccount, 
+    Deposit, 
+    EventConstructor, 
+    PeriodicDeposit, 
+    PeriodicTransfer, 
+    PeriodicWithdrawal, 
+    Transfer, 
+    Withdrawal 
+} from "./events"
+
 
 
 

@@ -1,9 +1,9 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Paper, useTheme } from '@mui/material';
-import ExitButton from '../buttons/ExitButton';
-import { MENU_TITLE_HEIGHT } from '../../globals/CONSTANTS';
-import { useMenu } from '../../contexts/MenuProvider';
+import { useMenu } from 'src/contexts';
+import { MENU_TITLE_HEIGHT } from 'src/globals';
+import { ExitButton } from '../buttons';
 import './Menu.css';
 
 
@@ -17,7 +17,7 @@ interface MenuProps {
   setOpenState: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Menu(props: MenuProps) {
+export function Menu(props: MenuProps) {
   const { title, openState, setOpenState } = props;
   const { menuWidth, menuHeight, closeMenu } = useMenu();
   const { palette } = useTheme();

@@ -7,7 +7,7 @@ interface ScrollContainerProps {
   children?: ReactNode;
 };
 
-export default function ScrollContainer(props: ScrollContainerProps) {
+export function ScrollContainer(props: ScrollContainerProps) {
   const { children } = props;
   const containerDivRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState(1000);

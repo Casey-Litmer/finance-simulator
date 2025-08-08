@@ -1,4 +1,4 @@
-import { DateFloat } from "../helpers/timeMethods";
+import { DateFloat } from "../../utils/timeMethods";
 
 
 ///////////////////////////////////////

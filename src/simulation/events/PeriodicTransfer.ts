@@ -1,16 +1,16 @@
-import { EventArguments,} from "./EventInterfaces";
-import Transfer from "./Transfer";
+import { Transfer } from "./Transfer";
+import { EventArguments } from "./EventInterfaces";
 
 
 
 
-export default class PeriodicTransfer extends Transfer{
+export class PeriodicTransfer extends Transfer{
     kwargs: EventArguments;
     constructor(kwargs: EventArguments) {
         super(kwargs);
         this.isPeriodic = true;
         this.kwargs = kwargs;
-    }
+    };
 };
 
 

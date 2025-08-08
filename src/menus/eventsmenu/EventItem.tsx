@@ -1,14 +1,13 @@
-import { useState } from 'react'
-import { EventJSON, SaveState } from '../../simulation/types';
-import { useSim } from '../../contexts/SimProvider';
-import UtilityButton from '../../components/buttons/UtitlityButton';
-import MenuItemContainer, { DropdownContainer, FixedText } from '../../components/menu/MenuItemContainer';
-import { ChevronLeft, ChevronRight, Edit } from '@mui/icons-material';
-import { convertTime, formatDatetime } from '../../simulation/helpers/timeMethods';
-import NewEventMenu from './NewEventMenu';
-import { useTheme } from '@mui/material';
-import { useMenu } from '../../contexts/MenuProvider';
-import VisibilityButton from '../../components/buttons/VisibilityButton';
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
+import { useTheme } from "@mui/material";
+import { useMenu, useSim } from "src/contexts";
+import { convertTime, formatDatetime } from "src/utils";
+import { NewEventMenu } from "./NewEventMenu";
+import { DropdownContainer, FixedText, MenuItemContainer } from "src/components/menu";
+import { UtilityButton, VisibilityButton } from "src/components/buttons";
+import { EventJSON, SaveState } from "src/simulation/types";
+
 
 
 
@@ -16,7 +15,7 @@ interface AccountItemProps {
   eventId: number;
 };
 
-export default function EventItem(props: AccountItemProps) {
+export function EventItem(props: AccountItemProps) {
   const { eventId } = props;
   const { palette } = useTheme();
   const simulation = useSim();

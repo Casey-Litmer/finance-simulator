@@ -1,13 +1,11 @@
-import Account from "../accounts/Account";
-import AccountState from "../sim/accountState";
-import AccountEvent from "./Event";
+import { Account } from "../accounts";
+import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
+import { AccountState } from "../sim/accountState";
 
 
 
-
-
-export default class ChangeInterestRate extends AccountEvent {
+export class ChangeInterestRate extends AccountEvent {
 
     newRate: number;
     
@@ -16,7 +14,6 @@ export default class ChangeInterestRate extends AccountEvent {
         this.newRate = value;
     };
 
-    
     public Functor(E: AccountState, account: Account): boolean {
         const t1 = this.eventTime;
         const t0 = E.t0;
@@ -26,6 +23,5 @@ export default class ChangeInterestRate extends AccountEvent {
         E.r = this.newRate;
 
         return true;
-    }
-
-}
+    };
+};

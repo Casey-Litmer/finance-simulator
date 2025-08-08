@@ -1,16 +1,13 @@
-import { useState } from 'react';
-import { useSim } from '../../contexts/SimProvider';
-import UtilityButton from '../../components/buttons/UtitlityButton';
-import MenuItemContainer, { DropdownContainer, FixedText } from '../../components/menu/MenuItemContainer';
-import { Add, ChevronLeft, ChevronRight, Edit, KeyboardDoubleArrowRight } from '@mui/icons-material';
-import EventsMenu from '../eventsmenu/EventsMenu';
-import NewAccountMenu from './NewAccountMenu';
-import NewEventMenu from '../eventsmenu/NewEventMenu';
-import { useTheme } from '@mui/material';
-import { useMenu } from '../../contexts/MenuProvider';
-import ColorSelect from '../../components/colorselector/ColorSelect';
-import { ScatterLine } from 'plotly.js';
-import VisibilityButton from '../../components/buttons/VisibilityButton';
+import { useState } from "react";
+import { ScatterLine } from "plotly.js";
+import { Add, ChevronLeft, ChevronRight, Edit, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { useTheme } from "@mui/material";
+import { useMenu, useSim } from "src/contexts";
+import { NewAccountMenu } from "./NewAccountMenu";
+import { EventsMenu, NewEventMenu } from "../eventsmenu";
+import { DropdownContainer, FixedText, MenuItemContainer } from "src/components/menu";
+import { UtilityButton, VisibilityButton } from "src/components/buttons";
+import { ColorSelect } from "src/components/colorselector";
 
 
 
@@ -19,7 +16,7 @@ interface AccountItemProps {
   accountId: number;
 };
 
-export default function AccountItem(props: AccountItemProps) {
+export function AccountItem(props: AccountItemProps) {
   const { accountId } = props;
   const { palette } = useTheme();
   const simulation = useSim();

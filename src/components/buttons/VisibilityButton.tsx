@@ -1,8 +1,8 @@
-import UtilityButton from './UtitlityButton';
-import { useSim } from '../../contexts/SimProvider';
-import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
 import { Theme } from '@emotion/react';
+import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
 import { SxProps } from '@mui/material';
+import { useSim } from 'src/contexts';
+import { UtilityButton } from './UtitlityButton';
 
 
 
@@ -12,7 +12,7 @@ interface VisibilityButtonProps {
   sx?: SxProps<Theme>;
 };
 
-export default function VisibilityButton(props: VisibilityButtonProps) {
+export function VisibilityButton(props: VisibilityButtonProps) {
   const { id, type, sx } = props;
   const simulation = useSim();
 

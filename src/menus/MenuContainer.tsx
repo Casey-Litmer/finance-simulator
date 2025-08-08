@@ -1,15 +1,16 @@
-import React, { CSSProperties, useEffect, useRef } from 'react'
-import './MenuContainer.css';
-import MainMenu from './accountsmenu/MainMenu';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material';
-import ExitButton from '../components/buttons/ExitButton';
-import { useMenu } from '../contexts/MenuProvider';
-import { MENU_MAX_SCALE, MENU_MIN_WIDTH } from '../globals/CONSTANTS';
-import { useWindow } from '../contexts/WindowProvider';
+import { useMenu, useWindow } from 'src/contexts';
+import { MainMenu } from './accountsmenu';
+import { ExitButton } from 'src/components/buttons';
+import { MENU_MAX_SCALE, MENU_MIN_WIDTH } from 'src/globals/CONSTANTS';
+import './MenuContainer.css';
+
+
 
 
 /**Blocks out space for menus in the main div*/
-export default function MenuContainer() {
+export function MenuContainer() {
   const {
     openState,
     setOpenState,

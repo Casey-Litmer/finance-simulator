@@ -1,16 +1,13 @@
-import { CSSProperties, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { CheckBoxOutlineBlank, CheckBoxOutlineBlankTwoTone, CheckBoxOutlined } from '@mui/icons-material';
-import { useSim } from '../../contexts/SimProvider';
-import { DateSelector, DropdownSelect, InputField } from '../../components/dataentry/DataEntry';
-import Menu from '../../components/menu/Menu';
-import MenuItemContainer from '../../components/menu/MenuItemContainer';
-import SaveButton from '../../components/buttons/SaveButton';
-import UtilityButton from '../../components/buttons/UtitlityButton';
-import DeleteButton from '../../components/buttons/DeleteButton';
-import { EventJSON } from '../../simulation/types';
-import { EventConstructorMap } from '../../simulation/ConstructorMaps';
-import { convertTime, getToday } from '../../simulation/helpers/timeMethods';
+import { CSSProperties, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { CheckBoxOutlineBlank, CheckBoxOutlineBlankTwoTone, CheckBoxOutlined } from "@mui/icons-material";
+import { useSim } from "src/contexts";
+import { convertTime, getToday } from "src/utils";
+import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons";
+import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
+import { Menu, MenuItemContainer } from "src/components/menu";
+import { EventConstructorMap } from "src/simulation";
+import { EventJSON } from "src/simulation/types";
 
 
 
@@ -21,7 +18,7 @@ interface NewEventMenuProps {
 };
 
 /*Create init arguments if no accountId is given, else, edit json.*/
-export default function NewEventMenu(props: NewEventMenuProps) {
+export function NewEventMenu(props: NewEventMenuProps) {
 
   const { eventId, accountId } = props;
 
@@ -312,10 +309,8 @@ export default function NewEventMenu(props: NewEventMenuProps) {
         <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
           <SaveButton />
           {(eventId !== undefined) &&
-            <DeleteButton onClick={handleDelete} />
-          }
+          <DeleteButton onClick={handleDelete} />}
         </MenuItemContainer>
-
       </form>
     </Menu>
   );
