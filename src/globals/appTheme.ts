@@ -20,7 +20,7 @@ export const darkTheme = createTheme({
         primary: {
             main: '#222831',
             middle: '#2F343D',
-            top: '#3F4651',
+            top: '#363c46ff',
             contrastText: '#FFFFFF'   
         },
         secondary: {

@@ -15,7 +15,7 @@ export const defaultSaveState = () => {
                 args: { name: 'Total', openDate: REF_TIME },
                 accountType: 'Account',
                 eventIds: [],
-                display: defaultAccountDisplay({color: 'rgb(255, 0, 0)', dash: 'dash'})
+                display: defaultAccountDisplay({ color: 'rgb(255, 0, 0)', dash: 'dash' })
             },
             // Rest of the Accounts
             ...Object.fromEntries(
@@ -29,7 +29,7 @@ export const defaultSaveState = () => {
                     },
                     accountType: 'Savings Account',
                     eventIds: [n, n + nAccounts],
-                    display: defaultAccountDisplay({color: `hsl(${n / nAccounts * 255}, 100%, 50%)`})
+                    display: defaultAccountDisplay({ color: `hsl(${n / nAccounts * 255}, 100%, 50%)` })
                 }]))
             )
         } as Record<number, AccountJSON>,
@@ -45,24 +45,6 @@ export const defaultSaveState = () => {
                 display: defaultEventDisplay
             }]))
         ) as Record<number, EventJSON>,
-        //accountsDisplay: {
-        //    [-1]: {
-        //        visible: true,
-        //        line: { color: 'hsl(0, 100%, 50%)', dash: 'dot' }
-        //    },
-        //    ...Object.fromEntries(
-        //        Array.from({ length: nAccounts }, (_, n) => ([n, {
-        //            visible: true,
-        //            line: { color: `hsl(${n / nAccounts * 255}, 100%, 50%)` }
-        //        }]))
-        //    )
-        //} as Record<number, AccountDisplay>,
-        //eventsDisplay: Object.fromEntries(
-        //    Array.from({ length: nAccounts * 2 }, (_, n) => ([n, {
-        //        active: true
-        //    }]))
-        //),
-        
         // Domain
         xDomain: {
             start: today,
@@ -74,7 +56,7 @@ export const defaultSaveState = () => {
 
 //=================================================================================
 
-export const defaultAccountDisplay = ({color, dash}: {color?: Color, dash?: Dash}) => ({
+export const defaultAccountDisplay = ({ color, dash }: { color?: Color, dash?: Dash }) => ({
     visible: true,
     line: { color: color, dash: dash }
 } as AccountDisplay);
@@ -85,7 +67,23 @@ export const defaultEventDisplay = {
 
 //=================================================================================
 
-export const defaultSaveStructure = {
-    accounts: {} as Record<number, AccountJSON>,
-    events: {}
-}
+export const defaultFilter = {
+    deposit: true,
+    withdrawal: true,
+    transfer: true,
+    closeAccount: true,
+    changeInterestRate: true,
+    adjustment: true,
+    periodicDeposit: true,
+    periodicWithdrawal: true,
+    periodicTransfer: true,
+    singular: true,
+    periodic: true,
+    name: '',
+    range: {
+        after: false,
+        startTime: getToday().time,
+        before: false,
+        endTime: getToday().time + 365 * 2,
+    }
+};

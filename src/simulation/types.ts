@@ -40,31 +40,27 @@ export type EventDisplay = {
 
 // Sorting
 export type FilterJSON = {
-    filter: boolean;
-    filterBy: {
-        //
-        singular: boolean;
-        periodic: boolean;
-        //
-        name: string;
-        // 
-        deposit: boolean;
-        withdrawal: boolean;
-        transfer: boolean;
-        closeAccount: boolean;
-        changeInterestRate: boolean;
-        adjustment: boolean;
-        //
-        periodicDeposit: boolean;
-        periodicWithdrawal: boolean;
-        periodicTransfer: boolean;
-        //
-        range: {
-            after: boolean;
-            startTime: number;
-            before: boolean;
-            endTime: number;
-        };
+    singular: boolean;
+    periodic: boolean;
+    //
+    name: string;
+    // 
+    deposit: boolean;
+    withdrawal: boolean;
+    transfer: boolean;
+    closeAccount: boolean;
+    changeInterestRate: boolean;
+    adjustment: boolean;
+    //
+    periodicDeposit: boolean;
+    periodicWithdrawal: boolean;
+    periodicTransfer: boolean;
+    //
+    range: {
+        after: boolean;
+        startTime: number;
+        before: boolean;
+        endTime: number;
     };
 };
 

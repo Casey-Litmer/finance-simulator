@@ -4,8 +4,8 @@ import { SaveButton } from "src/components/buttons";
 import { DateSelector, InputField } from "src/components/dataentry";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { useSim } from "src/contexts";
+import { defaultFilter } from "src/globals";
 import { FilterJSON } from "src/simulation/types";
-import { getToday } from "src/utils";
 
 
 
@@ -24,31 +24,9 @@ export const FilterMenu = (props: FilterMenuProps) => {
     watch,
     control,
     //formState: { errors },
-  } = useForm<FilterJSON>({  //TODO move to defaults
+  } = useForm<FilterJSON>({
     mode: 'onChange',
-    defaultValues: simulation.saveState.filter ?? {
-      filter: true,
-      filterBy: { 
-        deposit: true,
-        withdrawal: true,
-        transfer: true,
-        closeAccount: true,
-        changeInterestRate: true,
-        adjustment: true,
-        periodicDeposit: true,
-        periodicWithdrawal: true,
-        periodicTransfer: true, 
-        singular: true,
-        periodic: true,
-        name: '',
-        range: {
-            after: false,
-            startTime: getToday().time,
-            before: false,
-            endTime: getToday().time + 365*2,
-        }
-      }
-    }
+    defaultValues: simulation.saveState.filter ?? defaultFilter
   });
   const currentState = watch();
 
@@ -69,8 +47,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.singular')}
-              defaultValue={currentState.filterBy.singular}
+              register={register('singular')}
+              defaultValue={currentState.singular}
               control={control}
             />
             Singular
@@ -79,8 +57,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.periodic')}
-              defaultValue={currentState.filterBy.periodic}
+              register={register('periodic')}
+              defaultValue={currentState.periodic}
               control={control}
             />
             Periodic
@@ -92,8 +70,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.deposit')}
-              defaultValue={currentState.filterBy.deposit}
+              register={register('deposit')}
+              defaultValue={currentState.deposit}
               control={control}
             />
             Deposits
@@ -102,8 +80,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.withdrawal')}
-              defaultValue={currentState.filterBy.withdrawal}
+              register={register('withdrawal')}
+              defaultValue={currentState.withdrawal}
               control={control}
             />
             Withdrawals
@@ -112,8 +90,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.transfer')}
-              defaultValue={currentState.filterBy.transfer}
+              register={register('transfer')}
+              defaultValue={currentState.transfer}
               control={control}
             />
             Transfers
@@ -122,8 +100,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.closeAccount')}
-              defaultValue={currentState.filterBy.closeAccount}
+              register={register('closeAccount')}
+              defaultValue={currentState.closeAccount}
               control={control}
             />
             Close Account
@@ -132,8 +110,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.changeInterestRate')}
-              defaultValue={currentState.filterBy.changeInterestRate}
+              register={register('changeInterestRate')}
+              defaultValue={currentState.changeInterestRate}
               control={control}
             />
             Rate Changes
@@ -142,8 +120,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.adjustment')}
-              defaultValue={currentState.filterBy.adjustment}
+              register={register('adjustment')}
+              defaultValue={currentState.adjustment}
               control={control}
             />
             Adjustments
@@ -155,8 +133,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.periodicDeposit')}
-              defaultValue={currentState.filterBy.periodicDeposit}
+              register={register('periodicDeposit')}
+              defaultValue={currentState.periodicDeposit}
               control={control}
             />
             Periodic Deposits
@@ -165,8 +143,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.periodicWithdrawal')}
-              defaultValue={currentState.filterBy.periodicWithdrawal}
+              register={register('periodicWithdrawal')}
+              defaultValue={currentState.periodicWithdrawal}
               control={control}
             />
             Periodic Withdrawals
@@ -175,8 +153,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.periodicTransfer')}
-              defaultValue={currentState.filterBy.periodicTransfer}
+              register={register('periodicTransfer')}
+              defaultValue={currentState.periodicTransfer}
               control={control}
             />
             Periodic Transfers
@@ -188,8 +166,8 @@ export const FilterMenu = (props: FilterMenuProps) => {
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.range.after')}
-              defaultValue={currentState.filterBy.range.after}
+              register={register('range.after')}
+              defaultValue={currentState.range.after}
               control={control}
             />
             After
@@ -197,17 +175,17 @@ export const FilterMenu = (props: FilterMenuProps) => {
 {/* Start Time */}
           <MenuItemContainer>
             <DateSelector
-              register={register('filterBy.range.startTime')}
+              register={register('range.startTime')}
               control={control}
-              selected={currentState.filterBy.range.startTime}
+              selected={currentState.range.startTime}
             />
           </MenuItemContainer>
 {/* Before */}
           <MenuItemContainer>
             <InputField className='checkbox'
               type='checkbox'
-              register={register('filterBy.range.before')}
-              defaultValue={currentState.filterBy.range.before}
+              register={register('range.before')}
+              defaultValue={currentState.range.before}
               control={control}
             />
             Before
@@ -215,9 +193,9 @@ export const FilterMenu = (props: FilterMenuProps) => {
 {/* End Time */}
           <MenuItemContainer>
             <DateSelector
-              register={register('filterBy.range.endTime')}
+              register={register('range.endTime')}
               control={control}
-              selected={currentState.filterBy.range.endTime}
+              selected={currentState.range.endTime}
             />
           </MenuItemContainer>
 {/* Save */}

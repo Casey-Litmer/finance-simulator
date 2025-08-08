@@ -33,38 +33,42 @@ export function EventsMenu(props: EventsMenuProps) {
   };
 
   //=================================================================================
-  // Event Mapping
-
   // Filter eventJSON
-  const filteredEvents = filterEvents(
-    (accountId === undefined) ? 
+
+  const events = (accountId === undefined) ? 
     simulation.saveState.events :                        // If all events
     Object.fromEntries(                                  // If account events
       simulation.saveState.accounts[accountId].eventIds
       .map(id => [id, simulation.saveState.events[id]])  
-    )
-  , simulation.saveState.filter);
+    );
+  
+  const filteredEvents = filterEvents(events, simulation.saveState.filter);
+    
+  // Unfiltered Ids
+  const eventIds = Object.keys(events).map(Number);
+  // Filtered Ids
+  const filteredEventIds = Object.keys(filteredEvents).map(Number);
 
-  // Event ids
-  const eventIds = Object.keys(filteredEvents).map(Number);
-
+  //=================================================================================
+  // Event Mapping
+  
   // Get all objects from the sim that pass the filter (non active events included)
   const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
     .map(evData => evData.event)
-    .filter(ev => eventIds.includes(ev.id));
+    .filter(ev => filteredEventIds.includes(ev.id));
 
-  //Use eventTableMethods to order by time/precedence like in the sim
+  // Use eventTableMethods to order by time/precedence like in the sim
   let orderedEvents = {} as EventTable;
   for (const ev of eventObjects) {
     orderedEvents = addToEventTable(orderedEvents, ev as AccountEvent);
   };
 
-  //Squash list and map back to ids, components...
+  // Squash list and map back to ids, components...
   const orderedEventIds = makeEventQueue(orderedEvents).getItems().map((ev) => ev.id);
   const eventItems = orderedEventIds.map((id) => <EventItem key={id} eventId={Number(id)} />);
 
   //=================================================================================
-  //Close menu on empty
+  // Close menu on empty
 
   useEffect(() => {
     if (!eventIds.length) setOpenState(false);
@@ -82,13 +86,12 @@ export function EventsMenu(props: EventsMenuProps) {
       <ScrollContainer>
 {/* Filter */}
         <MenuItemContainer>
-          <div style={{ flex: 1, flexDirection: 'row' }}>
-            <UtilityButton
-              name='Filter Menu'
-              icon={KeyboardDoubleArrowRight}
-              handleClick={handleFilterMenu}
-            />
-          </div>
+          <UtilityButton
+            name='Filter Menu'
+            icon={KeyboardDoubleArrowRight}
+            handleClick={handleFilterMenu}
+          />
+          Filter
         </MenuItemContainer>
 
         <MenuDivider />

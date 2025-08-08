@@ -5,27 +5,26 @@ import { EventJSON, FilterJSON } from "src/simulation/types";
 
 
 export function filterEvents(events: Record<number, EventJSON>, settings?: FilterJSON): Record<number, EventJSON> {
-  if (!settings?.filter) return events;
-
   const result: Record<number, EventJSON> = {};
-  const filterBy = settings.filterBy;
+
+  if (!settings) return events;
 
   for (const [id, event] of Object.entries(events)) {
     const args = event.args;
 
     // Filter By Type
     const type = event.eventType;
-    if (!filterBy[typeToFilterKey(type)]) continue;
+    if (!settings[typeToFilterKey(type)]) continue;
 
     // Filter By Single/Periodic
     const isPeriodic = type.includes('Periodic');
-    if (isPeriodic && !filterBy.periodic) continue;
-    if (!isPeriodic && !filterBy.singular) continue;
+    if (isPeriodic && !settings.periodic) continue;
+    if (!isPeriodic && !settings.singular) continue;
 
     // Filter By Time Range
     const time = convertTime(args.eventTime, 'number');
-    if (filterBy.range.after && time <= filterBy.range.startTime) continue;
-    if (filterBy.range.before && time >= filterBy.range.endTime) continue;
+    if (settings.range.after && time <= settings.range.startTime) continue;
+    if (settings.range.before && time >= settings.range.endTime) continue;
 
     result[Number(id)] = event;
   };
@@ -35,10 +34,10 @@ export function filterEvents(events: Record<number, EventJSON>, settings?: Filte
 
 //=================================================================================
 
-function typeToFilterKey(type: string): keyof FilterJSON["filterBy"] {
+function typeToFilterKey(type: string): keyof FilterJSON {
   // Normalizes keys like "Periodic Deposit" to "periodicDeposit"
   return type
     .replace(/\s+/g, "")
-    .replace(/^./, c => c.toLowerCase()) as keyof FilterJSON["filterBy"];
+    .replace(/^./, c => c.toLowerCase()) as keyof FilterJSON;
 };
 
