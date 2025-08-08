@@ -1,18 +1,15 @@
-import AccountEvent from "./events/Event";
 import { ScatterLine } from "plotly.js";
-import AccountState from "./sim/accountState";
-import Account from "./accounts/Account";
-import { AccountArguments } from "./accounts/AccountInterfaces";
-import { EventArguments } from "./events/EventInterfaces";
-import Deque from "../utils/Deque";
+import { Account, AccountArguments } from "./accounts";
+import { AccountEvent, EventArguments } from "./events";
+import { AccountState } from "./sim";
+import { Deque } from "src/utils";
+
 
 
 
 export type SaveState = {
     accounts: Record<number, AccountJSON>;
     events: Record<number, EventJSON>;
-    accountsDisplay: Record<number, AccountDisplay>;
-    eventsDisplay: Record<number, EventDisplay>;
     filter?: FilterJSON;                                   // TODO convert all to optional
     xDomain: {start: number, stop: number, step: number};  //  Then have fallbacks
 };
@@ -22,12 +19,14 @@ export type AccountJSON = {
     args: AccountArguments;
     accountType: string;
     eventIds: number[];
+    display: AccountDisplay;
 };
 
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
     accountIds: number[];
+    display: EventDisplay;
 };
 
 export type AccountDisplay = {

@@ -27,7 +27,7 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
             ...args, 
             accounts: withAccounts, 
             id: Number(key),
-            isActive: saveState.eventsDisplay[Number(key)].active
+            isActive: saveState.events[Number(key)].display.active
         });
     });
 

@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
-import { defaultSaveState } from "src/globals";
+import { defaultEventDisplay, defaultSaveState } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/simulation/types";
 
@@ -61,15 +61,16 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
    */
   const reduceSaveState = (prev: SaveState, action: SaveStateReducerAction) => {
     const { partial, init } = action;
-    //If the events change, update the eventIds in accounts
     if (init) {
       invokeSimWorker(partial as SaveState);
       return partial as SaveState;
-    }
+    };
+    
+    //If the events change, update the eventIds in accounts
     if ('events' in partial) updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);
     return deepPartialReducer(prev, partial);
   };
-
+  
   const [saveState, dispatchSaveState] = useReducer(reduceSaveState, defaultSaveState());
 
   //=================================================================================
@@ -96,7 +97,6 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   [
     saveState.accounts, 
     saveState.events, 
-    saveState.eventsDisplay,
     saveState.xDomain, 
     forceRun
   ]);
@@ -108,28 +108,31 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   /////////
 
   /**
-   * Updates all accounts' eventIds with changes in events.
+   * Updates all accounts' eventIds with changes in event-account relations.
    * This ensures no duplicate or residual ids when an event references a new account.
    * @param saveState previous state (same signature as the reducer)
-   * @param events new partial: Record<number, EventJSON>
+   * @param eventsPartial new partial: Record<number, EventJSON>
    */
-  function updateAccountEventIds(saveState: SaveState, events: Record<number, EventJSON>) {
-    //For each event in the partial,
-    Object.entries(events).forEach(([eventId, event]) => {
-      const currentAccountIds = Object.keys(saveState.accounts).map(Number);
-      const newEventAccountIds = event.accountIds;
-      //For all current accountsIds,
-      for (const accId of currentAccountIds) {
-        const currentAccount = saveState.accounts[accId];
-        //If the new event references the accountId
-        if (newEventAccountIds.includes(accId)) {
-          //Add the eventId to the account if not already included
-          if (!currentAccount.eventIds.includes(Number(eventId)))
-            currentAccount.eventIds.push(Number(eventId));
-        } else {
-          //Remove the eventId if it is in the account
-          if (currentAccount.eventIds.includes(Number(eventId)))
-            currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== Number(eventId));
+  function updateAccountEventIds(saveState: SaveState, eventsPartial: Record<number, EventJSON>) {
+    // For each event in the partial,
+    Object.entries(eventsPartial).forEach(([eventId, event]) => {
+      // If the partial event includes accountId changes
+      if (event.accountIds !== undefined) {
+        const currentAccountIds = Object.keys(saveState.accounts).map(Number);
+        const newEventAccountIds = event.accountIds;  
+        // For all current accountsIds,
+        for (const accId of currentAccountIds) {
+          const currentAccount = saveState.accounts[accId];
+          // If the new event references the accountId
+          if (newEventAccountIds.includes(accId)) {
+            // Add the eventId to the account if not already included
+            if (!currentAccount.eventIds.includes(Number(eventId)))
+              currentAccount.eventIds.push(Number(eventId));
+          } else {
+            // Remove the eventId if it is in the account
+            if (currentAccount.eventIds.includes(Number(eventId)))
+              currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== Number(eventId));
+          };
         };
       };
     });
@@ -143,13 +146,13 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   const addAccount = (account: AccountJSON) => {
     const lastId = Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
     dispatchSaveState({partial: {
-      accounts: { [lastId + 1]: account },
-      accountsDisplay: {
-        [lastId + 1]: {
+      accounts: { [lastId + 1]: {
+        ...account,
+        display : {
           visible: true,
           line: { color: `hsl(${Math.random() * 255}, 100%, 50%)`, dash: 'solid' }
         }
-      }
+      } },
     }});
   };
 
@@ -157,12 +160,10 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   const addEvent = (event: EventJSON) => {
     const lastId = Math.max(...Object.keys(saveState.events).map(Number), ...[0]);
     dispatchSaveState({ partial: { 
-      events: { [lastId + 1]: event } ,
-      eventsDisplay: {
-        [lastId + 1]: {
-          active: true
-        }
-      } 
+      events: { [lastId + 1]: {
+        ...event,
+        display: defaultEventDisplay
+      } },
     }});
   };
 
@@ -191,19 +192,17 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     const accountEventIds = account.eventIds;
     accountEventIds.forEach((evId) => { _deleteEvent(evId) });
     delete saveState.accounts[accountId];
-    delete saveState.accountsDisplay[accountId];
   };
 
   /**Deletes an event and removes it from all linked accounts*/
   const _deleteEvent = (eventId: number) => {
     const event = saveState.events[eventId];
     const eventAccountIds = event.accountIds;
-    eventAccountIds.forEach((accId) => {//Remove eventId in each linked account
+    eventAccountIds.forEach((accId) => { // Remove eventId in each linked account
       const accountEventIds = saveState.accounts[accId].eventIds;
       saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== Number(eventId));
     });
     delete saveState.events[eventId];
-    delete saveState.eventsDisplay[eventId];
   };
 
   /**Adds an account to be deleted to the queue*/

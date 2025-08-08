@@ -35,16 +35,18 @@ export function EventsMenu(props: EventsMenuProps) {
   //=================================================================================
   // Event Mapping
 
-  console.log(simulation.saveState.events)
+  //console.log(simulation.saveState.events)
 
   const filteredEvents = filterEvents(
     (accountId === undefined) ? 
     simulation.saveState.events : 
+
     simulation.saveState.accounts[accountId].eventIds
     .map(id => simulation.saveState.events[id])
+    
   , simulation.saveState.filter);
 
-  console.log('filtered', filteredEvents) //TODO this is turning into an array and getting the wrong keys
+  //console.log('filtered', filteredEvents) //TODO this is turning into an array and getting the wrong keys
 
   const eventIds = Object.keys(filteredEvents).map(Number);
 

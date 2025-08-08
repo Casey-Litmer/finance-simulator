@@ -1,5 +1,5 @@
-import { convertTime, DateFloat } from "./timeMethods";
-import { EventJSON, FilterJSON } from "../simulation/types";
+import { convertTime } from "./timeMethods";
+import { EventJSON, FilterJSON } from "src/simulation/types";
 
 
 

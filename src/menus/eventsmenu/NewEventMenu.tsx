@@ -223,36 +223,34 @@ export function NewEventMenu(props: NewEventMenuProps) {
           </MenuItemContainer>
         }
 {/* Transfers */}
-        {(isTransfer && otherAccounts.length > 0) &&
-          <>
+        {(isTransfer && otherAccounts.length > 0) && <>
   {/* Transfer to */}
-            <MenuItemContainer sx={dataEntryStyles}>
-              Transfer To
-              <DropdownSelect
-                register={register('accountIds')}
-                control={control}
-                convertInput={(accIds) => accIds[1]}
-                convertOutput={(accId) => [currentAccountId, Number(accId)]}
-                defaultValue={currentState.accountIds.filter( id => id >= 0 )}
-              >
-                {otherAccounts.map((key) =>
-                (<option value={key}>
-                  {simulation.saveState.accounts[Number(key)].args.name}
-                </option>))
-                }
-              </DropdownSelect>
-            </MenuItemContainer>
+          <MenuItemContainer sx={dataEntryStyles}>
+            Transfer To
+            <DropdownSelect
+              register={register('accountIds')}
+              control={control}
+              convertInput={(accIds) => accIds[1]}
+              convertOutput={(accId) => [currentAccountId, Number(accId)]}
+              defaultValue={currentState.accountIds.filter( id => id >= 0 )}
+            >
+              {otherAccounts.map((key) =>
+              (<option key={key} value={key}>
+                {simulation.saveState.accounts[Number(key)].args.name}
+              </option>))
+              }
+            </DropdownSelect>
+          </MenuItemContainer>
   {/* Swap Transfer */} 
-            <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
-              Swap Transfer
-              <UtilityButton
-                name="Swap Transfer"
-                icon={CheckBoxOutlineBlankTwoTone}
-                handleClick={handleSwap}
-              />
-            </MenuItemContainer>
-          </>
-        }
+          <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
+            Swap Transfer
+            <UtilityButton
+              name="Swap Transfer"
+              icon={CheckBoxOutlineBlankTwoTone}
+              handleClick={handleSwap}
+            />
+          </MenuItemContainer>
+        </>}
 {/* Periodic */}
         {(isPeriodic) && <>
   {/* Period */}
@@ -280,7 +278,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
               control={control}
               errors={errors}
             >
-              {['constant', 'monthly'].map((mode) => <option value={mode}>{mode}</option>)}
+              {['constant', 'monthly'].map((mode) => <option key={mode} value={mode}>{mode}</option>)}
             </DropdownSelect>
           </MenuItemContainer>
   {/* Doesn't End */}

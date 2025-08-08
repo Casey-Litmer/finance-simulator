@@ -32,13 +32,15 @@ export const MenuProvider = ({ children }: MenuContextProviderProps) => {
   const [activeMenus, setActiveMenus] = useState<ReactNode[]>([]);
 
   //=========================================================================================
-  //Top level menu management hooks
+  // Top level menu management hooks
+
   const openMenu = (menu: ReactNode) => {
     setActiveMenus((prev) => [...prev, menu]);
   };
+
   const closeMenu = () => {
     setActiveMenus((prev) => prev.slice(0, prev.length - 1));
-    simulation.dispatchDelete();
+    simulation.dispatchDelete();  // Handles deletion when a menu is closed.  
   };
 
   //=========================================================================================

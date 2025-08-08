@@ -24,7 +24,7 @@ export function MainMenu(props: MainMenuProps) {
   const accounts = simulation.saveState.accounts;
 
   //=========================================================================================
-  const totalLine = simulation.saveState.accountsDisplay[-1].line;
+  const accountsTotalLine = simulation.saveState.accounts[-1].display.line;
 
   const accountItems = Object.keys(accounts)
     .filter(id => Number(id) >= 0)
@@ -37,7 +37,9 @@ export function MainMenu(props: MainMenuProps) {
   //=========================================================================================
   const handleNewAccount = () => openMenu(<NewAccountMenu />);
   const handleAllEvents = () => openMenu(<EventsMenu />);
-  const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState({ partial: { accountsDisplay: { [-1]: { line } } } }) };
+  const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
+    { partial: { accounts: { [-1]: { display: { line } } } } }) 
+  };
 
   //=========================================================================================
   return (
@@ -69,7 +71,7 @@ export function MainMenu(props: MainMenuProps) {
 
       <MenuItemContainer sx={{ height: 28 }}>
         <div style={{ marginLeft: 24 }}>Total Balance</div>
-        <ColorSelect line={totalLine} callback={handleTotalColorCallback} />
+        <ColorSelect line={accountsTotalLine} callback={handleTotalColorCallback} />
         <VisibilityButton type='account' id={-1} sx={{ top: '0px' }} />
       </MenuItemContainer>
 

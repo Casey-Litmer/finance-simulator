@@ -31,14 +31,14 @@ export function AccountItem(props: AccountItemProps) {
   //=========================================================================================
   const account = simulation.saveState.accounts[Number(accountId)]
   const accountName = account.args.name ?? account.accountType;
-  const line = simulation.saveState.accountsDisplay[accountId].line;
+  const line = simulation.saveState.accounts[accountId].display.line;
 
   //=========================================================================================
   const handleEdit = () => openMenu(<NewAccountMenu accountId={accountId} />);
   const handleExpand = () => setOpenDropdown((prev) => !prev);
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
   const handleEvents = () => { openMenu(<EventsMenu accountId={accountId} />) };
-  const handleColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState({ partial: { accountsDisplay: { [accountId]: { line } } } }) };
+  const handleColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState({ partial: { accounts: { [accountId]: { display: { line } } } } }) };
 
   //=========================================================================================
   return (

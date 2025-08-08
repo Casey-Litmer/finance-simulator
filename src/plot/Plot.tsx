@@ -59,7 +59,7 @@ export const SimPlot = () => {
 
     const traces = Object.entries(accountsData)
       .filter(([key, _]) => //Filter out all non-visible accounts
-        simulation.saveState.accountsDisplay[Number(key)]?.visible ?? false
+        simulation.saveState.accounts[Number(key)].display.visible ?? false
       ).map(//to traces
         ([key, accData]) => {
           //Add key to back-map
@@ -68,7 +68,7 @@ export const SimPlot = () => {
 
           const labels = formattedTimes.map((time, idx) =>
             `$${accData.bals[idx]?.toFixed(2)}<br>${time}`);
-          const lineStyle = simulation.saveState.accountsDisplay[Number(key)].line;
+          const lineStyle = simulation.saveState.accounts[Number(key)].display.line;
 
           return {
             x: formattedTimes,
@@ -85,7 +85,7 @@ export const SimPlot = () => {
 
   //Formatted Data
   const traces = useMemo(() => formatData(simulation.simData),
-    [simulation.simData, simulation.saveState.accountsDisplay]);
+    [simulation.simData, simulation.saveState.accounts]);
 
   //=========================================================================================
 
