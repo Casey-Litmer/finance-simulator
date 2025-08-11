@@ -26,6 +26,9 @@ I have many more ideas for quality of life improvements I will add in the future
 
 ## TODO:
 
+- Add value change breakpoints to all periodic events (Kindof like embedded versions of change interest rate)
+- Update the fonts and color pallete to be more readable
+
 0) Host this!
 1) Move to tailwindcss
 2) Optimize events before start time
