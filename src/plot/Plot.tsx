@@ -1,10 +1,10 @@
 import { UUID } from "crypto";
 import { useEffect, useMemo, useState } from "react";
 import Plot from 'react-plotly.js';
-import { PlotData } from "plotly.js";
+import { PlotData, Shape } from "plotly.js";
 import { useTheme } from "@mui/material";
 import { useMenu, useSim, useWindow } from 'src/contexts';
-import { formatDatetime } from "src/utils";
+import { formatDatetime, getToday } from "src/utils";
 import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
 import { SimulationData } from "src/simulation/types";
 
@@ -21,14 +21,15 @@ export const SimPlot = () => {
   const { menuWidth, openState } = useMenu();
 
   //=========================================================================================
-  //Set height from constants
+  
+  // Set height from constants
   useEffect(() => {
     setPlotHeight(
       windowHeight - HEADER_HEIGHT - FOOTER_HEIGHT
     );
   }, [windowHeight]);
 
-  //Manually set width and translation.  This is actually an optimization from resize observers :)
+  // Manually set width and translation.  This is actually an optimization from resize observers :)
   useEffect(() => {
     setPlotWidth(
       openState ?
@@ -82,16 +83,33 @@ export const SimPlot = () => {
         }
       );
     
-    // Today Marker (todo expand to general markers)
-    
-
-    
     return traces;
   };
 
-  //Formatted Data
+  // Formatted Data
   const traces = useMemo(() => formatData(simulation.simData),
     [simulation.simData, simulation.saveState.accounts]);
+
+  //=================================================================================
+  
+  /////////////
+  // Markers //
+  /////////////
+
+  const today = formatDatetime(getToday().time, 'plot');
+
+  const todayMarkerShape = {
+    type: 'line',
+    x0: today, x1: today,
+    y0: 0, y1: 1,
+    xref: 'x', yref: 'paper',
+    line: {
+      color: 'red',
+      width: 2,
+      dash: 'dash'
+    }
+  } as Partial<Shape>;
+
 
   //=========================================================================================
 
@@ -114,6 +132,9 @@ export const SimPlot = () => {
       onClick={handleClick}
       config={{ displayModeBar: false }}
       layout={{
+        //=================================================================================
+        // Styles
+        //=================================================================================
         title: "Simulation Data",
         plot_bgcolor: palette.primary.main,
         paper_bgcolor: palette.primary.main,
@@ -130,6 +151,9 @@ export const SimPlot = () => {
           x: 0.25, y: 0.95, // Inside the graph
           xanchor: 'right', yanchor: 'top'
         },
+        //=================================================================================
+        // Axis
+        //=================================================================================
         xaxis: {
           title: "Time",
           tickfont: { color: palette.primary.contrastText },
@@ -144,6 +168,10 @@ export const SimPlot = () => {
           ticklabelposition: 'inside top',
           rangemode: 'tozero',
         },
+        //=================================================================================
+        // Markers
+        //=================================================================================
+        shapes: [todayMarkerShape]
       }}
     />
   );
