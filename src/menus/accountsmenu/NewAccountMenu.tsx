@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from "@mui/icons-material";
 import { useSim } from "src/contexts";
 import { AccountConstructorMap } from "src/simulation";
-import { AccountJSON } from "src/simulation/types";
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { getToday } from "src/utils";
+import { AccountJSON } from "src/types";
 
 
 

@@ -13,7 +13,7 @@ import {
 import { AccountState } from './accountState';
 import { eventStackLoop } from './eventStackLoop';
 import { ACC_SUM_TOTAL_ID } from 'src/globals';
-import {AccountsData, EventsData, SimParameters, SimulationData} from '../types';
+import {AccountsData, EventsData, SimParameters, SimulationData} from 'src/types';
 
 
 

@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import { DateTime } from 'luxon';
 import { AccountEvent, CompoundInterest } from '../events';
 import { AccountArguments } from './AccountInterfaces';
@@ -10,8 +11,7 @@ import {
     Deque,
     newUUID
 } from 'src/utils';
-import { EventTable, SimulationBundle } from '../types';
-import { UUID } from 'crypto';
+import { EventTable, SimulationBundle } from 'src/types';
 
 
 

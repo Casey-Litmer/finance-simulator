@@ -1,6 +1,6 @@
-import { AccountEvent } from "src/simulation/events";
-import { EventTable } from "src/simulation/types";
 import { Deque } from "../Deque";
+import { AccountEvent } from "src/simulation/events";
+import { EventTable } from "src/types";
 
 
 

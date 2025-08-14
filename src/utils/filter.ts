@@ -1,9 +1,10 @@
 import { UUID } from "crypto";
 import { convertTime } from "./timeMethods";
-import { EventJSON, FilterJSON } from "src/simulation/types";
+import { EventJSON, FilterJSON } from "src/types";
 
 
 
+//=================================================================================
 
 export function filterEvents(events: Record<UUID, EventJSON>, settings?: FilterJSON): Record<UUID, EventJSON> {
   const result: Record<UUID, EventJSON> = {};

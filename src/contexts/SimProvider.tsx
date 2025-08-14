@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useReducer, useRef, useState } fr
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
 import { defaultEventDisplay, defaultSaveState } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
-import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/simulation/types";
 import { newUUID } from "src/utils";
+import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/types";
 
 
 

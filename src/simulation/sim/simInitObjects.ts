@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { Account } from "../accounts";
 import { AccountConstructorMap, EventConstructorMap } from "../ConstructorMaps";
-import { SaveState, SimParameters } from "../types";
+import { SaveState, SimParameters } from "src/types";
 
 
 

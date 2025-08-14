@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim, useWindow } from 'src/contexts';
 import { formatDatetime, getToday } from "src/utils";
 import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
-import { SimulationData } from "src/simulation/types";
+import { SimulationData } from "src/types";
 
 
 
@@ -109,7 +109,6 @@ export const SimPlot = () => {
       dash: 'dash'
     }
   } as Partial<Shape>;
-
 
   //=========================================================================================
 

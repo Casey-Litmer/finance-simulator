@@ -1,4 +1,7 @@
+import { UUID } from 'crypto';
 import { Account } from '../accounts';
+import { EventArguments, EventSettings } from './EventInterfaces';
+import { AccountState } from '../sim/accountState';
 import {
     REF_TIME, 
     addPeriod,
@@ -6,10 +9,7 @@ import {
     makeIdTable,
     newUUID
 } from 'src/utils';
-import { EventTable } from '../types';
-import { EventArguments, EventSettings } from './EventInterfaces';
-import { AccountState } from '../sim/accountState';
-import { UUID } from 'crypto';
+import { EventTable } from 'src/types';
 
 
 

@@ -10,7 +10,7 @@ import { NewEventMenu } from "./NewEventMenu";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { UtilityButton } from "src/components/buttons";
 import { AccountEvent } from "src/simulation/events";
-import { EventTable } from "src/simulation/types";
+import { EventTable } from "src/types";
 
 
 

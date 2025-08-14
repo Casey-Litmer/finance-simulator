@@ -1,7 +1,7 @@
 import { ScatterLine } from "plotly.js";
-import { Account, AccountArguments } from "./accounts";
-import { AccountEvent, EventArguments } from "./events";
-import { AccountState } from "./sim";
+import { Account, AccountArguments } from "src/simulation/accounts";
+import { AccountEvent, EventArguments } from "src/simulation/events";
+import { AccountState } from "src/simulation/sim";
 import { Deque } from "src/utils";
 import { UUID } from "crypto";
 
