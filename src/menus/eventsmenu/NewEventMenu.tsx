@@ -8,8 +8,8 @@ import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons"
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
-import { EventJSON } from "src/simulation/types";
 import { ACC_SUM_TOTAL_ID } from "src/globals";
+import { EventJSON } from "src/types";
 
 
 
@@ -56,20 +56,20 @@ export function NewEventMenu(props: NewEventMenuProps) {
   });
   const currentState = watch();
 
-  //Get accountId if eventId is known
+  // Get accountId if eventId is known
   const [currentAccountId, setCurrentAccountId] = useState(
     accountId ?? simulation.saveState.events[eventId!]?.accountIds[0]
   );
 
   //=========================================================================================
-  //Params
+  // Params
   const title = (eventId === undefined) ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
   const eventTypeParameters = paramsFromEventType(currentState.eventType);
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
 
   //=========================================================================================
-  //Hydration Station
+  // Hydration Station
   const eventTypes = Object.keys(EventConstructorMap)
     .filter((key) => key !== 'Event')
     .map((key, i) => (<option key={i} value={key}>{key}</option>));
@@ -78,7 +78,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
     .filter((key) => key !== currentAccountId && key != ACC_SUM_TOTAL_ID); 
 
   //=========================================================================================
-  //Conditions
+  // Conditions
   const isTransfer = ['Transfer', 'Periodic Transfer'].includes(currentState.eventType);
   const isPeriodic = currentState.eventType.includes('Periodic');
   const doesEnd = currentState.args.doesEnd;
@@ -87,7 +87,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const isMonthlyMode = currentState.args.periodMode === 'monthly';
 
   //=========================================================================================
-  //Errors
+  // Errors
   const monthlyCanUseDay = (_: any) => {
     const dayOfMonth = convertTime(currentState.args.eventTime, 'DateTime').day;
     return (isMonthlyMode && isPeriodic && dayOfMonth >= 29) ?
@@ -111,13 +111,13 @@ export function NewEventMenu(props: NewEventMenuProps) {
       'Interest rate must be in the range [0, 100]' : true;
   };
 
-  //Error updates
+  // Error updates
   useEffect(() => {
     trigger('args.periodMode');
   }, [currentState.args.eventTime, currentState.args.periodMode]);
 
   //=========================================================================================
-  //Dispatch to simProvider
+  // Dispatch to simProvider
   const handleSave = (eventJSON: EventJSON) => {
     setOpenState((prev) => !prev);
 
@@ -128,21 +128,21 @@ export function NewEventMenu(props: NewEventMenuProps) {
     };
   };
 
-  //Delete Event
+  // Delete Event
   const handleDelete = () => {
     setOpenState((prev) => !prev);
     simulation.deleteEvent(eventId!);
   };
 
   //=========================================================================================
-  //Swap transfer
+  // Swap transfer
   const handleSwap = () => {
     currentState.accountIds.reverse();
     setCurrentAccountId(currentState.accountIds[0]);
     setValue('accountIds', currentState.accountIds);
   };
 
-  //Manually set default transfer-to
+  // Manually set default transfer-to
   const [lastIsTransfer, setLastIsTransfer] = useState(isTransfer);
   useEffect(() => {
     if (lastIsTransfer !== isTransfer) {

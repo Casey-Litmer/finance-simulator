@@ -5,6 +5,7 @@ import { useMenu, useSim } from "src/contexts";
 import { AccountItem } from "./AccountItem";
 import { NewAccountMenu } from "./NewAccountMenu";
 import { EventsMenu } from "../eventsmenu";
+import { MarkersMenu, NewMarkerMenu } from "../markersmenu";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
@@ -33,12 +34,16 @@ export function MainMenu(props: MainMenuProps) {
     .map(id => <AccountItem key={id} accountId={id as UUID} />);
 
   //=========================================================================================
-  const hasEvents = Object.keys(simulation.saveState.events).length > 0;
   const hasAccounts = accountItems.length > 0;
+  const hasEvents = Object.keys(simulation.saveState.events).length > 0;
+  const hasMarkers = Object.keys(simulation.saveState.markers).length > 0;
 
   //=========================================================================================
   const handleNewAccount = () => openMenu(<NewAccountMenu />);
   const handleAllEvents = () => openMenu(<EventsMenu />);
+  const handleNewMarker = () => openMenu(<NewMarkerMenu />);
+  const handleMarkers = () => openMenu(<MarkersMenu />);
+  
   const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
     { partial: { accounts: { [ACC_SUM_TOTAL_ID]: { display: { line } } } } }) 
   };
@@ -46,6 +51,17 @@ export function MainMenu(props: MainMenuProps) {
   //=========================================================================================
   return (
     <Menu title='Accounts' openState={openState} setOpenState={setOpenState}>
+
+      <MenuDivider />
+
+      <MenuItemContainer>
+        <UtilityButton
+          name='Add Marker'
+          icon={Add}
+          handleClick={handleNewMarker}
+        />
+        Add Marker
+      </MenuItemContainer>
 
       <MenuDivider />
 
@@ -66,6 +82,17 @@ export function MainMenu(props: MainMenuProps) {
             handleClick={handleAllEvents}
           />
           All Events
+        </MenuItemContainer>
+      }
+
+      {hasMarkers &&
+        <MenuItemContainer>
+          <UtilityButton
+            name="Markers"
+            icon={KeyboardDoubleArrowRight}
+            handleClick={handleMarkers}
+          />
+          Markers
         </MenuItemContainer>
       }
 

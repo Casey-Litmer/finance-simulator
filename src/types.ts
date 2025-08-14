@@ -8,13 +8,18 @@ import { UUID } from "crypto";
 
 
 
+//Save State
+////////////////////////////////
+
 export type SaveState = {
     accounts: Record<UUID, AccountJSON>;
     events: Record<UUID, EventJSON>;
+    markers: Record<UUID, MarkerJSON>;
     filter?: FilterJSON;                                   
     xDomain: {start: number, stop: number, step: number};  
 };
 
+// Data
 
 export type AccountJSON = {
     args: AccountArguments;
@@ -30,6 +35,14 @@ export type EventJSON = {
     display: EventDisplay;
 };
 
+export type MarkerJSON = {
+    time: number;
+    name: string;
+    display: MarkerDisplay;
+};
+
+// Display
+
 export type AccountDisplay = {
     visible: boolean;
     line: Partial<ScatterLine>;
@@ -39,7 +52,13 @@ export type EventDisplay = {
     active: boolean;
 };
 
+export type MarkerDisplay = {
+    visible: boolean;
+    line: Partial<ScatterLine>;
+};
+
 // Sorting
+
 export type FilterJSON = {
     singular: boolean;
     periodic: boolean;

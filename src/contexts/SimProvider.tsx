@@ -2,10 +2,10 @@ import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
-import { defaultEventDisplay, defaultSaveState } from "src/globals";
+import { defaultEventDisplay, defaultMarker, defaultMarkerDisplay, defaultSaveState } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { newUUID } from "src/utils";
-import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/types";
+import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
 
 
 
@@ -24,10 +24,11 @@ type SimContextType = {
   dispatchSaveState: React.Dispatch<SaveStateReducerAction>;
   addAccount: (account: AccountJSON) => void;
   addEvent: (event: EventJSON) => void;
+  addMarker: (event: MarkerJSON) => void;
   deleteAccount: (accountId: UUID) => void;
   deleteEvent: (eventId: UUID) => void;
+  deleteMarker: (markerId: UUID) => void;
   dispatchDelete: () => void;
-  getLastAccId: () => number;
   simData?: SimulationData;
 };
 
@@ -141,17 +142,8 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     });
   };
 
-
-
-  const getLastAccId = () => {
-    return Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
-  }; //THIS NEEDS TO BE FIXED OR REMOVED
-
-
-
   /**Creates a new Record key before dispatching new account*/
   const addAccount = (account: AccountJSON) => {
-    //const lastId = Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
     dispatchSaveState({partial: {
       accounts: { [newUUID()]: {
         ...account,
@@ -165,12 +157,24 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
 
   /**Creates a new Record key before dispatching new event*/
   const addEvent = (event: EventJSON) => {
-    //const lastId = Math.max(...Object.keys(saveState.events).map(Number), ...[0]);
     dispatchSaveState({ partial: { 
       events: { [newUUID()]: {
         ...event,
         display: defaultEventDisplay
       } },
+    }});
+  };
+
+  /**Creates a new Record key before dispatching new marker*/
+  const addMarker = (marker: MarkerJSON) => {
+    dispatchSaveState({ partial: { 
+      markers: { [newUUID()]: {
+        ...marker,
+        display: {
+          visible: true,
+          line: { color: `hsl(${Math.random() * 255}, 100%, 50%)`, dash: 'dash' }
+        }
+      }},
     }});
   };
 
@@ -224,6 +228,10 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     return true;
   };
 
+  const deleteMarker = (markerId: UUID) => {
+    delete saveState.markers[markerId];
+  };
+
   //=================================================================================
   return (
     <simContext.Provider
@@ -233,10 +241,11 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         dispatchSaveState,
         addAccount,
         addEvent,
+        addMarker,
         deleteAccount,
         deleteEvent,
+        deleteMarker,
         dispatchDelete,
-        getLastAccId,
       }}
     >
       {children}

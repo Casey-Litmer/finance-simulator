@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim, useWindow } from 'src/contexts';
 import { formatDatetime, getToday } from "src/utils";
 import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
-import { SimulationData } from "src/types";
+import { MarkerJSON, SimulationData } from "src/types";
 
 
 
@@ -60,17 +60,17 @@ export const SimPlot = () => {
     let traceIdx = 0;
 
     const traces = Object.entries(accountsData)
-      .filter(([key, _]) => //Filter out all non-visible accounts
-        simulation.saveState.accounts[key as UUID].display.visible ?? false
+      .filter(([id, _]) => //Filter out all non-visible accounts
+        simulation.saveState.accounts[id as UUID].display.visible ?? false
       ).map(//to traces
-        ([key, accData]) => {
-          //Add key to back-map
-          traceMap.set(traceIdx, key);
+        ([id, accData]) => {
+          //Add id to back-map
+          traceMap.set(traceIdx, id);
           traceIdx++;
 
           const labels = formattedTimes.map((time, idx) =>
             `$${accData.bals[idx]?.toFixed(2)}<br>${time}`);
-          const lineStyle = simulation.saveState.accounts[key as UUID].display.line;
+          const lineStyle = simulation.saveState.accounts[id as UUID].display.line;
 
           return {
             x: formattedTimes,
@@ -109,6 +109,32 @@ export const SimPlot = () => {
       dash: 'dash'
     }
   } as Partial<Shape>;
+
+  const formatMarkers = (markers: Record<UUID, MarkerJSON>) => {
+    if (!markers) return [];
+
+    const shapes = Object.entries(markers)
+      .filter(([id, _]) => markers[id as UUID].display.visible ?? false)
+      .map(([id, _]) => {
+        const marker = markers[id as UUID];
+        const markerTime = formatDatetime(marker.time, 'plot');
+        return {
+          type: 'line',
+          x0: markerTime, x1: markerTime,
+          y0: 0, y1: 1,
+          xref: 'x', yref: 'paper',
+          line: { width: 2, ...marker.display.line}
+        };
+      });
+
+    console.log(shapes)
+    console.log(markers)
+
+    return shapes as Partial<Shape>[];
+  };
+
+  const markerShapes = useMemo(() => formatMarkers(simulation.saveState.markers), 
+    [simulation.saveState.markers, Object.keys(simulation.saveState.markers).join(',')]);
 
   //=========================================================================================
 
@@ -170,7 +196,7 @@ export const SimPlot = () => {
         //=================================================================================
         // Markers
         //=================================================================================
-        shapes: [todayMarkerShape]
+        shapes: [todayMarkerShape, ...markerShapes]
       }}
     />
   );

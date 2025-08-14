@@ -7,16 +7,16 @@ import { convertTime, formatDatetime } from "src/utils";
 import { NewEventMenu } from "./NewEventMenu";
 import { DropdownContainer, FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
-import { EventJSON, SaveState } from "src/simulation/types";
+import { EventJSON, SaveState } from "src/types";
 
 
 
 
-interface AccountItemProps {
+interface EventItemProps {
   eventId: UUID;
 };
 
-export function EventItem(props: AccountItemProps) {
+export function EventItem(props: EventItemProps) {
   const { eventId } = props;
   const { palette } = useTheme();
   const simulation = useSim();

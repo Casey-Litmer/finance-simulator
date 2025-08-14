@@ -1,8 +1,9 @@
 import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
-import { AccountDisplay, AccountJSON, EventDisplay, EventJSON } from "src/simulation/types";
 import { ACC_SUM_TOTAL_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
+import { AccountDisplay, AccountJSON, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
+
 
 
 
@@ -59,6 +60,10 @@ export const defaultSaveState = () => {
             }]))
         ) as Record<UUID, EventJSON>,
         //=================================================================================
+        // Markers
+        //=================================================================================
+        markers: {} as Record<UUID, MarkerJSON>,
+        //=================================================================================
         // Domain
         //=================================================================================
         xDomain: {
@@ -66,7 +71,7 @@ export const defaultSaveState = () => {
             stop: today + 365,
             step: 1
         }
-    };
+    } as SaveState;
 };
 
 //=================================================================================
@@ -79,6 +84,11 @@ export const defaultAccountDisplay = ({ color, dash }: { color?: Color, dash?: D
 export const defaultEventDisplay = {
     active: true
 } as EventDisplay;
+
+export const defaultMarkerDisplay = ({ color, dash }: { color?: Color, dash?: Dash }) => ({
+    visible: true,
+    line: { color: color, dash: dash }
+} as MarkerDisplay);
 
 //=================================================================================
 
@@ -101,4 +111,12 @@ export const defaultFilter = {
         before: false,
         endTime: getToday().time + 365 * 2,
     }
-};
+} as FilterJSON;
+
+//=================================================================================
+
+export const defaultMarker = ({ color, dash }: { color?: Color, dash?: Dash }) => ({
+    time: getToday().time,
+    name: 'Today',
+    display: defaultMarkerDisplay({color, dash})
+} as MarkerJSON);

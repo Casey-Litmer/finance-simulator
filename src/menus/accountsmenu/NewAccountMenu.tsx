@@ -35,7 +35,7 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
         simulation.saveState.accounts[accountId] : {
           args: {
             openDate: today,
-            name: `Account ${simulation.getLastAccId() + 1}`,
+            name: `Checking Account`,
           },
           accountType: 'Checking Account',
           eventIds: []
