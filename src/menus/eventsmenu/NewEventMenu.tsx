@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { CSSProperties, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlineBlankTwoTone, CheckBoxOutlined } from "@mui/icons-material";
@@ -8,13 +9,14 @@ import { DateSelector, DropdownSelect, InputField } from "src/components/dataent
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
 import { EventJSON } from "src/simulation/types";
+import { ACC_SUM_TOTAL_ID } from "src/globals";
 
 
 
 
 interface NewEventMenuProps {
-  accountId?: number;  //TODO make optional
-  eventId?: number;
+  accountId?: UUID;  
+  eventId?: UUID;
 };
 
 /*Create init arguments if no accountId is given, else, edit json.*/
@@ -73,7 +75,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
     .map((key, i) => (<option key={i} value={key}>{key}</option>));
 
   const otherAccounts = Object.keys(simulation.saveState.accounts)
-    .filter((key) => Number(key) !== currentAccountId && Number(key) >= 0);
+    .filter((key) => key !== currentAccountId && key != ACC_SUM_TOTAL_ID); 
 
   //=========================================================================================
   //Conditions
@@ -146,7 +148,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
     if (lastIsTransfer !== isTransfer) {
       setValue('accountIds',
         (isTransfer && otherAccounts.length > 0) ?
-          [currentAccountId, Number(otherAccounts[0])] : [currentAccountId]
+          [currentAccountId, otherAccounts[0] as UUID] : [currentAccountId]
       );
       setLastIsTransfer(isTransfer);
     };
@@ -232,11 +234,11 @@ export function NewEventMenu(props: NewEventMenuProps) {
               control={control}
               convertInput={(accIds) => accIds[1]}
               convertOutput={(accId) => [currentAccountId, Number(accId)]}
-              defaultValue={currentState.accountIds.filter( id => id >= 0 )}
+              defaultValue={currentState.accountIds.filter( id => id !== ACC_SUM_TOTAL_ID )}
             >
               {otherAccounts.map((key) =>
               (<option key={key} value={key}>
-                {simulation.saveState.accounts[Number(key)].args.name}
+                {simulation.saveState.accounts[key as UUID].args.name}
               </option>))
               }
             </DropdownSelect>

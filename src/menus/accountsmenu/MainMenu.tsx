@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { ScatterLine } from "plotly.js";
 import { Add, KeyboardDoubleArrowRight } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
@@ -7,6 +8,7 @@ import { EventsMenu } from "../eventsmenu";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
+import { ACC_SUM_TOTAL_ID } from "src/globals";
 
 
 
@@ -24,11 +26,11 @@ export function MainMenu(props: MainMenuProps) {
   const accounts = simulation.saveState.accounts;
 
   //=========================================================================================
-  const accountsTotalLine = simulation.saveState.accounts[-1].display.line;
+  const accountsTotalLine = simulation.saveState.accounts[ACC_SUM_TOTAL_ID].display.line;
 
   const accountItems = Object.keys(accounts)
-    .filter(id => Number(id) >= 0)
-    .map(id => <AccountItem key={id} accountId={Number(id)} />);
+    .filter(id => id !== ACC_SUM_TOTAL_ID)
+    .map(id => <AccountItem key={id} accountId={id as UUID} />);
 
   //=========================================================================================
   const hasEvents = Object.keys(simulation.saveState.events).length > 0;
@@ -38,7 +40,7 @@ export function MainMenu(props: MainMenuProps) {
   const handleNewAccount = () => openMenu(<NewAccountMenu />);
   const handleAllEvents = () => openMenu(<EventsMenu />);
   const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
-    { partial: { accounts: { [-1]: { display: { line } } } } }) 
+    { partial: { accounts: { [ACC_SUM_TOTAL_ID]: { display: { line } } } } }) 
   };
 
   //=========================================================================================
@@ -72,7 +74,7 @@ export function MainMenu(props: MainMenuProps) {
       <MenuItemContainer sx={{ height: 28 }}>
         <div style={{ marginLeft: 24 }}>Total Balance</div>
         <ColorSelect line={accountsTotalLine} callback={handleTotalColorCallback} />
-        <VisibilityButton type='account' id={-1} sx={{ top: '0px' }} />
+        <VisibilityButton type='account' id={ACC_SUM_TOTAL_ID} sx={{ top: '0px' }} />
       </MenuItemContainer>
 
       {hasAccounts && <MenuDivider />}

@@ -1,11 +1,12 @@
+import { UUID } from "crypto";
 import { convertTime } from "./timeMethods";
 import { EventJSON, FilterJSON } from "src/simulation/types";
 
 
 
 
-export function filterEvents(events: Record<number, EventJSON>, settings?: FilterJSON): Record<number, EventJSON> {
-  const result: Record<number, EventJSON> = {};
+export function filterEvents(events: Record<UUID, EventJSON>, settings?: FilterJSON): Record<UUID, EventJSON> {
+  const result: Record<UUID, EventJSON> = {};
 
   if (!settings) return events;
 
@@ -26,7 +27,7 @@ export function filterEvents(events: Record<number, EventJSON>, settings?: Filte
     if (settings.range.after && time <= settings.range.startTime) continue;
     if (settings.range.before && time >= settings.range.endTime) continue;
 
-    result[Number(id)] = event;
+    result[id as UUID] = event;
   };
 
   return result;

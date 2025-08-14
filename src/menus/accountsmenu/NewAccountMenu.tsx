@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { CSSProperties, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from "@mui/icons-material";
@@ -13,7 +14,7 @@ import { getToday } from "src/utils";
 
 
 interface NewAccountMenuProps {
-  accountId?: number;
+  accountId?: UUID;
 };
 
 /*Create init arguments if no accountId is given, else, edit json.*/

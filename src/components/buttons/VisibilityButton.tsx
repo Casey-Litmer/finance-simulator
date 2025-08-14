@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import { Theme } from '@emotion/react';
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
 import { SxProps } from '@mui/material';
@@ -7,7 +8,7 @@ import { UtilityButton } from './UtitlityButton';
 
 
 interface VisibilityButtonProps {
-  id: number;
+  id: UUID;
   type: 'account' | 'event';
   sx?: SxProps<Theme>;
 };

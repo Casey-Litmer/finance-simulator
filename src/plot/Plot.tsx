@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { useEffect, useMemo, useState } from "react";
 import Plot from 'react-plotly.js';
 import { PlotData } from "plotly.js";
@@ -59,16 +60,16 @@ export const SimPlot = () => {
 
     const traces = Object.entries(accountsData)
       .filter(([key, _]) => //Filter out all non-visible accounts
-        simulation.saveState.accounts[Number(key)].display.visible ?? false
+        simulation.saveState.accounts[key as UUID].display.visible ?? false
       ).map(//to traces
         ([key, accData]) => {
           //Add key to back-map
-          traceMap.set(traceIdx, Number(key));
+          traceMap.set(traceIdx, key);
           traceIdx++;
 
           const labels = formattedTimes.map((time, idx) =>
             `$${accData.bals[idx]?.toFixed(2)}<br>${time}`);
-          const lineStyle = simulation.saveState.accounts[Number(key)].display.line;
+          const lineStyle = simulation.saveState.accounts[key as UUID].display.line;
 
           return {
             x: formattedTimes,
@@ -80,6 +81,11 @@ export const SimPlot = () => {
           } as PlotData;
         }
       );
+    
+    // Today Marker (todo expand to general markers)
+    
+
+    
     return traces;
   };
 

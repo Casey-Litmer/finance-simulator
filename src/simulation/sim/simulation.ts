@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import { Account } from '../accounts';
 import { AccountEvent, OpenAccount } from '../events';
 import { 
@@ -11,6 +12,7 @@ import {
 } from 'src/utils';
 import { AccountState } from './accountState';
 import { eventStackLoop } from './eventStackLoop';
+import { ACC_SUM_TOTAL_ID } from 'src/globals';
 import {AccountsData, EventsData, SimParameters, SimulationData} from '../types';
 
 
@@ -71,17 +73,10 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
         };
     };
 
-    const accountsTotal = new Account({name: "Total", openDate: REF_DATE, id:-1});
-    //const DEFAULTDATA: SimulationData = {
-    //    timeDomain:[0], 
-    //    eventsData: {},
-    //    accountsData: {
-    //        '-1':{bals:[0], account: accountsTotal}
-    //    }
-    //};
+    const accountsTotal = new Account({name: "Total", openDate: REF_DATE, id: ACC_SUM_TOTAL_ID});
     
     //add sum and other indicators here
-    accountsData[-1] = {bals: accountsSumTotal(accountsData, timeDomain), account: accountsTotal};
+    accountsData[ACC_SUM_TOTAL_ID] = {bals: accountsSumTotal(accountsData, timeDomain), account: accountsTotal};
     
     return {timeDomain, accountsData, eventsData} as SimulationData;
 };
@@ -155,7 +150,7 @@ function accountsSumTotal(accountsData: AccountsData, timeDomain: number[]): num
     for (const t in timeDomain) {
         let sumAtT = 0;
         for (const id in accountsData) {
-            const bal = accountsData[id].bals[t];
+            const bal = accountsData[id as UUID].bals[t];
             sumAtT += (bal === null) ? 0 : bal;
         };
         sumBals.push(sumAtT);

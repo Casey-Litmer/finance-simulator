@@ -1,17 +1,26 @@
 import { Color, Dash } from "plotly.js";
-import { getToday, REF_TIME } from "src/utils";
+import { getToday, newUUID, REF_TIME } from "src/utils";
 import { AccountDisplay, AccountJSON, EventDisplay, EventJSON } from "src/simulation/types";
+import { ACC_SUM_TOTAL_ID } from "./CONSTANTS";
+import { UUID } from "crypto";
+
 
 
 
 export const defaultSaveState = () => {
     const today = getToday().time;
     const nAccounts = 2;
+    const nEvents = 4;
+    const accUUIDs = Array.from({length: nAccounts}, () => newUUID());
+    const evtUUIDs = Array.from({length: nEvents}, () => newUUID());
+    //=================================================================================
     return {
+        //=================================================================================
         // Accounts
+        //=================================================================================
         accounts: {
             // Accounts Sum Total
-            [-1]: {
+            [ACC_SUM_TOTAL_ID]: {
                 args: { name: 'Total', openDate: REF_TIME },
                 accountType: 'Account',
                 eventIds: [],
@@ -19,7 +28,7 @@ export const defaultSaveState = () => {
             },
             // Rest of the Accounts
             ...Object.fromEntries(
-                Array.from({ length: nAccounts }, (_, n) => ([n, {
+                Array.from({ length: nAccounts }, (_, n) => ([accUUIDs[n], {
                     // Simulation Args
                     args: {
                         name: String(n),
@@ -28,24 +37,30 @@ export const defaultSaveState = () => {
                         interestRate: 0.25
                     },
                     accountType: 'Savings Account',
-                    eventIds: [n, n + nAccounts],
+                    //eventIds: [n, n + nAccounts],
+                    eventIds: [evtUUIDs[n], evtUUIDs[n + nAccounts]],
                     display: defaultAccountDisplay({ color: `hsl(${n / nAccounts * 255}, 100%, 50%)` })
                 }]))
             )
-        } as Record<number, AccountJSON>,
+        } as Record<UUID, AccountJSON>,
+        //=================================================================================
         // Events
+        //=================================================================================
         events: Object.fromEntries(
-            Array.from({ length: nAccounts * 2 }, (_, n) => ([n, {
+            Array.from({ length: nEvents }, (_, n) => ([evtUUIDs[n], {
+                // Simulation Args
                 args: {
                     eventTime: today + n * 8 + 1,
                     value: 1.2 ** n
                 },
                 eventType: 'Deposit',
-                accountIds: [n % nAccounts],
+                accountIds: [accUUIDs[n % nAccounts]],
                 display: defaultEventDisplay
             }]))
-        ) as Record<number, EventJSON>,
+        ) as Record<UUID, EventJSON>,
+        //=================================================================================
         // Domain
+        //=================================================================================
         xDomain: {
             start: today,
             stop: today + 365,

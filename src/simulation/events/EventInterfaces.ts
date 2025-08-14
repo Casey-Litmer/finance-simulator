@@ -1,12 +1,13 @@
+import { UUID } from "crypto";
 import { Account } from "../accounts";
 import { DateFloat } from "src/utils";
 
 
 
 export interface EventArguments {
+    id?: UUID;
     eventTime: DateFloat;
     accounts?: Account[];
-    id?: number;
     name?: string;
     value?: number; //deposit_amount, etc...
 

@@ -3,11 +3,13 @@ import {
     REF_TIME, 
     addPeriod,
     convertTime,
-    makeIdTable
+    makeIdTable,
+    newUUID
 } from 'src/utils';
 import { EventTable } from '../types';
 import { EventArguments, EventSettings } from './EventInterfaces';
 import { AccountState } from '../sim/accountState';
+import { UUID } from 'crypto';
 
 
 
@@ -19,13 +21,13 @@ export type EventConstructor<E extends AccountEvent = AccountEvent> = new (...ar
 //=========================================================================================
 export class AccountEvent {
     _precedence_: number; 
+    id: UUID;
     eventTime: number;
     currentTime: number;
     isGenerated: boolean;
     isConsumable: boolean = true;
     isActive: boolean;
     accounts: Record<number, Account>;
-    id: number;
     name: string | undefined;
     isPeriodic: boolean;
     eventPeriod: number;
@@ -37,16 +39,18 @@ export class AccountEvent {
         isGenerated = false,
         isPeriodic = false,
     }: EventSettings, {
+        id,
+        name,
         eventTime = REF_TIME, 
         accounts = [], 
         eventPeriod = 28,
         periodMode = 'constant',
         endTime = REF_TIME,
         doesEnd = false,
-        id,
-        name,
         isActive = true
     }: EventArguments ) {      
+        this.id = id ?? newUUID();; //Change later to be required?
+        this.name = name;   
         this.eventTime = convertTime(eventTime, 'number');
 
         //Active
@@ -66,9 +70,6 @@ export class AccountEvent {
             this.addToParentAccounts();
             EVENTS.push(this);
         }
-
-        this.id = id ?? -1; //Change later to be required?
-        this.name = name;   
 
         //Periodic Events
         this.isPeriodic = isPeriodic;

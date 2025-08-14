@@ -3,29 +3,30 @@ import { Account, AccountArguments } from "./accounts";
 import { AccountEvent, EventArguments } from "./events";
 import { AccountState } from "./sim";
 import { Deque } from "src/utils";
+import { UUID } from "crypto";
 
 
 
 
 export type SaveState = {
-    accounts: Record<number, AccountJSON>;
-    events: Record<number, EventJSON>;
-    filter?: FilterJSON;                                   // TODO convert all to optional
-    xDomain: {start: number, stop: number, step: number};  //  Then have fallbacks
+    accounts: Record<UUID, AccountJSON>;
+    events: Record<UUID, EventJSON>;
+    filter?: FilterJSON;                                   
+    xDomain: {start: number, stop: number, step: number};  
 };
 
 
 export type AccountJSON = {
     args: AccountArguments;
     accountType: string;
-    eventIds: number[];
+    eventIds: UUID[];
     display: AccountDisplay;
 };
 
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
-    accountIds: number[];
+    accountIds: UUID[];
     display: EventDisplay;
 };
 
@@ -82,14 +83,14 @@ export type SimulationData = {
 };
 
 export type AccountsData = {
-    [key: number] : {
+    [key: UUID] : {
         bals: (number | null)[];
         account: Account;
     };
 };
 
 export type EventsData = {
-    [key: number] : {
+    [key: UUID] : {
         event: AccountEvent;
     };
 };

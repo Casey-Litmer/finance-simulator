@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
 import { useTheme } from "@mui/material";
@@ -12,7 +13,7 @@ import { EventJSON, SaveState } from "src/simulation/types";
 
 
 interface AccountItemProps {
-  eventId: number;
+  eventId: UUID;
 };
 
 export function EventItem(props: AccountItemProps) {
@@ -21,7 +22,7 @@ export function EventItem(props: AccountItemProps) {
   const simulation = useSim();
   const { openMenu } = useMenu();
   const [openDropdown, setOpenDropdown] = useState(false);
-  const event = simulation.saveState.events[Number(eventId)];
+  const event = simulation.saveState.events[eventId];
 
   const ContainerSx = {
     borderRadius: '4px',
@@ -67,7 +68,7 @@ export function EventItem(props: AccountItemProps) {
 const dropdownContents = (event: EventJSON, saveState: SaveState, sx: any) => {
   const properties: string[] = [];
   const accountIds = event.accountIds;
-  const getAccountName = (id: number) => saveState.accounts[id].args.name;
+  const getAccountName = (id: UUID) => saveState.accounts[id].args.name;
 
   //=================================================================================
   //Type 

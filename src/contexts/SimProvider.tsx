@@ -1,16 +1,18 @@
+import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
 import { defaultEventDisplay, defaultSaveState } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { AccountJSON, EventJSON, SaveState, SimulationData } from "src/simulation/types";
+import { newUUID } from "src/utils";
 
 
 
 
 type DispatchDeleteEvent = {
   type: 'account' | 'event';
-  id: number;
+  id: UUID;
 };
 
 type ContextProviderProps = {
@@ -22,8 +24,8 @@ type SimContextType = {
   dispatchSaveState: React.Dispatch<SaveStateReducerAction>;
   addAccount: (account: AccountJSON) => void;
   addEvent: (event: EventJSON) => void;
-  deleteAccount: (accountId: number) => void;
-  deleteEvent: (eventId: number) => void;
+  deleteAccount: (accountId: UUID) => void;
+  deleteEvent: (eventId: UUID) => void;
   dispatchDelete: () => void;
   getLastAccId: () => number;
   simData?: SimulationData;
@@ -111,14 +113,15 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
    * Updates all accounts' eventIds with changes in event-account relations.
    * This ensures no duplicate or residual ids when an event references a new account.
    * @param saveState previous state (same signature as the reducer)
-   * @param eventsPartial new partial: Record<number, EventJSON>
+   * @param eventsPartial new partial: Record<UUID, EventJSON>
    */
-  function updateAccountEventIds(saveState: SaveState, eventsPartial: Record<number, EventJSON>) {
+  function updateAccountEventIds(saveState: SaveState, eventsPartial: Record<UUID, EventJSON>) {
     // For each event in the partial,
-    Object.entries(eventsPartial).forEach(([eventId, event]) => {
+    Object.entries(eventsPartial).forEach(([_eventId, event]) => {
+      const eventId = _eventId as UUID;
       // If the partial event includes accountId changes
       if (event.accountIds !== undefined) {
-        const currentAccountIds = Object.keys(saveState.accounts).map(Number);
+        const currentAccountIds = Object.keys(saveState.accounts) as UUID[];
         const newEventAccountIds = event.accountIds;  
         // For all current accountsIds,
         for (const accId of currentAccountIds) {
@@ -126,27 +129,31 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
           // If the new event references the accountId
           if (newEventAccountIds.includes(accId)) {
             // Add the eventId to the account if not already included
-            if (!currentAccount.eventIds.includes(Number(eventId)))
-              currentAccount.eventIds.push(Number(eventId));
+            if (!currentAccount.eventIds.includes(eventId))
+              currentAccount.eventIds.push(eventId);
           } else {
             // Remove the eventId if it is in the account
-            if (currentAccount.eventIds.includes(Number(eventId)))
-              currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== Number(eventId));
+            if (currentAccount.eventIds.includes(eventId))
+              currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== eventId);
           };
         };
       };
     });
   };
 
+
+
   const getLastAccId = () => {
     return Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
-  };
+  }; //THIS NEEDS TO BE FIXED OR REMOVED
+
+
 
   /**Creates a new Record key before dispatching new account*/
   const addAccount = (account: AccountJSON) => {
-    const lastId = Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
+    //const lastId = Math.max(...Object.keys(saveState.accounts).map(Number), ...[0]);
     dispatchSaveState({partial: {
-      accounts: { [lastId + 1]: {
+      accounts: { [newUUID()]: {
         ...account,
         display : {
           visible: true,
@@ -158,9 +165,9 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
 
   /**Creates a new Record key before dispatching new event*/
   const addEvent = (event: EventJSON) => {
-    const lastId = Math.max(...Object.keys(saveState.events).map(Number), ...[0]);
+    //const lastId = Math.max(...Object.keys(saveState.events).map(Number), ...[0]);
     dispatchSaveState({ partial: { 
-      events: { [lastId + 1]: {
+      events: { [newUUID()]: {
         ...event,
         display: defaultEventDisplay
       } },
@@ -187,7 +194,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   };
 
   /**Deletes an account and all linked events*/
-  const _deleteAccount = (accountId: number) => {
+  const _deleteAccount = (accountId: UUID) => {
     const account = saveState.accounts[accountId];
     const accountEventIds = account.eventIds;
     accountEventIds.forEach((evId) => { _deleteEvent(evId) });
@@ -195,24 +202,24 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   };
 
   /**Deletes an event and removes it from all linked accounts*/
-  const _deleteEvent = (eventId: number) => {
+  const _deleteEvent = (eventId: UUID) => {
     const event = saveState.events[eventId];
     const eventAccountIds = event.accountIds;
     eventAccountIds.forEach((accId) => { // Remove eventId in each linked account
       const accountEventIds = saveState.accounts[accId].eventIds;
-      saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== Number(eventId));
+      saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== eventId);
     });
     delete saveState.events[eventId];
   };
 
   /**Adds an account to be deleted to the queue*/
-  const deleteAccount = (accountId: number): boolean => {
+  const deleteAccount = (accountId: UUID): boolean => {
     deletionQueue.push({ type: 'account', id: accountId });
     return true;
   };
 
   /**Adds an event to be deleted to the queue*/
-  const deleteEvent = (eventId: number): boolean => {
+  const deleteEvent = (eventId: UUID): boolean => {
     deletionQueue.push({ type: 'event', id: eventId });
     return true;
   };

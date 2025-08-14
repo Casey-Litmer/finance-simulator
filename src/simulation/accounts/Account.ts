@@ -7,16 +7,13 @@ import {
     formatDatetime,
     convertTime,
     addToEventTable,
-    Deque
+    Deque,
+    newUUID
 } from 'src/utils';
 import { EventTable, SimulationBundle } from '../types';
+import { UUID } from 'crypto';
 
 
-
-
-//manually create ids for accounts and increment value
-export let LAST_ACCOUNT_ID = 0;
-export function resetLastAccountID() { LAST_ACCOUNT_ID = 0 }
 
 
 //Meta constructor
@@ -24,19 +21,17 @@ export type AccountConstructor<A extends Account = Account> = new (...args: any[
 
 
 export class Account {
+    id: UUID;
     name: string;
     initialBal: number;
     openDate: DateTime;
-    prorate: boolean;
     interestRate: number;
     interestPeriod: number;
     periodStart: DateTime;
+    prorate: boolean;
     events: EventTable;
     periodicEvents: EventTable;
-
     READOUT: boolean;
-    id: number;
-
     bundle: SimulationBundle;
 
     constructor({
@@ -46,11 +41,13 @@ export class Account {
         prorate = true,
         id
     }: AccountArguments) {
-
+        
+        this.id = id ?? newUUID(); 
         this.openDate = convertTime(openDate, 'DateTime');
         this.name = name ? name : 'Account ' + formatDatetime(this.openDate);
         this.initialBal = initialBal;
         this.prorate = prorate;
+        this.READOUT = false;
 
         //Default interest parameters.  Accounts without interest will not generate
         //CompoundInterest events and will accrue $0
@@ -58,17 +55,9 @@ export class Account {
         this.interestPeriod = 365;
         this.periodStart = REF_DATE;
 
+        // Events
         this.events = {};
         this.periodicEvents = {};
-
-        this.READOUT = false;
-
-        if (id !== undefined) {
-            this.id = id;
-        } else {
-            this.id = LAST_ACCOUNT_ID;
-            LAST_ACCOUNT_ID++;
-        }
 
         //Data used in simulation
         this.bundle = {

@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { useState } from "react";
 import { ScatterLine } from "plotly.js";
 import { Add, ChevronLeft, ChevronRight, Edit, KeyboardDoubleArrowRight } from "@mui/icons-material";
@@ -13,7 +14,7 @@ import { ColorSelect } from "src/components/colorselector";
 
 
 interface AccountItemProps {
-  accountId: number;
+  accountId: UUID;
 };
 
 export function AccountItem(props: AccountItemProps) {
@@ -29,7 +30,7 @@ export function AccountItem(props: AccountItemProps) {
   };
 
   //=========================================================================================
-  const account = simulation.saveState.accounts[Number(accountId)]
+  const account = simulation.saveState.accounts[accountId]
   const accountName = account.args.name ?? account.accountType;
   const line = simulation.saveState.accounts[accountId].display.line;
 

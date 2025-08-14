@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import { Add, KeyboardDoubleArrowRight } from "@mui/icons-material";
@@ -14,7 +15,7 @@ import { EventTable } from "src/simulation/types";
 
 
 interface EventsMenuProps {
-  accountId?: number
+  accountId?: UUID
 }
 
 export function EventsMenu(props: EventsMenuProps) {
@@ -45,9 +46,9 @@ export function EventsMenu(props: EventsMenuProps) {
   const filteredEvents = filterEvents(events, simulation.saveState.filter);
     
   // Unfiltered Ids
-  const eventIds = Object.keys(events).map(Number);
+  const eventIds = Object.keys(events);
   // Filtered Ids
-  const filteredEventIds = Object.keys(filteredEvents).map(Number);
+  const filteredEventIds = Object.keys(filteredEvents);
 
   //=================================================================================
   // Event Mapping
@@ -65,7 +66,7 @@ export function EventsMenu(props: EventsMenuProps) {
 
   // Squash list and map back to ids, components...
   const orderedEventIds = makeEventQueue(orderedEvents).getItems().map((ev) => ev.id);
-  const eventItems = orderedEventIds.map((id) => <EventItem key={id} eventId={Number(id)} />);
+  const eventItems = orderedEventIds.map((id) => <EventItem key={id} eventId={id} />);
 
   //=================================================================================
   // Close menu on empty
