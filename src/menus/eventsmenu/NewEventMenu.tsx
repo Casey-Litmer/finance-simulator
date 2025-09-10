@@ -83,6 +83,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const isPeriodic = currentState.eventType.includes('Periodic');
   const doesEnd = currentState.args.doesEnd;
   const hasValue = !['Close Account'].includes(currentState.eventType);
+  const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
+  const percentMode = currentState.args.percentMode;
   const isChangeInterestRate = currentState.eventType === 'Change Interest Rate';
   const isMonthlyMode = currentState.args.periodMode === 'monthly';
 
@@ -105,6 +107,10 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const valueBounds = (value: any) => {
     return (value < 0) ?
       `${eventTypeParameters.label} must be positive` : true;
+  };
+  const percentValueBounds = (value: any) => {
+    return (value < 0 || value > 100) ?
+      `${eventTypeParameters.label} must be in the range [0%, 100%]` : true;
   };
   const interestRateBounds = (value: any) => {
     return (value > 1 || value < 0) ?
@@ -198,11 +204,22 @@ export function NewEventMenu(props: NewEventMenuProps) {
               errors={errors}
               register={register('args.value', {
                 valueAsNumber: true,
-                validate: { valueBounds }
+                validate: { validateValue: (percentMode && hasPercentMode) ? percentValueBounds : valueBounds }
               })}
               control={control}
               convertOutput={x => Number(Number(x).toFixed(2))}
               defaultValue={currentState.args.value}
+            />
+          </MenuItemContainer>
+        }
+{/* Percent Mode */}
+        {(hasPercentMode) &&
+          <MenuItemContainer sx={dataEntryStyles}>
+            Percentage Mode
+            <UtilityButton
+              name="Percentage"
+              icon={!percentMode ? CheckBoxOutlineBlank : CheckBoxOutlined}
+              handleClick={() => setValue('args.percentMode', !percentMode)}
             />
           </MenuItemContainer>
         }

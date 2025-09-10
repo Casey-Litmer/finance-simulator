@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
-import { defaultEventDisplay, defaultMarker, defaultMarkerDisplay, defaultSaveState } from "src/globals";
+import { defaultEventDisplay, defaultSaveState } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { newUUID } from "src/utils";
 import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";

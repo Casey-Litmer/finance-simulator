@@ -84,7 +84,6 @@ export type FilterJSON = {
     };
 };
 
-
 //Sim Data
 ////////////////////////////////
 // SimParameters -> SimulatonData
@@ -113,8 +112,6 @@ export type EventsData = {
         event: AccountEvent;
     };
 };
-
-
 
 //Sim Usage
 ///////////////////////////////////

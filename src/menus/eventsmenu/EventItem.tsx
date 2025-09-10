@@ -104,7 +104,9 @@ const dropdownContents = (event: EventJSON, saveState: SaveState, sx: any) => {
     properties.push(
       `Amount:` +
       `${'\u00A0'.repeat(5)}` +
-      `$${event.args.value}`);
+      ((event.args.percentMode) ?
+        `${event.args.value}%` : 
+        `$${event.args.value}`));
 
   if (['Adjustment'].includes(event.eventType))
     properties.push(

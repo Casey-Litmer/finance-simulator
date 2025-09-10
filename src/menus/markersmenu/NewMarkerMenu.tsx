@@ -2,7 +2,6 @@ import { UUID } from "crypto";
 import { CSSProperties, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSim } from "src/contexts";
-import { getToday } from "src/utils";
 import { DeleteButton, SaveButton } from "src/components/buttons";
 import { DateSelector, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
@@ -27,8 +26,6 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
     handleSubmit,
     register,
     watch,
-    setValue,
-    trigger,
     control,
     formState: { errors },
   } = useForm<MarkerJSON>({

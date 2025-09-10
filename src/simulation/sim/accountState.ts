@@ -35,8 +35,11 @@ export class AccountState {
         }
     }
 
-
     public addBal(x: number): number {
         return typeof this.bal === 'number' ? this.bal + x : x
+    }
+
+    public mulBal(x: number): number {
+        return typeof this.bal === 'number' ? this.bal * x : 0;
     }
 }

@@ -10,6 +10,7 @@ export interface EventArguments {
     accounts?: Account[];
     name?: string;
     value?: number; //deposit_amount, etc...
+    percentMode?: boolean;
 
     //periodic arguments
     eventPeriod?: number;
