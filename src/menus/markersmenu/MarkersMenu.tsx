@@ -7,6 +7,7 @@ import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/compo
 import { UtilityButton } from "src/components/buttons";
 import { NewMarkerMenu } from "./NewMarkerMenu";
 import { MarkerItem } from "./MarkerItem";
+import { TODAY_MARKER_ID } from "src/globals";
 
 
 
@@ -33,7 +34,9 @@ export function MarkersMenu(props: MarkersMenuProps) {
   // Filter markerJSON
 
   const markerIds = Object.keys(simulation.saveState.markers) as UUID[];
-  const markerItems = markerIds.map((id) => <MarkerItem key={id} markerId={id} />);
+  const markerItems = markerIds
+    .filter(id => id !== TODAY_MARKER_ID)
+    .map((id) => <MarkerItem key={id} markerId={id} />);
 
   //=================================================================================
   // Close menu on empty
@@ -52,17 +55,16 @@ export function MarkersMenu(props: MarkersMenuProps) {
     <Menu title='Markers' openState={openState} setOpenState={setOpenState}>
       <ScrollContainer>
 {/* New Marker */}        
-        {accountId !== undefined && <>
-          <MenuItemContainer sx={ContainerSx}>
-            <UtilityButton
-              name='New Marker'
-              icon={Add}
-              handleClick={handleNewMarker}
-            />
-            New Marker
-          </MenuItemContainer>
-          <MenuDivider />
-        </>}
+        <MenuItemContainer sx={ContainerSx}>
+          <UtilityButton
+            name='New Marker'
+            icon={Add}
+            handleClick={handleNewMarker}
+          />
+          New Marker
+        </MenuItemContainer>
+        
+        <MenuDivider />
 
 {/* Markers */}
         {markerItems}

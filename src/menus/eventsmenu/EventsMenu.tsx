@@ -34,6 +34,9 @@ export function EventsMenu(props: EventsMenuProps) {
   };
 
   //=================================================================================
+  const account = accountId ? simulation.saveState.accounts[accountId] : undefined;
+
+  //=================================================================================
   // Filter eventJSON
 
   const events = (accountId === undefined) ? 
@@ -83,7 +86,7 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   return (
-    <Menu title='Events' openState={openState} setOpenState={setOpenState}>
+    <Menu title={`${account?.args.name ?? 'All'} Events`} openState={openState} setOpenState={setOpenState}>
       <ScrollContainer>
 {/* Filter */}
         <MenuItemContainer>

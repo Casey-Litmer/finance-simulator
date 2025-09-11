@@ -31,7 +31,7 @@ export function floatToDateTime(t: number): DateTime {
  * @returns : number
  */
 export function jsDateToFloat(date: Date): number {
-    return dateTimeToFloat(DateTime.fromJSDate(date).minus({days:1}));
+    return dateTimeToFloat(DateTime.fromJSDate(date));
 };
 
 /**
@@ -41,7 +41,7 @@ export function jsDateToFloat(date: Date): number {
  * @returns : Date
  */
 export function floatToJsDate(t: number): Date {
-    return floatToDateTime(t ? t+1 : REF_TIME+1).toJSDate();
+    return floatToDateTime(t ? t : REF_TIME).toJSDate();
 };
 
 //=================================================================================

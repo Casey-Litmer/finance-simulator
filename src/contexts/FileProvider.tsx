@@ -17,7 +17,7 @@ export const FileContext = createContext({} as FileContextType);
 
 export const FileProvider = ({ children }: FileContextProviderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { saveState, dispatchSaveState } = useSim();
+  const { saveState, dispatchSaveState, updateTodayMarker } = useSim();
   const [ graphName, setGraphName ] = useState<string>('New Graph');
 
   //=================================================================================
@@ -63,6 +63,8 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
       try {
         const contents = event.target?.result;
         const parsed = JSON.parse(contents as string);
+        // Update Today
+        updateTodayMarker();
         // Set sim save state
         dispatchSaveState({partial: parsed, init: true});
         setGraphName(stripExtension(file.name));

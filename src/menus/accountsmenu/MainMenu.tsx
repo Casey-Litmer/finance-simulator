@@ -9,7 +9,7 @@ import { MarkersMenu, NewMarkerMenu } from "../markersmenu";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
-import { ACC_SUM_TOTAL_ID } from "src/globals";
+import { ACC_SUM_TOTAL_ID, TODAY_MARKER_ID } from "src/globals";
 
 
 
@@ -36,21 +36,24 @@ export function MainMenu(props: MainMenuProps) {
   //=========================================================================================
   const hasAccounts = accountItems.length > 0;
   const hasEvents = Object.keys(simulation.saveState.events).length > 0;
-  const hasMarkers = Object.keys(simulation.saveState.markers).length > 0;
+  const hasMarkers = Object.keys(simulation.saveState.markers).length > 1;
 
   //=========================================================================================
   const handleNewAccount = () => openMenu(<NewAccountMenu />);
   const handleAllEvents = () => openMenu(<EventsMenu />);
   const handleNewMarker = () => openMenu(<NewMarkerMenu />);
   const handleMarkers = () => openMenu(<MarkersMenu />);
-  
+
   const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
     { partial: { accounts: { [ACC_SUM_TOTAL_ID]: { display: { line } } } } }) 
+  };
+  const handleTodayColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
+    { partial: { markers: { [TODAY_MARKER_ID]: { display: { line } } } } }) 
   };
 
   //=========================================================================================
   return (
-    <Menu title='Accounts' openState={openState} setOpenState={setOpenState}>
+    <Menu title='Main Menu' openState={openState} setOpenState={setOpenState}>
 
       <MenuDivider />
 
@@ -62,6 +65,17 @@ export function MainMenu(props: MainMenuProps) {
         />
         Add Marker
       </MenuItemContainer>
+
+      {hasMarkers &&
+        <MenuItemContainer>
+          <UtilityButton
+            name="Markers"
+            icon={KeyboardDoubleArrowRight}
+            handleClick={handleMarkers}
+          />
+          Markers
+        </MenuItemContainer>
+      }
 
       <MenuDivider />
 
@@ -85,17 +99,6 @@ export function MainMenu(props: MainMenuProps) {
         </MenuItemContainer>
       }
 
-      {hasMarkers &&
-        <MenuItemContainer>
-          <UtilityButton
-            name="Markers"
-            icon={KeyboardDoubleArrowRight}
-            handleClick={handleMarkers}
-          />
-          Markers
-        </MenuItemContainer>
-      }
-
       <MenuDivider />
 
       <MenuItemContainer sx={{ height: 28 }}>
@@ -103,7 +106,13 @@ export function MainMenu(props: MainMenuProps) {
         <ColorSelect line={accountsTotalLine} callback={handleTotalColorCallback} />
         <VisibilityButton type='account' id={ACC_SUM_TOTAL_ID} sx={{ top: '0px' }} />
       </MenuItemContainer>
-
+      
+      <MenuItemContainer sx={{ height: 28 }}>
+        <div style={{ marginLeft: 24 }}>Today</div>
+        <ColorSelect line={accountsTotalLine} callback={handleTodayColorCallback} />
+        <VisibilityButton type='marker' id={TODAY_MARKER_ID} sx={{ top: '0px' }} />
+      </MenuItemContainer>
+      
       {hasAccounts && <MenuDivider />}
 
       <ScrollContainer>

@@ -4,7 +4,7 @@ import Plot from 'react-plotly.js';
 import { PlotData, Shape } from "plotly.js";
 import { useTheme } from "@mui/material";
 import { useMenu, useSim, useWindow } from 'src/contexts';
-import { formatDatetime, getToday } from "src/utils";
+import { formatDatetime } from "src/utils";
 import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
 import { MarkerJSON, SimulationData } from "src/types";
 
@@ -40,6 +40,10 @@ export const SimPlot = () => {
     );
   }, [openState, windowWidth, menuWidth]);
 
+  //=================================================================================
+  
+  const { start, stop } = simulation.saveState.xDomain;
+
   //=========================================================================================
 
   ///////////////
@@ -61,7 +65,7 @@ export const SimPlot = () => {
 
     const traces = Object.entries(accountsData)
       .filter(([id, _]) => //Filter out all non-visible accounts
-        simulation.saveState.accounts[id as UUID].display.visible ?? false
+        simulation.saveState.accounts[id as UUID]?.display.visible ?? false
       ).map(//to traces
         ([id, accData]) => {
           //Add id to back-map
@@ -82,59 +86,68 @@ export const SimPlot = () => {
           } as PlotData;
         }
       );
-    
+
     return traces;
   };
+
+  console.log(simulation.saveState)
 
   // Formatted Data
   const traces = useMemo(() => formatData(simulation.simData),
     [simulation.simData, simulation.saveState.accounts]);
 
   //=================================================================================
-  
+
   /////////////
   // Markers //
   /////////////
 
-  const today = formatDatetime(getToday().time, 'plot');
-
-  const todayMarkerShape = {
-    type: 'line',
-    x0: today, x1: today,
-    y0: 0, y1: 1,
-    xref: 'x', yref: 'paper',
-    line: {
-      color: 'red',
-      width: 2,
-      dash: 'dash'
-    }
-  } as Partial<Shape>;
-
   const formatMarkers = (markers: Record<UUID, MarkerJSON>) => {
-    if (!markers) return [];
+    if (!markers) return {markerShapes: [], markerTraces: []};
 
-    const shapes = Object.entries(markers)
-      .filter(([id, _]) => markers[id as UUID].display.visible ?? false)
-      .map(([id, _]) => {
-        const marker = markers[id as UUID];
-        const markerTime = formatDatetime(marker.time, 'plot');
-        return {
+    // Filter Visible
+    const visibleMarkers = Object.entries(markers)
+      .filter(([id, marker]) => {
+        if (marker.time < start || marker.time > stop) return false;
+        return markers[id as UUID].display.visible ?? false;
+      });
+
+    const markerData = visibleMarkers.map(([id, _]) => {
+      const marker = markers[id as UUID];
+      const markerTime = formatDatetime(marker.time, 'plot');
+      const label = `${marker.name}<br>${markerTime}`;
+
+      return {  
+        shape: {
           type: 'line',
           x0: markerTime, x1: markerTime,
           y0: 0, y1: 1,
           xref: 'x', yref: 'paper',
           line: { width: 2, ...marker.display.line}
-        };
-      });
+        } as Partial<Shape>, 
+        trace: {
+          x: [markerTime],
+          y: [0],
+          name: '',
+          mode: 'markers',
+          marker: { size: 1, opacity: 0 },
+          line: marker.display.line,
+          hovertemplate: label,
+          showlegend: false
+        } as PlotData
+      };
+    });
 
-    console.log(shapes)
-    console.log(markers)
-
-    return shapes as Partial<Shape>[];
+    return {
+      markerShapes: markerData.map(m => m.shape),
+      markerTraces: markerData.map(m => m.trace)
+    };
   };
 
-  const markerShapes = useMemo(() => formatMarkers(simulation.saveState.markers), 
-    [simulation.saveState.markers, Object.keys(simulation.saveState.markers).join(',')]);
+  const { markerShapes, markerTraces } = useMemo(() => 
+    formatMarkers(simulation.saveState.markers), 
+    [simulation.saveState.markers, Object.keys(simulation.saveState.markers).join(',')]
+  );
 
   //=========================================================================================
 
@@ -153,7 +166,7 @@ export const SimPlot = () => {
   return (
     <Plot
       style={{ color: 'black', transform: `translateX(${plotTranslateX}px)` }}
-      data={traces}
+      data={[...traces, ...markerTraces]}
       onClick={handleClick}
       config={{ displayModeBar: false }}
       layout={{
@@ -184,6 +197,7 @@ export const SimPlot = () => {
           tickfont: { color: palette.primary.contrastText },
           color: palette.primary.contrastText,
           ticklabelposition: 'outside',
+          range: [formatDatetime(start, 'plot'), formatDatetime(stop, 'plot')]
         },
         yaxis: {
           title: "Balance",
@@ -196,7 +210,7 @@ export const SimPlot = () => {
         //=================================================================================
         // Markers
         //=================================================================================
-        shapes: [todayMarkerShape, ...markerShapes]
+        shapes: markerShapes
       }}
     />
   );

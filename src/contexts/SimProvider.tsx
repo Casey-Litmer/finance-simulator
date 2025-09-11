@@ -2,9 +2,9 @@ import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/deepPartial";
-import { defaultEventDisplay, defaultSaveState } from "src/globals";
+import { defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
-import { newUUID } from "src/utils";
+import { getToday, newUUID } from "src/utils";
 import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
 
 
@@ -21,6 +21,7 @@ type ContextProviderProps = {
 
 type SimContextType = {
   saveState: SaveState;
+  simData?: SimulationData;
   dispatchSaveState: React.Dispatch<SaveStateReducerAction>;
   addAccount: (account: AccountJSON) => void;
   addEvent: (event: EventJSON) => void;
@@ -29,7 +30,7 @@ type SimContextType = {
   deleteEvent: (eventId: UUID) => void;
   deleteMarker: (markerId: UUID) => void;
   dispatchDelete: () => void;
-  simData?: SimulationData;
+  updateTodayMarker: () => void;
 };
 
 type SaveStateReducerAction = {
@@ -88,6 +89,8 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     const simParams = simInitObjects(saveState);
     const simData = runSim(simParams);
     setSimData(simData);
+    // Update Today
+    updateTodayMarker();
     // Start Worker
     workerRef.current = new Worker(new URL('./simWorker.ts', import.meta.url), { type: 'module' });
     workerRef.current.onmessage = (e) => setSimData(e.data.simData);
@@ -96,7 +99,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
 
   // Invoke the worker on parameter changes
   useEffect(
-    debounce(() => invokeSimWorker(saveState), 10),
+    debounce(() => {
+      // Update today
+      updateTodayMarker();
+      // Run worker
+      invokeSimWorker(saveState);
+    }, 10),
   [
     saveState.accounts, 
     saveState.events, 
@@ -233,6 +241,10 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   };
 
   //=================================================================================
+  //Automatically update today marker
+  const updateTodayMarker = () => { dispatchSaveState({ partial: { markers: { [TODAY_MARKER_ID]: { time: getToday().time } } } }) };
+
+  //=================================================================================
   return (
     <simContext.Provider
       value={{
@@ -246,6 +258,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         deleteEvent,
         deleteMarker,
         dispatchDelete,
+        updateTodayMarker
       }}
     >
       {children}

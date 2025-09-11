@@ -10,3 +10,4 @@ export const MENU_MAX_SCALE = 0.2;
 //=================================================================================
 
 export const ACC_SUM_TOTAL_ID = '835cf01f-fc53-4a77-80bc-d576cbeb5752';
+export const TODAY_MARKER_ID = '835cf01f-fc53-4a77-80bc-d576cbeb5753';

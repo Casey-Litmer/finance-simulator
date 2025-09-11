@@ -32,8 +32,7 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
     mode: 'onChange',
     defaultValues: (markerId !== undefined) ? 
       simulation.saveState.markers[markerId] :
-      defaultMarker({}  
-    )
+      defaultMarker({})
   });
   const currentState = watch();
 

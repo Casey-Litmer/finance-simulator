@@ -1,11 +1,8 @@
 import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
-import { ACC_SUM_TOTAL_ID } from "./CONSTANTS";
+import { ACC_SUM_TOTAL_ID, TODAY_MARKER_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
 import { AccountDisplay, AccountJSON, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
-
-
-
 
 
 export const defaultSaveState = () => {
@@ -25,7 +22,7 @@ export const defaultSaveState = () => {
                 args: { name: 'Total', openDate: REF_TIME },
                 accountType: 'Account',
                 eventIds: [],
-                display: defaultAccountDisplay({ color: 'rgb(255, 0, 0)', dash: 'dash' })
+                display: defaultAccountDisplay({ color: 'hsl(0, 100%, 50%)', dash: 'dash' })
             },
             // Rest of the Accounts
             ...Object.fromEntries(
@@ -38,7 +35,6 @@ export const defaultSaveState = () => {
                         interestRate: 0.25
                     },
                     accountType: 'Savings Account',
-                    //eventIds: [n, n + nAccounts],
                     eventIds: [evtUUIDs[n], evtUUIDs[n + nAccounts]],
                     display: defaultAccountDisplay({ color: `hsl(${n / nAccounts * 255}, 100%, 50%)` })
                 }]))
@@ -62,7 +58,9 @@ export const defaultSaveState = () => {
         //=================================================================================
         // Markers
         //=================================================================================
-        markers: {} as Record<UUID, MarkerJSON>,
+        markers: {
+            [TODAY_MARKER_ID]: defaultMarker({ color: 'hsl(0, 100%, 50%)', dash: 'dash' })
+        } as Record<UUID, MarkerJSON>,
         //=================================================================================
         // Domain
         //=================================================================================

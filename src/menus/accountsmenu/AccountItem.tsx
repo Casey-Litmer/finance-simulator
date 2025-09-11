@@ -32,7 +32,7 @@ export function AccountItem(props: AccountItemProps) {
   //=========================================================================================
   const account = simulation.saveState.accounts[accountId]
   const accountName = account.args.name ?? account.accountType;
-  const line = simulation.saveState.accounts[accountId].display.line;
+  const line = account.display.line;
 
   //=========================================================================================
   const handleEdit = () => openMenu(<NewAccountMenu accountId={accountId} />);
