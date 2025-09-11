@@ -1,5 +1,6 @@
 import { createContext, useContext, useRef, useState } from 'react';
 import { useSim } from './SimProvider';
+import { useMenu } from './MenuProvider';
 
 
 type FileContextProviderProps = {
@@ -18,6 +19,7 @@ export const FileContext = createContext({} as FileContextType);
 export const FileProvider = ({ children }: FileContextProviderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { saveState, dispatchSaveState, updateTodayMarker } = useSim();
+  const { setActiveMenus } = useMenu();
   const [ graphName, setGraphName ] = useState<string>('New Graph');
 
   //=================================================================================
@@ -63,6 +65,8 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
       try {
         const contents = event.target?.result;
         const parsed = JSON.parse(contents as string);
+        // Close Menus
+        setActiveMenus([]);
         // Update Today
         updateTodayMarker();
         // Set sim save state

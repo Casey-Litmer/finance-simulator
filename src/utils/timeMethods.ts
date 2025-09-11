@@ -12,7 +12,8 @@ export type DateFloat = DateTime | number | Date;
  */
 export function dateTimeToFloat(datetime: DateTime): number {
     //return (date.getTime() - REF_DATE.getTime()) / 1000 / (24 * 60 * 60);
-    return (datetime.toSeconds() - REF_DATE.toSeconds()) / (24 * 60 * 60);
+    const n = (datetime.toSeconds() - REF_DATE.toSeconds()) / (24 * 60 * 60);
+    return n;
 };
 
 /**
@@ -108,10 +109,10 @@ export function getToday() {
  * Alternate display for Date
  */
 export function formatDatetime(date: DateFloat, mode: 'mdy' | 'ymd' | 'plot' = 'mdy'): string {
-    const date_ = convertTime(date, 'DateTime');
-    const month = date_.month;
-    const day = date_.day;
-    const year = date_.year;
+    const date_ = convertTime(date, 'Date');
+    const month = date_.getMonth() + 1;
+    const day = date_.getDate();
+    const year = date_.getFullYear();
     switch (mode) {
         case 'mdy': return `${month}/${day}/${year}`;
         case 'ymd': return `${year}/${month}/${day}`.padEnd(15, ' ');

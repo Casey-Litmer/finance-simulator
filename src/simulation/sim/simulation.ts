@@ -50,7 +50,8 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
 
     //Main Loop
     for (const n in timeDomain) {
-        const t = timeDomain[n];
+        //t + 1 to write to the day opening (this is kindof a hack)
+        const t = timeDomain[n] + 1;
 
         //Set pending event queue for all accounts
         for (const account of accounts) {

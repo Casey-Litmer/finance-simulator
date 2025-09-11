@@ -90,8 +90,6 @@ export const SimPlot = () => {
     return traces;
   };
 
-  console.log(simulation.saveState)
-
   // Formatted Data
   const traces = useMemo(() => formatData(simulation.simData),
     [simulation.simData, simulation.saveState.accounts]);
