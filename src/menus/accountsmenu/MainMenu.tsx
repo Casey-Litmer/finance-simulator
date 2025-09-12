@@ -28,6 +28,7 @@ export function MainMenu(props: MainMenuProps) {
 
   //=========================================================================================
   const accountsTotalLine = simulation.saveState.accounts[ACC_SUM_TOTAL_ID].display.line;
+  const todayMarkerLine = simulation.saveState.markers[TODAY_MARKER_ID].display.line;
 
   const accountItems = Object.keys(accounts)
     .filter(id => id !== ACC_SUM_TOTAL_ID)
@@ -109,7 +110,7 @@ export function MainMenu(props: MainMenuProps) {
       
       <MenuItemContainer sx={{ height: 28 }}>
         <div style={{ marginLeft: 24 }}>Today</div>
-        <ColorSelect line={accountsTotalLine} callback={handleTodayColorCallback} />
+        <ColorSelect line={todayMarkerLine} callback={handleTodayColorCallback} />
         <VisibilityButton type='marker' id={TODAY_MARKER_ID} sx={{ top: '0px' }} />
       </MenuItemContainer>
       

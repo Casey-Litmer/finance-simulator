@@ -59,7 +59,7 @@ export const defaultSaveState = () => {
         // Markers
         //=================================================================================
         markers: {
-            [TODAY_MARKER_ID]: defaultMarker({ color: 'hsl(0, 100%, 50%)', dash: 'dash' })
+            [TODAY_MARKER_ID]: defaultMarker({ color: 'hsla(182, 75%, 51%, 1.00)', dash: 'dash' })
         } as Record<UUID, MarkerJSON>,
         //=================================================================================
         // Domain
