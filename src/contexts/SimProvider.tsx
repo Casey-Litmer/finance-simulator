@@ -1,11 +1,12 @@
 import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
-import { DeepPartial, deepPartialReducer } from "src/deepPartial";
+import { DeepPartial, deepPartialReducer } from "src/utils/deepPartial";
 import { defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { getToday, newUUID } from "src/utils";
 import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
+import { _deleteAccount, _deleteEvent, updateAccountEventIds } from "./simProviderUtils";
 
 
 
@@ -72,6 +73,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     
     //If the events change, update the eventIds in accounts
     if ('events' in partial) updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);
+    
     return deepPartialReducer(prev, partial);
   };
   
@@ -117,38 +119,6 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   /////////
   // API //
   /////////
-
-  /**
-   * Updates all accounts' eventIds with changes in event-account relations.
-   * This ensures no duplicate or residual ids when an event references a new account.
-   * @param saveState previous state (same signature as the reducer)
-   * @param eventsPartial new partial: Record<UUID, EventJSON>
-   */
-  function updateAccountEventIds(saveState: SaveState, eventsPartial: Record<UUID, EventJSON>) {
-    // For each event in the partial,
-    Object.entries(eventsPartial).forEach(([_eventId, event]) => {
-      const eventId = _eventId as UUID;
-      // If the partial event includes accountId changes
-      if (event.accountIds !== undefined) {
-        const currentAccountIds = Object.keys(saveState.accounts) as UUID[];
-        const newEventAccountIds = event.accountIds;  
-        // For all current accountsIds,
-        for (const accId of currentAccountIds) {
-          const currentAccount = saveState.accounts[accId];
-          // If the new event references the accountId
-          if (newEventAccountIds.includes(accId)) {
-            // Add the eventId to the account if not already included
-            if (!currentAccount.eventIds.includes(eventId))
-              currentAccount.eventIds.push(eventId);
-          } else {
-            // Remove the eventId if it is in the account
-            if (currentAccount.eventIds.includes(eventId))
-              currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== eventId);
-          };
-        };
-      };
-    });
-  };
 
   /**Creates a new Record key before dispatching new account*/
   const addAccount = (account: AccountJSON) => {
@@ -197,31 +167,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   const dispatchDelete = () => {
     if (deletionQueue.length) { //fixes rerender.  Still need a way to keep zoom on plot
       deletionQueue.forEach(({ type, id }) => {
-        if (type === 'account') _deleteAccount(id);
-        if (type === 'event') _deleteEvent(id);
+        if (type === 'account') _deleteAccount(saveState, id);
+        if (type === 'event') _deleteEvent(saveState, id);
       });
       setDeletionQueue([]);
       dispatchForceRun();
     };
-  };
-
-  /**Deletes an account and all linked events*/
-  const _deleteAccount = (accountId: UUID) => {
-    const account = saveState.accounts[accountId];
-    const accountEventIds = account.eventIds;
-    accountEventIds.forEach((evId) => { _deleteEvent(evId) });
-    delete saveState.accounts[accountId];
-  };
-
-  /**Deletes an event and removes it from all linked accounts*/
-  const _deleteEvent = (eventId: UUID) => {
-    const event = saveState.events[eventId];
-    const eventAccountIds = event.accountIds;
-    eventAccountIds.forEach((accId) => { // Remove eventId in each linked account
-      const accountEventIds = saveState.accounts[accId].eventIds;
-      saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== eventId);
-    });
-    delete saveState.events[eventId];
   };
 
   /**Adds an account to be deleted to the queue*/
