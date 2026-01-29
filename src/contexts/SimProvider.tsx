@@ -6,13 +6,13 @@ import { defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/glob
 import { runSim, simInitObjects } from "src/simulation";
 import { getToday, newUUID } from "src/utils";
 import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
-import { _deleteAccount, _deleteEvent, updateAccountEventIds } from "./simProviderUtils";
+import { _deleteAccount, _deleteEvent, _deleteMarker, updateAccountEventIds } from "./simProviderUtils";
 
 
 
 
 type DispatchDeleteEvent = {
-  type: 'account' | 'event';
+  type: 'account' | 'event' | 'marker';
   id: UUID;
 };
 
@@ -110,6 +110,8 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   [
     saveState.accounts, 
     saveState.events, 
+    // exclude today marker changes
+    JSON.stringify({...saveState.markers, [TODAY_MARKER_ID]: null}), 
     saveState.xDomain, 
     forceRun
   ]);
@@ -167,8 +169,9 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   const dispatchDelete = () => {
     if (deletionQueue.length) { //fixes rerender.  Still need a way to keep zoom on plot
       deletionQueue.forEach(({ type, id }) => {
-        if (type === 'account') _deleteAccount(saveState, id);
-        if (type === 'event') _deleteEvent(saveState, id);
+        if (type === 'account') _deleteAccount(id, saveState);
+        if (type === 'event') _deleteEvent(id, saveState);
+        if (type === 'marker') _deleteMarker(id, saveState);
       });
       setDeletionQueue([]);
       dispatchForceRun();
@@ -187,13 +190,17 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     return true;
   };
 
+  /**Adds a marker to be deleted to the queue*/
   const deleteMarker = (markerId: UUID) => {
-    delete saveState.markers[markerId];
+    deletionQueue.push({ type: 'marker', id: markerId });
+    return true;
   };
 
   //=================================================================================
-  //Automatically update today marker
-  const updateTodayMarker = () => { dispatchSaveState({ partial: { markers: { [TODAY_MARKER_ID]: { time: getToday().time } } } }) };
+  // Automatically update today marker
+  const updateTodayMarker = () => { 
+    dispatchSaveState({ partial: { markers: { [TODAY_MARKER_ID]: { time: getToday().time } } } }) 
+  };
 
   //=================================================================================
   return (

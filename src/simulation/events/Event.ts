@@ -47,7 +47,7 @@ export class AccountEvent {
         periodMode = 'constant',
         endTime = REF_TIME,
         doesEnd = false,
-        isActive = true
+        isActive = true,
     }: EventArguments ) {      
         this.id = id ?? newUUID();; //Change later to be required?
         this.name = name;   

@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { NULL_MARKER_ID } from "src/globals";
 import { EventJSON, SaveState } from "src/types";
 
 
@@ -39,16 +40,24 @@ export function updateAccountEventIds(saveState: SaveState, eventsPartial: Recor
 //=================================================================================
 // API operations
 
+/** Look here if anything breaks in deletion due to direct state mutations.
+ *  This is a clear antipattern but given that
+ *   - saveState doesn't require reactMemo or other optimizations (for now)
+ *   - dispatchDelete manually triggers a UI update in SimProvider
+ *   - any debugging difficulties can refer to this comment :)
+ *  I say fuck it.
+ */
+
 /**Deletes an account and all linked events*/
-export const _deleteAccount = (saveState: SaveState, accountId: UUID) => {
+export const _deleteAccount = (accountId: UUID, saveState: SaveState) => {
     const account = saveState.accounts[accountId];
     const accountEventIds = account.eventIds;
-    accountEventIds.forEach((evId) => { _deleteEvent(saveState, evId) });
+    accountEventIds.forEach((evId) => { _deleteEvent(evId, saveState) });
     delete saveState.accounts[accountId];
 };
 
 /**Deletes an event and removes it from all linked accounts*/
-export const _deleteEvent = (saveState: SaveState, eventId: UUID) => {
+export const _deleteEvent = (eventId: UUID, saveState: SaveState) => {
     const event = saveState.events[eventId];
     const eventAccountIds = event.accountIds;
     eventAccountIds.forEach((accId) => { // Remove eventId in each linked account
@@ -56,4 +65,16 @@ export const _deleteEvent = (saveState: SaveState, eventId: UUID) => {
         saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== eventId);
     });
     delete saveState.events[eventId];
+};
+
+/**Deletes a marker and clears the marker control from all linked events*/
+export const _deleteMarker = (markerId: UUID, saveState: SaveState) => {
+    const linkedEventIds = Object.entries(saveState.events)
+        .filter(([_, event]) => event.markerControl?.markerId === markerId)
+        .map(([id, _]) => id) as UUID[];
+    // Turn off control for linked events
+    linkedEventIds.forEach(eventId => {
+        saveState.events[eventId].markerControl.markerId = NULL_MARKER_ID;
+    });
+    delete saveState.markers[markerId];
 };

@@ -12,6 +12,7 @@ import { UUID } from "crypto";
 ////////////////////////////////
 
 export type SaveState = {
+    version: string;
     accounts: Record<UUID, AccountJSON>;
     events: Record<UUID, EventJSON>;
     markers: Record<UUID, MarkerJSON>;
@@ -31,6 +32,7 @@ export type AccountJSON = {
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
+    markerControl: { markerId: UUID, attribute: string };
     accountIds: UUID[];
     display: EventDisplay;
 };

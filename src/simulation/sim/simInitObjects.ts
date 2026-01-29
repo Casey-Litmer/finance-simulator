@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import { Account } from "../accounts";
 import { AccountConstructorMap, EventConstructorMap } from "../ConstructorMaps";
 import { SaveState, SimParameters } from "src/types";
+import { NULL_MARKER_ID } from "src/globals/CONSTANTS";
 
 
 
@@ -20,19 +21,31 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
 
     //  Record<UUID, EventJSON> => AccountEvent[]
     const events = Object.entries(saveState.events)
-    .flatMap(([_id, event]) => {
-        const id = _id as UUID;
-        const eventType = EventConstructorMap[event.eventType];
-        const args = event.args;
-        const withAccounts = event.accountIds.map((id) => accounts[id]); 
+        .flatMap(([_id, event]) => {
+            const id = _id as UUID;
+            const eventType = EventConstructorMap[event.eventType];
+            const withAccounts = event.accountIds.map((id) => accounts[id]); 
+            const markerControl = event.markerControl;
+            const { markerId, attribute } = markerControl;
+            const controlActive = markerId !== NULL_MARKER_ID;
+            const eventActive = saveState.events[id].display.active;
 
-        return new eventType({
-            ...args, 
-            accounts: withAccounts, 
-            id: id,
-            isActive: saveState.events[id].display.active
+            const args = {
+                ...event.args,
+                // Apply marker controllers
+                eventTime: (controlActive && attribute === 'eventDate') ?
+                    saveState.markers[markerControl.markerId].time : event.args.eventTime,
+                endTime: (controlActive && attribute === 'endDate') ?
+                    saveState.markers[markerControl.markerId].time : event.args.endTime,
+            };
+
+            return new eventType({
+                ...args, 
+                accounts: withAccounts, 
+                id: id,
+                isActive: eventActive
+            });
         });
-    });
 
     return {xDomain: saveState.xDomain, accounts: Object.values(accounts), events};
 };

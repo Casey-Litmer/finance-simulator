@@ -1,6 +1,6 @@
 import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
-import { ACC_SUM_TOTAL_ID, TODAY_MARKER_ID } from "./CONSTANTS";
+import { ACC_SUM_TOTAL_ID, APP_VERSION, NULL_MARKER_ID, TODAY_MARKER_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
 import { AccountDisplay, AccountJSON, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
 
@@ -13,6 +13,7 @@ export const defaultSaveState = () => {
     const evtUUIDs = Array.from({length: nEvents}, () => newUUID());
     //=================================================================================
     return {
+        version: APP_VERSION,
         //=================================================================================
         // Accounts
         //=================================================================================
@@ -51,6 +52,7 @@ export const defaultSaveState = () => {
                     value: 1.2 ** n
                 },
                 eventType: 'Deposit',
+                markerControl: { markerId: NULL_MARKER_ID, attribute: 'eventDate' },
                 accountIds: [accUUIDs[n % nAccounts]],
                 display: defaultEventDisplay
             }]))

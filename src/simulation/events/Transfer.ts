@@ -3,7 +3,6 @@ import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
 import { AccountState } from "../sim/accountState";
 import { eventStackLoop } from "../sim";
-import { convertTime } from "src/utils";
 
 
 
@@ -14,7 +13,6 @@ export class Transfer extends AccountEvent {
     to: Account;
     approveTransfer: boolean | null = null;  //maybe initialize in constructor?
 
-    
     constructor({value = 0, percentMode = false, accounts = [], ...kwargs}: EventArguments) {
         super({_precedence_: 4}, {accounts, ...kwargs});
         this.transferAmount = value;

@@ -8,7 +8,7 @@ import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons"
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
-import { ACC_SUM_TOTAL_ID } from "src/globals";
+import { ACC_SUM_TOTAL_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
 
 
@@ -21,7 +21,6 @@ interface NewEventMenuProps {
 
 /*Create init arguments if no accountId is given, else, edit json.*/
 export function NewEventMenu(props: NewEventMenuProps) {
-
   const { eventId, accountId } = props;
 
   if (accountId === undefined && eventId === undefined) throw Error('An id must be provided');
@@ -30,6 +29,25 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const today = getToday().time;
   const [openState, setOpenState] = useState(false);
 
+  // Get accountId if eventId is known
+  const [currentAccountId, setCurrentAccountId] = useState(
+    accountId ?? simulation.saveState.events[eventId!]?.accountIds[0]
+  );
+
+  //=========================================================================================
+  // Hydration Station
+  const eventTypes = Object.keys(EventConstructorMap)
+    .filter((key) => key !== 'Event')
+    .map((key, i) => (<option key={i} value={key}>{key}</option>));
+
+  const otherAccounts = Object.keys(simulation.saveState.accounts)
+    .filter((key) => key !== currentAccountId && key != ACC_SUM_TOTAL_ID); 
+
+  const markers = Object.keys(simulation.saveState.markers)
+    .filter((key) => key !== TODAY_MARKER_ID);
+
+  //=================================================================================
+  // Form Hook
   const { 
     handleSubmit,
     register,
@@ -48,18 +66,17 @@ export function NewEventMenu(props: NewEventMenuProps) {
           value: 0,
           eventPeriod: 7,
           periodMode: 'constant',
-          doesEnd: false
+          doesEnd: false,
         },
         eventType: 'Deposit',
-        accountIds: [accountId]
+        accountIds: [accountId],   
+        markerControl: {
+          markerId: markers.length > 0 ? markers[0] as UUID : NULL_MARKER_ID,
+          attribute: 'eventDate',
+        },
       }
   });
   const currentState = watch();
-
-  // Get accountId if eventId is known
-  const [currentAccountId, setCurrentAccountId] = useState(
-    accountId ?? simulation.saveState.events[eventId!]?.accountIds[0]
-  );
 
   //=========================================================================================
   // Params
@@ -67,15 +84,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const eventTypeParameters = paramsFromEventType(currentState.eventType);
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
-
-  //=========================================================================================
-  // Hydration Station
-  const eventTypes = Object.keys(EventConstructorMap)
-    .filter((key) => key !== 'Event')
-    .map((key, i) => (<option key={i} value={key}>{key}</option>));
-
-  const otherAccounts = Object.keys(simulation.saveState.accounts)
-    .filter((key) => key !== currentAccountId && key != ACC_SUM_TOTAL_ID); 
 
   //=========================================================================================
   // Conditions
@@ -126,7 +134,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
   // Dispatch to simProvider
   const handleSave = (eventJSON: EventJSON) => {
     setOpenState((prev) => !prev);
-
     if (eventId === undefined) {
       simulation.addEvent(eventJSON);
     } else {
@@ -185,6 +192,36 @@ export function NewEventMenu(props: NewEventMenuProps) {
             selected={currentState.args.eventTime}
           />
         </MenuItemContainer>
+{/* Marker Control */}        
+        {markers.length > 0 && 
+          <MenuItemContainer sx={{...dataEntryStyles, flexDirection: 'row'}}>
+  {/* Marker Id */}
+            <div style={{...dataEntryStyles, display: 'flex'}}>
+              Marker
+              <DropdownSelect 
+                register={register('markerControl.markerId')}
+                control={control}
+              >
+                {[NULL_MARKER_ID, ...markers].map(id => 
+                  (<option key={id} value={id}>
+                    {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
+                  </option>)
+                )}
+              </DropdownSelect>
+            </div>
+  {/* Marker Control Attribute */}
+            <div style={{...dataEntryStyles, display: 'flex'}}>
+              Parameter
+              <DropdownSelect
+                register={register('markerControl.attribute')}
+                control={control}
+              >
+                <option key='eventDate' value='eventDate'>Event Date</option>
+                <option key='endDate' value='endDate'>End Date</option>
+              </DropdownSelect>
+            </div>        
+          </MenuItemContainer>
+        }
 {/* Event Type */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Type
@@ -251,13 +288,14 @@ export function NewEventMenu(props: NewEventMenuProps) {
               control={control}
               convertInput={(accIds) => accIds[1]}
               convertOutput={(accId) => [currentAccountId, Number(accId)]}
-              defaultValue={currentState.accountIds.filter( id => id !== ACC_SUM_TOTAL_ID )}
+              // defaultValue might be useless...
+              //defaultValue={currentState.accountIds.filter( id => id !== ACC_SUM_TOTAL_ID )}
             >
               {otherAccounts.map((key) =>
-              (<option key={key} value={key}>
-                {simulation.saveState.accounts[key as UUID].args.name}
-              </option>))
-              }
+                (<option key={key} value={key}>
+                  {simulation.saveState.accounts[key as UUID].args.name}
+                </option>)
+              )}
             </DropdownSelect>
           </MenuItemContainer>
   {/* Swap Transfer */} 
@@ -297,7 +335,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
               control={control}
               errors={errors}
             >
-              {['constant', 'monthly'].map((mode) => <option key={mode} value={mode}>{mode}</option>)}
+              <option key='constant' value='constant'>constant</option>
+              <option key='monthly' value='monthly'>monthly</option>
             </DropdownSelect>
           </MenuItemContainer>
   {/* Doesn't End */}
