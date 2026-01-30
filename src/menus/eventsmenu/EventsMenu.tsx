@@ -78,37 +78,39 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   return (
-    <Menu title={`${account?.args.name ?? 'All'} Events`} openState={openState} setOpenState={setOpenState}>
-      <ScrollContainer>
+    <Menu 
+      title={`${account?.args.name ?? 'All'} Events`} 
+      openState={openState} 
+      setOpenState={setOpenState}
+    >
 {/* Filter */}
-        <MenuItemContainer>
-          <UtilityButton
-            name='Filter Menu'
-            icon={KeyboardDoubleArrowRight}
-            handleClick={handleFilterMenu}
-          />
-          Filter
-        </MenuItemContainer>
+      <MenuItemContainer>
+        <UtilityButton
+          name='Filter Menu'
+          icon={KeyboardDoubleArrowRight}
+          handleClick={handleFilterMenu}
+        />
+        Filter
+      </MenuItemContainer>
 
-        <MenuDivider />
+      <MenuDivider />
 
 {/* New Event */}        
-        {accountId !== undefined && <>
-          <MenuItemContainer sx={ContainerSx}>
-            <UtilityButton
-              name='New Event'
-              icon={Add}
-              handleClick={handleNewEvent}
-            />
-            New Event
-          </MenuItemContainer>
-          <MenuDivider />
-        </>}
+      {accountId !== undefined && <>
+        <MenuItemContainer sx={ContainerSx}>
+          <UtilityButton
+            name='New Event'
+            icon={Add}
+            handleClick={handleNewEvent}
+          />
+          New Event
+        </MenuItemContainer>
+        <MenuDivider />
+      </>}
 
 {/* Events */}
-        {eventItems}
-          
-      </ScrollContainer>
+      {eventItems}
+        
     </Menu>
   );
 };

@@ -5,6 +5,7 @@ import { useMenu } from 'src/contexts';
 import { MENU_TITLE_HEIGHT } from 'src/globals';
 import { ExitButton } from '../buttons';
 import './Menu.css';
+import { ScrollContainer } from './ScrollContainer';
 
 
 
@@ -46,7 +47,8 @@ export function Menu(props: MenuProps) {
       style={{
         ...springStyle,
         width: menuWidth,
-      }}>
+      }}
+    >      
       <Paper sx={{ backgroundColor: palette.primary.main }}>
         <Paper className='Title' sx={{ backgroundColor: palette.primary.middle }}>
 
@@ -64,9 +66,13 @@ export function Menu(props: MenuProps) {
             height: menuContentsHeight,
             paddingTop: `${menuContentsPadding / 2}px`,
             paddingBottom: `${menuContentsPadding / 2}px`
-          }}>
-          {props.children}
+          }}
+        >
+          <ScrollContainer>
+            {props.children}
+          </ScrollContainer>
         </Paper>
+
       </Paper>
     </animated.div>
   );
