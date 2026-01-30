@@ -11,12 +11,8 @@ import { TODAY_MARKER_ID } from "src/globals";
 
 
 
-interface MarkersMenuProps {
-  accountId?: UUID
-}
 
-export function MarkersMenu(props: MarkersMenuProps) {
-  const { accountId } = props;
+export function MarkersMenu() {
   const simulation = useSim();
   const { palette } = useTheme();
   const { openMenu } = useMenu();

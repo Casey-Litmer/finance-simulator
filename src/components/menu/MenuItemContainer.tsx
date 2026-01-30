@@ -6,14 +6,17 @@ import { Divider, Paper, SxProps, useTheme } from '@mui/material';
 
 interface MenuItemContainerProps {
   children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
   sx?: SxProps<Theme>;
 };
 
 export function MenuItemContainer(props: MenuItemContainerProps) {
-  const { children, sx } = props;
+  const { children, className, style, sx } = props;
   return (
     <Paper
-      className='MenuItemContainer'
+      className={`MenuItemContainer ${className ?? ''}`}
+      style={style}
       sx={{ borderRadius: 0, ...sx }}
     >
       {children}

@@ -36,14 +36,12 @@
 }
 
 .DropdownContainer {
+    display: grid;
+    grid-template-columns: auto 1fr;
     flex-basis: 100%;
+    text-align: left;
     order: 1;
     width: 100%;
-    
-    .MenuItemContainer {
-        margin-left: 8px;
-        margin-bottom: 2px;
-    }
 }
 
 .ScrollContainer {

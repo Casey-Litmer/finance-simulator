@@ -6,11 +6,10 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { NewAccountMenu } from "./NewAccountMenu";
 import { EventsMenu, NewEventMenu } from "../eventsmenu";
-import { DropdownContainer, FixedText, MenuItemContainer } from "src/components/menu";
+import { FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
-
-
+import { DropdownMenu } from "src/components/menu/DropDownMenu";
 
 
 interface AccountItemProps {
@@ -26,6 +25,7 @@ export function AccountItem(props: AccountItemProps) {
 
   const ContainerSx = {
     borderRadius: '4px',
+    paddingLeft: '8px',
     backgroundColor: palette.primary.top
   };
 
@@ -61,28 +61,28 @@ export function AccountItem(props: AccountItemProps) {
       <ColorSelect line={line} callback={handleColorCallback} />
       <VisibilityButton type='account' id={accountId} />
 
-      <DropdownContainer open={openDropdown}>
-        <MenuItemContainer sx={ContainerSx}>
-          <UtilityButton
-            name='New Event'
-            icon={Add}
-            handleClick={handleNewEvent}
-          />
-          New Event
-        </MenuItemContainer>
-
-        {account.eventIds.length > 0 &&
-          <MenuItemContainer sx={ContainerSx}>
-            <UtilityButton
+      <DropdownMenu 
+        sx={ContainerSx} 
+        fields={[
+          {condition: true, row: { 
+            left: <UtilityButton
+              name='New Event'
+              icon={Add}
+              handleClick={handleNewEvent}
+            />, 
+            right: "New Event", 
+          }},
+          {condition: account.eventIds.length > 0, row: { 
+            left: <UtilityButton
               name='Events'
               icon={KeyboardDoubleArrowRight}
               handleClick={handleEvents}
-            />
-            Events
-          </MenuItemContainer>
-        }
-      </DropdownContainer>
-
+            />, 
+            right: "Events", 
+          }},
+        ]} 
+        open={openDropdown} 
+      />
     </MenuItemContainer>
   );
 };

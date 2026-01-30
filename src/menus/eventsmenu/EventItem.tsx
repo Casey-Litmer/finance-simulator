@@ -5,10 +5,9 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
 import { NewEventMenu } from "./NewEventMenu";
-import { DropdownContainer, FixedText, MenuItemContainer } from "src/components/menu";
+import { FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
-import { EventJSON, SaveState } from "src/types";
-
+import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
 
 
 
@@ -26,6 +25,7 @@ export function EventItem(props: EventItemProps) {
 
   const ContainerSx = {
     borderRadius: '4px',
+    width: '100%',
     backgroundColor: palette.primary.top
   };
 
@@ -36,6 +36,42 @@ export function EventItem(props: EventItemProps) {
   //=========================================================================================
   const handleEdit = () => { openMenu(<NewEventMenu eventId={eventId} />) };
   const handleExpand = () => { setOpenDropdown((prev) => !prev) };
+
+  //=========================================================================================
+  const dropdownContents = () => {
+    const accountIds = event.accountIds;
+    const getAccountName = (id: UUID) => simulation.saveState.accounts[id]?.args.name ?? '';
+
+    //=================================================================================
+    const accountFieldCondition = ['Transfer', 'Periodic Transfer'].includes(event.eventType);
+    const eventFieldCondition = ['Deposit', 'Withdrawal', 'Transfer', 'Periodic Transfer', 
+      'Periodic Deposit', 'Periodic Withdrawal'].includes(event.eventType);
+    const adjustmentFieldCondition = ['Adjustment'].includes(event.eventType);
+    const changeInterestRateFieldCondition = ['Change Interest Rate'].includes(event.eventType);
+    const periodicEventFieldCondition = event.eventType.includes('Periodic');
+
+    const periodModeValue = `${event.args.eventPeriod} 
+      ${{ 'monthly': 'months', 'constant': 'days' }[event.args.periodMode ?? 'constant']}`;
+
+    //=================================================================================
+    const fields: DropdownFields[] = [
+      //Type 
+      { condition: true, row: { left: 'Type:', right: event.eventType } },
+      //Accounts
+      { condition: accountFieldCondition, row: { left: 'From:', right: getAccountName(accountIds[0])! } },
+      { condition: accountFieldCondition, row: { left: 'To:', right: getAccountName(accountIds[1])! } },
+      { condition: !accountFieldCondition, row: { left: 'Account:', right: getAccountName(accountIds[0])! } },
+      //Values
+      { condition: eventFieldCondition, row: { left: 'Amount:', right: (event.args.percentMode) ? `${event.args.value}%` : `$${event.args.value}` } },
+      { condition: adjustmentFieldCondition, row: { left: 'Balance:', right: `$${event.args.value}` } },
+      { condition: changeInterestRateFieldCondition, row: { left: 'New Rate:', right: `${event.args.value! * 100}%` } },
+      //Periods
+      { condition: periodicEventFieldCondition, row: { left: 'Period:', right: periodModeValue } },
+      { condition: periodicEventFieldCondition && !!event.args.doesEnd, row: { left: 'End Date:', right: `${formatDatetime(event.args.endTime!, 'mdy')}` } },
+    ];
+
+    return fields;
+  };
 
   //=========================================================================================
   return (
@@ -55,93 +91,12 @@ export function EventItem(props: EventItemProps) {
       <FixedText maxWidth={'90%'} text={eventName} />
       <VisibilityButton type='event' id={eventId} />
 
-      <DropdownContainer open={openDropdown}>
-        {dropdownContents(event, simulation.saveState, ContainerSx)}
-      </DropdownContainer>
-    </MenuItemContainer>
-  );
-};
-
-
-//=========================================================================================
-/**Display event info based on type*/
-const dropdownContents = (event: EventJSON, saveState: SaveState, sx: any) => {
-  const properties: string[] = [];
-  const accountIds = event.accountIds;
-  const getAccountName = (id: UUID) => saveState.accounts[id].args.name;
-
-  //=================================================================================
-  //Type 
-  properties.push(
-    `Type:` +
-    `${'\u00A0'.repeat(9)}` +
-    `${event.eventType}`
-  );
-
-  //=================================================================================
-  //Accounts
-  if (['Transfer', 'Periodic Transfer'].includes(event.eventType)) {
-    properties.push(
-      `From:` +
-      `${'\u00A0'.repeat(9)}` +
-      `"${getAccountName(accountIds[0])}"`);
-    properties.push(
-      'To:' +
-      `${'\u00A0'.repeat(14)}` +
-      `"${getAccountName(accountIds[1])}"`);
-  } else {
-    properties.push(
-      `Account:` +
-      `${'\u00A0'.repeat(4)}` +
-      `"${getAccountName(accountIds[0])}"`);
-  };
-
-  //=================================================================================
-  //Values
-  if (['Deposit', 'Withdrawal', 'Transfer',
-    'Periodic Transfer', 'Periodic Deposit',
-    'Periodic Withdrawal'].includes(event.eventType))
-    properties.push(
-      `Amount:` +
-      `${'\u00A0'.repeat(5)}` +
-      ((event.args.percentMode) ?
-        `${event.args.value}%` : 
-        `$${event.args.value}`));
-
-  if (['Adjustment'].includes(event.eventType))
-    properties.push(
-      `Balance:` +
-      `${'\u00A0'.repeat(5)}` +
-      `$${event.args.value}`);
-
-  if (['Change Interest Rate'].includes(event.eventType))
-    properties.push(
-      `New Rate:` +
-      `${'\u00A0'.repeat(2)}` +
-      `${event.args.value}%`);
-
-  //=================================================================================
-  //Periods
-  if (event.eventType.includes('Periodic')) {
-    properties.push(
-      `Period:` +
-      `${'\u00A0'.repeat(8)}` +
-      `${event.args.eventPeriod} 
-            ${{ 'monthly': 'months', 'constant': 'days' }[event.args.periodMode ?? 'constant']}`
-    );
-    if (event.args.doesEnd)
-      properties.push(
-        `End Date:` +
-        `${'\u00A0'.repeat(3)}` +
-        `${formatDatetime(event.args.endTime!, 'mdy')}`
-      );
-  };
-
-  /* Add option for displaying generative events later */
-  //=================================================================================
-  return properties.map((text, i) =>
-    <MenuItemContainer key={i} sx={sx}>
-      <FixedText text={text} maxWidth={'100%'} />
+      <DropdownMenu 
+        sx={ContainerSx} 
+        style={{gridTemplateColumns: 'auto 0.9fr'}}
+        fields={dropdownContents()} 
+        open={openDropdown} 
+      />
     </MenuItemContainer>
   );
 };
