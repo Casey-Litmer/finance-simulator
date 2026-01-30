@@ -8,6 +8,7 @@ import { NewEventMenu } from "./NewEventMenu";
 import { FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
+import { NULL_MARKER_ID } from "src/globals";
 
 
 
@@ -30,7 +31,14 @@ export function EventItem(props: EventItemProps) {
   };
 
   //=========================================================================================
-  const eventDate = formatDatetime(convertTime(event.args.eventTime, 'DateTime')).padEnd(10, '\u00A0');
+  const eventTime = event.markerControl.markerId === NULL_MARKER_ID 
+    || event.markerControl.attribute !== 'eventDate' ?
+      event.args.eventTime : simulation.saveState.markers[event.markerControl.markerId].time;
+  const eventDate = formatDatetime(convertTime(eventTime, 'DateTime')).padEnd(10, '\u00A0');
+  const endTime = event.markerControl.markerId === NULL_MARKER_ID 
+    || event.markerControl.attribute !== 'endDate' ?
+      event.args.endTime ?? 0 : simulation.saveState.markers[event.markerControl.markerId].time; 
+  const endDate = convertTime(endTime, 'DateTime');
   const eventName = `\u00A0${event.args.name ?? event.eventType}`;
 
   //=========================================================================================
@@ -67,7 +75,7 @@ export function EventItem(props: EventItemProps) {
       { condition: changeInterestRateFieldCondition, row: { left: 'New Rate:', right: `${event.args.value! * 100}%` } },
       //Periods
       { condition: periodicEventFieldCondition, row: { left: 'Period:', right: periodModeValue } },
-      { condition: periodicEventFieldCondition && !!event.args.doesEnd, row: { left: 'End Date:', right: `${formatDatetime(event.args.endTime!, 'mdy')}` } },
+      { condition: periodicEventFieldCondition && !!event.args.doesEnd, row: { left: 'End Date:', right: `${formatDatetime(endDate, 'mdy')}` } },
     ];
 
     return fields;

@@ -27,7 +27,6 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   // Styles
-
   const ContainerSx = {
     borderRadius: '4px',
     backgroundColor: palette.primary.top
@@ -38,7 +37,6 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   // Filter eventJSON
-
   const events = (accountId === undefined) ? 
     simulation.saveState.events :                        // If all events
     Object.fromEntries(                                  // If account events
@@ -47,15 +45,11 @@ export function EventsMenu(props: EventsMenuProps) {
     );
   
   const filteredEvents = filterEvents(events, simulation.saveState.filter);
-    
-  // Unfiltered Ids
   const eventIds = Object.keys(events);
-  // Filtered Ids
   const filteredEventIds = Object.keys(filteredEvents);
 
   //=================================================================================
   // Event Mapping
-  
   // Get all objects from the sim that pass the filter (non active events included)
   const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
     .map(evData => evData.event)
@@ -73,14 +67,12 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   // Close menu on empty
-
   useEffect(() => {
     if (!eventIds.length) setOpenState(false);
   }, [eventIds]);
 
   //=================================================================================
   // Handlers
-
   const handleFilterMenu = () => { openMenu(<FilterMenu />) };
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
 

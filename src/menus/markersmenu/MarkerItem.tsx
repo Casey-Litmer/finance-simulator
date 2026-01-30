@@ -1,15 +1,15 @@
-import { useTheme } from "@mui/material";
+import { useState } from "react";
 import { UUID } from "crypto";
+import { useTheme } from "@mui/material";
 import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
 import { FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
+import { DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NewMarkerMenu } from "./NewMarkerMenu";
 import { ColorSelect } from "src/components/colorselector";
 import { ScatterLine } from "plotly.js";
-import { useState } from "react";
-import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
 
 
 

@@ -22,6 +22,15 @@ interface DateSelectorProps extends FormHookProps {
 export function DateSelector(props: DateSelectorProps) {
   const { control, selected, errors, register } = props;
 
+  if (!control) return (
+    <DatePicker
+      className='DateSelector DataEntry'
+      selected={convertTime(selected, 'Date')}
+      readOnly
+    />
+  );
+  
+  //=================================================================================
   return (
     <Controller
       name='Date'
@@ -29,7 +38,7 @@ export function DateSelector(props: DateSelectorProps) {
       {...register}
       render={({ field }) => <>
         <DatePicker
-          className={'DateSelector DataEntry'}
+          className='DateSelector DataEntry'
           selected={convertTime(field.value ?? selected, 'Date')}
           onChange={(date) => {
             //Round to ignore daylight savings.
@@ -61,6 +70,19 @@ export function DropdownSelect(props: DropdownSelectProps) {
     convertInput = (val) => val,
     convertOutput = (val) => val
   } = props;
+
+  if (!control) {
+    return (
+      <select
+        style={style}
+        className='DataEntry'
+        value={convertInput(defaultValue)}
+        disabled
+      >
+        {children}
+      </select>
+    );
+  }
 
   //=================================================================================
   return (
@@ -115,6 +137,22 @@ export function InputField(props: InputFieldProps) {
   const handleEnter = (ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Enter') ev.preventDefault();
   };
+
+  if (!control) {
+    return (
+      <input
+        className={`DataEntry ${className}`}
+        type={type}
+        step='any'
+        onKeyDown={handleEnter}
+        autoComplete='off'
+        style={style}
+        defaultValue={convertInput(defaultValue)}
+        defaultChecked={(type === 'checkbox' && typeof defaultValue === 'boolean') ? defaultValue : undefined}
+        readOnly
+      />
+    );
+  }
 
   //=================================================================================
   return (

@@ -13,7 +13,6 @@ import { EventJSON } from "src/types";
 
 
 
-
 interface NewEventMenuProps {
   accountId?: UUID;  
   eventId?: UUID;
@@ -78,12 +77,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
   });
   const currentState = watch();
 
-  //=========================================================================================
-  // Params
-  const title = (eventId === undefined) ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
-  const eventTypeParameters = paramsFromEventType(currentState.eventType);
-  const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
-    ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
 
   //=========================================================================================
   // Conditions
@@ -95,6 +88,18 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const percentMode = currentState.args.percentMode;
   const isChangeInterestRate = currentState.eventType === 'Change Interest Rate';
   const isMonthlyMode = currentState.args.periodMode === 'monthly';
+  const isControlled = currentState.markerControl.markerId !== NULL_MARKER_ID;
+
+  //=========================================================================================
+  // Params
+  const title = (eventId === undefined) ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
+  const eventTypeParameters = paramsFromEventType(currentState.eventType);
+  const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
+    ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
+  const markerTime = isControlled ? 
+    simulation.saveState.markers[currentState.markerControl.markerId as UUID].time : 
+    today;
+  const markerAttribute = currentState.markerControl.attribute;
 
   //=========================================================================================
   // Errors
@@ -186,11 +191,13 @@ export function NewEventMenu(props: NewEventMenuProps) {
 {/* Event Date */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Date
-          <DateSelector
-            register={register('args.eventTime')}
-            control={control}
-            selected={currentState.args.eventTime}
-          />
+          {!isControlled || markerAttribute !== 'eventDate' ?
+            <DateSelector
+              register={register('args.eventTime')}
+              control={control}
+              selected={currentState.args.eventTime}
+            /> : <DateSelector selected={markerTime} />
+          }
         </MenuItemContainer>
 {/* Marker Control */}        
         {markers.length > 0 && 
@@ -353,11 +360,13 @@ export function NewEventMenu(props: NewEventMenuProps) {
     {/* End Date */}
             <MenuItemContainer sx={dataEntryStyles}>
               End Date
-              <DateSelector
-                register={register('args.endTime')}
-                control={control}
-                selected={currentState.args.endTime ?? currentState.args.eventTime}
-              />
+              {!isControlled || markerAttribute !== 'endDate' ? 
+                <DateSelector
+                  register={register('args.endTime')}
+                  control={control}
+                  selected={currentState.args.endTime ?? currentState.args.eventTime}
+                /> : <DateSelector selected={markerTime} />              
+              }
             </MenuItemContainer>
           </>}
         </>}
