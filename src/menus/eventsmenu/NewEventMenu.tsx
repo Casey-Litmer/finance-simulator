@@ -13,15 +13,19 @@ import { EventJSON } from "src/types";
 
 
 interface NewEventMenuProps {
-  accountId?: UUID;  
+  accountId?: UUID;
   eventId?: UUID;
-};
+}
 
-/*Create init arguments if no accountId is given, else, edit json.*/
+/**
+ * Create init arguments if no accountId is given, else edit json.
+ */
 export function NewEventMenu(props: NewEventMenuProps) {
   const { eventId, accountId } = props;
 
-  if (accountId === undefined && eventId === undefined) throw Error('An id must be provided');
+  if (accountId === undefined && eventId === undefined) {
+    throw Error('An id must be provided');
+  }
 
   const simulation = useSim();
   const today = getToday().time;
@@ -32,8 +36,10 @@ export function NewEventMenu(props: NewEventMenuProps) {
     accountId ?? simulation.saveState.events[eventId!]?.accountIds[0]
   );
 
-  //=========================================================================================
-  // Hydration Station
+  // ============================================================================
+  // Data Setup
+  // ============================================================================
+
   const eventTypes = Object.keys(EventConstructorMap)
     .filter((key) => key !== 'Event')
     .map((key, i) => (<option key={i} value={key}>{key}</option>));
@@ -44,9 +50,11 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const markers = Object.keys(simulation.saveState.markers)
     .filter((key) => key !== TODAY_MARKER_ID);
 
-  //=================================================================================
-  // Form Hook
-  const { 
+  // ============================================================================
+  // Form Setup
+  // ============================================================================
+
+  const {
     handleSubmit,
     register,
     watch,
@@ -56,28 +64,31 @@ export function NewEventMenu(props: NewEventMenuProps) {
     formState: { errors },
   } = useForm<EventJSON>({
     mode: 'onChange',
-    defaultValues: (eventId !== undefined) ?
-      simulation.saveState.events[eventId] :
-      {
-        args: {
-          eventTime: today,
-          value: 0,
-          eventPeriod: 7,
-          periodMode: 'constant',
-          doesEnd: false,
-        },
-        eventType: 'Deposit',
-        accountIds: [accountId],   
-        markerControl: {
-          markerId: NULL_MARKER_ID,
-          attribute: 'eventDate',
-        },
-      }
+    defaultValues:
+      eventId !== undefined
+        ? simulation.saveState.events[eventId]
+        : {
+            args: {
+              eventTime: today,
+              value: 0,
+              eventPeriod: 7,
+              periodMode: 'constant',
+              doesEnd: false,
+            },
+            eventType: 'Deposit',
+            accountIds: [accountId],
+            markerControl: {
+              markerId: NULL_MARKER_ID,
+              attribute: 'eventDate',
+            },
+          },
   });
   const currentState = watch();
 
   //=========================================================================================
   // Conditions
+  //=================================================================================
+
   const isTransfer = ['Transfer', 'Periodic Transfer'].includes(currentState.eventType);
   const isPeriodic = currentState.eventType.includes('Periodic');
   const doesEnd = currentState.args.doesEnd;
@@ -88,9 +99,11 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const isMonthlyMode = currentState.args.periodMode === 'monthly';
   const isControlled = currentState.markerControl.markerId !== NULL_MARKER_ID;
 
-  //=========================================================================================
-  // Params
-  const title = (eventId === undefined) ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
+  // ============================================================================
+  // Display Parameters
+  // ============================================================================
+
+  const title = eventId === undefined ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
   const eventTypeParameters = paramsFromEventType(currentState.eventType);
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
@@ -101,28 +114,33 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
   //=========================================================================================
   // Errors
+  //=================================================================================
+
   const monthlyCanUseDay = (_: any) => {
     const dayOfMonth = convertTime(currentState.args.eventTime, 'DateTime').day;
     return (isMonthlyMode && isPeriodic && dayOfMonth >= 29) ?
       'Monthly mode can only be used on days up to the 28th of the month.' : true;
   };
+
   const monthlyPeriodIsInt = (_: any) => {
     const period = currentState.args.eventPeriod;
     return (isMonthlyMode && isPeriodic && period !== Math.floor(period!)) ?
       'Monthly mode requires an integer number of months.' : true;
   };
+
   const periodBounds = (value: any) => {
-    return (value < 1) ?
-      `Event period must be >= 1 ${periodUnits}` : true;
+    return value < 1 ? `Event period must be >= 1 ${periodUnits}` : true;
   };
+
   const valueBounds = (value: any) => {
-    return (value < 0) ?
-      `${eventTypeParameters.label} must be positive` : true;
+    return value < 0 ? `${eventTypeParameters.label} must be positive` : true;
   };
+
   const percentValueBounds = (value: any) => {
     return (value < 0 || value > 100) ?
       `${eventTypeParameters.label} must be in the range [0%, 100%]` : true;
   };
+
   const interestRateBounds = (value: any) => {
     return (value > 1 || value < 0) ?
       'Interest rate must be in the range [0, 100]' : true;
@@ -152,6 +170,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
   //=========================================================================================
   // Swap transfer
+  //=================================================================================
+
   const handleSwap = () => {
     currentState.accountIds.reverse();
     setCurrentAccountId(currentState.accountIds[0]);
@@ -162,9 +182,11 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const [lastIsTransfer, setLastIsTransfer] = useState(isTransfer);
   useEffect(() => {
     if (lastIsTransfer !== isTransfer) {
-      setValue('accountIds',
-        (isTransfer && otherAccounts.length > 0) ?
-          [currentAccountId, otherAccounts[0] as UUID] : [currentAccountId]
+      setValue(
+        'accountIds',
+        isTransfer && otherAccounts.length > 0
+          ? [currentAccountId, otherAccounts[0] as UUID]
+          : [currentAccountId]
       );
       setLastIsTransfer(isTransfer);
     };
@@ -174,46 +196,50 @@ export function NewEventMenu(props: NewEventMenuProps) {
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
+
 {/* Event Name */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Name
           <InputField
-            type='string'
+            type="string"
             errors={errors}
             register={register('args.name')}
             control={control}
-            convertInput={nm => nm ?? ''}
-            convertOutput={nm => nm.length ? nm : undefined}
+            convertInput={(nm) => nm ?? ''}
+            convertOutput={(nm) => (nm.length ? nm : undefined)}
           />
         </MenuItemContainer>
+
 {/* Event Date */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Date
-          {!isControlled || markerAttribute !== 'eventDate' ?
+          {!isControlled || markerAttribute !== 'eventDate' ? (
             <DateSelector
               register={register('args.eventTime')}
               control={control}
               selected={currentState.args.eventTime}
-            /> : <DateSelector selected={markerTime} />
-          }
+            />
+          ) : (<DateSelector selected={markerTime} />)}
         </MenuItemContainer>
+
 {/* Marker Control */}        
-        {markers.length > 0 && 
+        {markers.length > 0 && (
           <MenuItemContainer sx={{...dataEntryStyles, flexDirection: 'row'}}>
   {/* Marker Id */}
             <div style={{...dataEntryStyles, display: 'flex'}}>
               Marker
-              <DropdownSelect 
+              <DropdownSelect
                 register={register('markerControl.markerId')}
                 control={control}
               >
-                {[NULL_MARKER_ID, ...markers].map(id => 
-                  (<option key={id} value={id}>
+                {[NULL_MARKER_ID, ...markers].map((id) => (
+                  <option key={id} value={id}>
                     {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
-                  </option>)
-                )}
+                  </option>
+                ))}
               </DropdownSelect>
             </div>
+
   {/* Marker Control Attribute */}
             <div style={{...dataEntryStyles, display: 'flex'}}>
               Parameter
@@ -224,9 +250,10 @@ export function NewEventMenu(props: NewEventMenuProps) {
                 <option key='eventDate' value='eventDate'>Event Date</option>
                 <option key='endDate' value='endDate'>End Date</option>
               </DropdownSelect>
-            </div>        
+            </div>
           </MenuItemContainer>
-        }
+        )}
+
 {/* Event Type */}
         <MenuItemContainer sx={dataEntryStyles}>
           Event Type
@@ -237,25 +264,32 @@ export function NewEventMenu(props: NewEventMenuProps) {
             {eventTypes}
           </DropdownSelect>
         </MenuItemContainer>
+
 {/* Event Value */}
-        {(hasValue && !isChangeInterestRate) &&
+        {(hasValue && !isChangeInterestRate) && (
           <MenuItemContainer sx={dataEntryStyles}>
             {`${eventTypeParameters.label}:`}
             <InputField
-              type='number'
+              type="number"
               errors={errors}
               register={register('args.value', {
                 valueAsNumber: true,
-                validate: { validateValue: (percentMode && hasPercentMode) ? percentValueBounds : valueBounds }
+                validate: {
+                  validateValue:
+                    percentMode && hasPercentMode
+                      ? percentValueBounds
+                      : valueBounds,
+                },
               })}
               control={control}
-              convertOutput={x => Number(Number(x).toFixed(2))}
+              convertOutput={(x) => Number(Number(x).toFixed(2))}
               defaultValue={currentState.args.value}
             />
           </MenuItemContainer>
-        }
+        )}
+
 {/* Percent Mode */}
-        {(hasPercentMode) &&
+        {(hasPercentMode) && (
           <MenuItemContainer sx={dataEntryStyles}>
             Percentage Mode
             <UtilityButton
@@ -264,17 +298,18 @@ export function NewEventMenu(props: NewEventMenuProps) {
               handleClick={() => setValue('args.percentMode', !percentMode)}
             />
           </MenuItemContainer>
-        }
+        )}
+
 {/* Event Rate (change interest rate) */}
-        {(isChangeInterestRate) &&
+        {(isChangeInterestRate) && (
           <MenuItemContainer sx={dataEntryStyles}>
             {`${eventTypeParameters.label}:`}
             <InputField
-              type='number'
+              type="number"
               errors={errors}
               register={register('args.value', {
                 valueAsNumber: true,
-                validate: { interestRateBounds }
+                validate: { interestRateBounds },
               })}
               control={control}
               defaultValue={currentState.args.value}
@@ -282,68 +317,71 @@ export function NewEventMenu(props: NewEventMenuProps) {
               convertOutput={(val: string) => Number(val) / 100}
             />
           </MenuItemContainer>
-        }
+        )}
+
 {/* Transfers */}
-        {(isTransfer && otherAccounts.length > 0) && <>
+        {isTransfer && otherAccounts.length > 0 && (
+          <>
   {/* Transfer to */}
-          <MenuItemContainer sx={dataEntryStyles}>
-            Transfer To
-            <DropdownSelect
-              register={register('accountIds')}
-              control={control}
-              convertInput={(accIds) => accIds[1]}
-              convertOutput={(accId) => [currentAccountId, Number(accId)]}
-              // defaultValue might be useless...
-              //defaultValue={currentState.accountIds.filter( id => id !== ACC_SUM_TOTAL_ID )}
-            >
-              {otherAccounts.map((key) =>
-                (<option key={key} value={key}>
-                  {simulation.saveState.accounts[key as UUID].args.name}
-                </option>)
-              )}
-            </DropdownSelect>
-          </MenuItemContainer>
-  {/* Swap Transfer */} 
-          <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
-            Swap Transfer
-            <UtilityButton
-              name="Swap Transfer"
-              icon={CheckBoxOutlineBlankTwoTone}
-              handleClick={handleSwap}
-            />
-          </MenuItemContainer>
-        </>}
+            <MenuItemContainer sx={dataEntryStyles}>
+              Transfer To
+              <DropdownSelect
+                register={register('accountIds')}
+                control={control}
+                convertInput={(accIds) => accIds[1]}
+                convertOutput={(accId) => [currentAccountId, Number(accId)]}
+              >
+                {otherAccounts.map((key) => (
+                  <option key={key} value={key}>
+                    {simulation.saveState.accounts[key as UUID].args.name}
+                  </option>
+                ))}
+              </DropdownSelect>
+            </MenuItemContainer>
+
+  {/* Swap Transfer */}
+            <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
+              Swap Transfer
+              <UtilityButton
+                name="Swap Transfer"
+                icon={CheckBoxOutlineBlankTwoTone}
+                handleClick={handleSwap}
+              />
+            </MenuItemContainer>
+          </>
+        )}
+
 {/* Periodic */}
-        {(isPeriodic) && <>
+        {isPeriodic && (<>
   {/* Period */}
           <MenuItemContainer sx={dataEntryStyles}>
             {`Period (${periodUnits})`}
             <InputField
-              type='number'
+              type="number"
               errors={errors}
               register={register('args.eventPeriod', {
                 valueAsNumber: true,
-                validate: { monthlyPeriodIsInt, periodBounds }
+                validate: { monthlyPeriodIsInt, periodBounds },
               })}
               control={control}
               convertOutput={Number}
               defaultValue={currentState.args.eventPeriod ?? 7}
             />
           </MenuItemContainer>
+
   {/* Period Mode */}
           <MenuItemContainer sx={dataEntryStyles}>
             Period Mode
             <DropdownSelect
-              register={register('args.periodMode', {
-                validate: { monthlyCanUseDay },
-              })}
+              register={register('args.periodMode', { validate: { monthlyCanUseDay } })}
               control={control}
               errors={errors}
             >
-              <option key='constant' value='constant'>constant</option>
-              <option key='monthly' value='monthly'>monthly</option>
+              <option key="constant" value="constant">constant</option>
+              <option key="monthly" value="monthly">monthly</option>
             </DropdownSelect>
           </MenuItemContainer>
+
   {/* Doesn't End */}
           <MenuItemContainer sx={dataEntryStyles}>
             Doesn't End
@@ -351,33 +389,41 @@ export function NewEventMenu(props: NewEventMenuProps) {
               name="Doesn't End"
               icon={doesEnd ? CheckBoxOutlineBlank : CheckBoxOutlined}
               handleClick={() => {
-                if (currentState.args.endTime === undefined)
+                if (currentState.args.endTime === undefined) {
                   setValue('args.endTime', currentState.args.eventTime);
+                };
                 setValue('args.doesEnd', !doesEnd);
               }}
             />
           </MenuItemContainer>
+
   {/* Does End */}
-          {(doesEnd) && <>
+          {doesEnd && (
+            <>
     {/* End Date */}
-            <MenuItemContainer sx={dataEntryStyles}>
-              End Date
-              {!isControlled || markerAttribute !== 'endDate' ? 
-                <DateSelector
-                  register={register('args.endTime')}
-                  control={control}
-                  selected={currentState.args.endTime!}
-                /> : <DateSelector selected={markerTime} />              
-              }
-            </MenuItemContainer>
-          </>}
-        </>}
+              <MenuItemContainer sx={dataEntryStyles}>
+                End Date
+                {!isControlled || markerAttribute !== 'endDate' ? (
+                  <DateSelector
+                    register={register('args.endTime')}
+                    control={control}
+                    selected={currentState.args.endTime!}
+                  />
+                ) : (
+                  <DateSelector selected={markerTime} />
+                )}
+              </MenuItemContainer>
+            </>
+          )}
+
+        </>)}
+
 {/* Save and Delete */}
         <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
           <SaveButton />
-          {(eventId !== undefined) &&
-          <DeleteButton onClick={handleDelete} />}
+          {eventId !== undefined && <DeleteButton onClick={handleDelete} />}
         </MenuItemContainer>
+
       </form>
     </Menu>
   );
@@ -390,21 +436,28 @@ const dataEntryStyles = {
   alignItems: 'flex-start',
 } as CSSProperties;
 
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 const paramsFromEventType = (eventType: string): {
-  bounds: { min?: number, max?: number }
-  label: string
+  bounds: { min?: number; max?: number };
+  label: string;
 } => {
-  if (eventType === 'Change Interest Rate') return {
-    label: 'New Rate',
-    bounds: { min: 0, max: 100 },
-  };
-  if (eventType === 'Adjustment') return {
-    label: 'New Balance',
-    bounds: {}
-  };
+  if (eventType === 'Change Interest Rate') {
+    return {
+      label: 'New Rate',
+      bounds: { min: 0, max: 100 },
+    };
+  }
+  if (eventType === 'Adjustment') {
+    return {
+      label: 'New Balance',
+      bounds: {},
+    };
+  }
   return {
     label: 'Amount',
-    bounds: { min: 0 }
+    bounds: { min: 0 },
   };
-};   
+};
