@@ -12,7 +12,6 @@ import { ACC_SUM_TOTAL_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
 
 
-
 interface NewEventMenuProps {
   accountId?: UUID;  
   eventId?: UUID;
@@ -70,13 +69,12 @@ export function NewEventMenu(props: NewEventMenuProps) {
         eventType: 'Deposit',
         accountIds: [accountId],   
         markerControl: {
-          markerId: markers.length > 0 ? markers[0] as UUID : NULL_MARKER_ID,
+          markerId: NULL_MARKER_ID,
           attribute: 'eventDate',
         },
       }
   });
   const currentState = watch();
-
 
   //=========================================================================================
   // Conditions
@@ -327,8 +325,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
                 valueAsNumber: true,
                 validate: { monthlyPeriodIsInt, periodBounds }
               })}
-              convertOutput={Number}
               control={control}
+              convertOutput={Number}
               defaultValue={currentState.args.eventPeriod ?? 7}
             />
           </MenuItemContainer>
@@ -352,7 +350,11 @@ export function NewEventMenu(props: NewEventMenuProps) {
             <UtilityButton
               name="Doesn't End"
               icon={doesEnd ? CheckBoxOutlineBlank : CheckBoxOutlined}
-              handleClick={() => setValue('args.doesEnd', !doesEnd)}
+              handleClick={() => {
+                if (currentState.args.endTime === undefined)
+                  setValue('args.endTime', currentState.args.eventTime);
+                setValue('args.doesEnd', !doesEnd);
+              }}
             />
           </MenuItemContainer>
   {/* Does End */}
@@ -364,7 +366,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
                 <DateSelector
                   register={register('args.endTime')}
                   control={control}
-                  selected={currentState.args.endTime ?? currentState.args.eventTime}
+                  selected={currentState.args.endTime!}
                 /> : <DateSelector selected={markerTime} />              
               }
             </MenuItemContainer>
@@ -387,7 +389,6 @@ const dataEntryStyles = {
   flexDirection: 'column',
   alignItems: 'flex-start',
 } as CSSProperties;
-
 
 
 const paramsFromEventType = (eventType: string): {

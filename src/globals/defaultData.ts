@@ -49,7 +49,9 @@ export const defaultSaveState = () => {
                 // Simulation Args
                 args: {
                     eventTime: today + n * 8 + 1,
-                    value: 1.2 ** n
+                    value: 1.2 ** n,
+                    eventPeriod: 7,
+                    periodMode: 'constant',
                 },
                 eventType: 'Deposit',
                 markerControl: { markerId: NULL_MARKER_ID, attribute: 'eventDate' },
