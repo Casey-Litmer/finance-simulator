@@ -99,9 +99,16 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
  */
 function prepAccounts(timeDomain: number[], step: number, accounts: Account[], events: AccountEvent[]): void {
     for (const event of events) {
+
+        //for (const id in event.accounts) {
+        //    const account = event.accounts[id];
+        //    console.log('account', account)
+        //};
+
         if (event.isPeriodic) {
             //#Generate all reoccuring events FIRST
             const generatedEvents = event.generatePeriodicEvents(timeDomain, step)
+            console.log('GENERATED EVENTS', generatedEvents)
 
             //#Update linked Accounts' generated event table
             for (const id in event.accounts) {

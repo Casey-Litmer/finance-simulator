@@ -7,15 +7,14 @@ import { eventStackLoop } from "../sim";
 
 
 export class Transfer extends AccountEvent {
-    transferAmount: number;
+
     percentMode: boolean;
     from: Account;
     to: Account;
     approveTransfer: boolean | null = null;  //maybe initialize in constructor?
 
-    constructor({value = 0, percentMode = false, accounts = [], ...kwargs}: EventArguments) {
+    constructor({percentMode = false, accounts = [], ...kwargs}: EventArguments) {
         super({_precedence_: 4}, {accounts, ...kwargs});
-        this.transferAmount = value;
         this.percentMode = percentMode;
         this.from = accounts[0];
         this.to = accounts[1];
@@ -25,7 +24,7 @@ export class Transfer extends AccountEvent {
         
         //Value Mode 
         const transferAmount = (this.percentMode) ? 
-            this.from.bundle.state!.mulBal(this.transferAmount / 100) : this.transferAmount;
+            this.from.bundle.state!.mulBal(this.value / 100) : this.value;
 
         //Receiving account
         if (account === this.to) {

@@ -1,6 +1,6 @@
 import { UUID } from 'crypto';
 import { Account } from '../accounts';
-import { EventArguments, EventSettings } from './EventInterfaces';
+import { EventArguments, EventBreakpoint, EventSettings } from './EventInterfaces';
 import { AccountState } from '../sim/accountState';
 import {
     REF_TIME, 
@@ -22,17 +22,19 @@ export type EventConstructor<E extends AccountEvent = AccountEvent> = new (...ar
 export class AccountEvent {
     _precedence_: number; 
     id: UUID;
-    eventTime: number;
-    currentTime: number;
-    isGenerated: boolean;
-    isConsumable: boolean = true;
-    isActive: boolean;
-    accounts: Record<number, Account>;
     name: string | undefined;
-    isPeriodic: boolean;
+    eventTime: number;
+    value: number;
+    accounts: Record<number, Account>;
     eventPeriod: number;
     periodMode: string;
     endTime: number;
+    breakpoints: Record<UUID, EventBreakpoint>;
+    
+    isGenerated: boolean;
+    isConsumable: boolean = true;
+    isActive: boolean;
+    isPeriodic: boolean;
     
     constructor({
         _precedence_ = 10,
@@ -42,22 +44,20 @@ export class AccountEvent {
         id,
         name,
         eventTime = REF_TIME, 
+        value = 0,
         accounts = [], 
         eventPeriod = 28,
         periodMode = 'constant',
         endTime = REF_TIME,
         doesEnd = false,
         isActive = true,
+        breakpoints = {},
     }: EventArguments ) {      
         this.id = id ?? newUUID();; //Change later to be required?
+        this.isActive = isActive;
         this.name = name;   
         this.eventTime = convertTime(eventTime, 'number');
-
-        //Active
-        this.isActive = isActive;
-
-        //Mutable ref for PeriodicEvents
-        this.currentTime = this.eventTime;
+        this.value = value;
 
         //Parent Accounts
         this.accounts = makeIdTable(accounts, acc => acc);
@@ -78,6 +78,9 @@ export class AccountEvent {
 
         //End of period event.  If None, the event will not end...
         this.endTime = (doesEnd) ? convertTime(endTime, 'number') : 10**7; //...(in our lifetimes)
+
+        //Breakpoints
+        this.breakpoints = breakpoints;
     };
 
     //=========================================================================================
@@ -114,24 +117,43 @@ export class AccountEvent {
     public generatePeriodicEvents(timeDomain: number[], step: number): EventTable {
         //Placement of events decided by period mode
         const increment = (time: number) => addPeriod(time, this.eventPeriod, this.periodMode);
-
         const t_max = timeDomain[timeDomain.length - 1] + step;
         
         const generatedEvents: EventTable = {};
         let t = increment(this.eventTime);
+        let currentValue = this.value;
+
+        //Backwards sort breakpoints
+        const breakpointsSorted = this.isPeriodic 
+            ? Object.entries(this.breakpoints)
+                .sort(([_, A], [__, B]) => B.time - A.time)
+                .map(([_, breakpoint]) => breakpoint)
+            : [];
 
         //Create 'generated' copies of the event at each reoccurence
         while (t <= t_max && t < this.endTime) {
-
             const newEvent =  Object.assign(Object.create(Object.getPrototypeOf(this)), this) as typeof this;
             newEvent.isGenerated = true;
             newEvent.eventTime = t;
+            
+            currentValue = this.applyBreakpoints(currentValue, t, breakpointsSorted);
+            newEvent.value = currentValue;
 
             generatedEvents[t] = [newEvent];
 
             t = increment(t);   
         };
         return generatedEvents;
+    };
+
+    private applyBreakpoints(currentValue: number, t: number, breakpoints: EventBreakpoint[]): number {
+        let newValue = currentValue;
+        while (breakpoints.length && t >= breakpoints[breakpoints.length - 1].time) {
+            const lastBreakpoint = breakpoints.pop()!;
+            const { value } = lastBreakpoint;
+            if (value !== undefined) newValue = value;
+        };
+        return newValue;
     };
 };
 

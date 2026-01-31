@@ -5,9 +5,9 @@ import { DateFloat } from "src/utils";
 
 
 export type EventBreakpoint = {
-    time: DateFloat;
-    attribute: string;
-    value: any;
+    name?: string;
+    value: number;
+    time: number;
 };
 
 export interface EventArguments {
@@ -28,17 +28,17 @@ export interface EventArguments {
     isActive?: boolean;
 
     //Breakpoints
-    //breakpoints: Record<UUID, EventBreakpoint>;
+    breakpoints?: Record<UUID, EventBreakpoint>;
     //TODO: where should this go?
     //markerBreakpointControls: { markerId: UUID; breakpointId: UUID; }[]; 
-}
+};
 
 //Event children may have to pass settings at some point.  Maybe nest it inside EventArguments?
 export interface EventSettings {
     _precedence_?: number;
     isGenerated?: boolean;
     isPeriodic?: boolean;
-}
+};
 
 
 

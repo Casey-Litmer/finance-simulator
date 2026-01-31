@@ -7,12 +7,11 @@ import { AccountState } from "../sim";
 
 
 export class Withdrawal extends AccountEvent {
-    withdrawalAmount: number;
+
     percentMode: boolean;
 
-    constructor({value = 0, percentMode = false, ...kwargs}: EventArguments) {
+    constructor({percentMode = false, ...kwargs}: EventArguments) {
         super({_precedence_:3 }, kwargs);
-        this.withdrawalAmount = value;
         this.percentMode = percentMode;
     };
 
@@ -22,7 +21,7 @@ export class Withdrawal extends AccountEvent {
 
         //Value Mode 
         const withdrawalAmount = (this.percentMode) ?
-            E.mulBal(this.withdrawalAmount / 100) : this.withdrawalAmount;
+            E.mulBal(this.value / 100) : this.value;
         
         if (E.addBal(-withdrawalAmount) >= 0) {
             E.t0 = t1;

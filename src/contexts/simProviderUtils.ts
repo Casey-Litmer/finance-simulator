@@ -67,6 +67,15 @@ export const _deleteEvent = (eventId: UUID, saveState: SaveState) => {
     delete saveState.events[eventId];
 };
 
+/**Deletes an event and removes it from all linked accounts*/
+export const _deleteEventBreakpoint = (breakpointId: UUID, saveState: SaveState) => {
+    const event = Object.values(saveState.events)
+        .find((event) => 
+            Object.keys(event.args.breakpoints ?? []).includes(breakpointId)
+        );
+    delete event?.args.breakpoints?.[breakpointId];
+};
+
 /**Deletes a marker and clears the marker control from all linked events*/
 export const _deleteMarker = (markerId: UUID, saveState: SaveState) => {
     const linkedEventIds = Object.entries(saveState.events)

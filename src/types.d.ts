@@ -119,7 +119,7 @@ export type EventsData = {
 ///////////////////////////////////
 
 export type EventTable = {
-    [key:number]: AccountEvent[];
+    [key: number]: AccountEvent[];
 };
 
 export type SimulationBundle = {

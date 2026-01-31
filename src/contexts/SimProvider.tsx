@@ -6,13 +6,14 @@ import { defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/glob
 import { runSim, simInitObjects } from "src/simulation";
 import { getToday, newUUID } from "src/utils";
 import { AccountJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
-import { _deleteAccount, _deleteEvent, _deleteMarker, updateAccountEventIds } from "./simProviderUtils";
+import { _deleteAccount, _deleteEvent, _deleteEventBreakpoint, _deleteMarker, updateAccountEventIds } from "./simProviderUtils";
+import { EventBreakpoint } from "src/simulation/events";
 
 
 
 
 type DispatchDeleteEvent = {
-  type: 'account' | 'event' | 'marker';
+  type: 'account' | 'event' | 'eventBreakpoint' | 'marker';
   id: UUID;
 };
 
@@ -27,8 +28,10 @@ type SimContextType = {
   addAccount: (account: AccountJSON) => void;
   addEvent: (event: EventJSON) => void;
   addMarker: (event: MarkerJSON) => void;
+  addEventBreakpoint: (breakpoint: EventBreakpoint, eventId: UUID) => void;
   deleteAccount: (accountId: UUID) => void;
   deleteEvent: (eventId: UUID) => void;
+  deleteEventBreakpoint: (breakpointId: UUID) => void;
   deleteMarker: (markerId: UUID) => void;
   dispatchDelete: () => void;
   updateTodayMarker: () => void;
@@ -145,6 +148,13 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     }});
   };
 
+  /**Creates a new Event breakpoint key before dispatching new event*/
+  const addEventBreakpoint = (breakpoint: EventBreakpoint, eventId: UUID) => {
+    dispatchSaveState({ partial: { 
+      events: { [eventId]: { args: { breakpoints: { [newUUID()]: breakpoint } } } }
+    }});
+  };
+
   /**Creates a new Record key before dispatching new marker*/
   const addMarker = (marker: MarkerJSON) => {
     dispatchSaveState({ partial: { 
@@ -171,6 +181,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
       deletionQueue.forEach(({ type, id }) => {
         if (type === 'account') _deleteAccount(id, saveState);
         if (type === 'event') _deleteEvent(id, saveState);
+        if (type === 'eventBreakpoint') _deleteEventBreakpoint(id, saveState);
         if (type === 'marker') _deleteMarker(id, saveState);
       });
       setDeletionQueue([]);
@@ -196,6 +207,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     return true;
   };
 
+  /**Adds a marker to be deleted to the queue*/
+  const deleteEventBreakpoint = (breakpointId: UUID) => {
+    deletionQueue.push({ type: 'eventBreakpoint', id: breakpointId });
+    return true;
+  };
+
   //=================================================================================
   // Automatically update today marker
   const updateTodayMarker = () => { 
@@ -212,8 +229,10 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         addAccount,
         addEvent,
         addMarker,
+        addEventBreakpoint,
         deleteAccount,
         deleteEvent,
+        deleteEventBreakpoint,
         deleteMarker,
         dispatchDelete,
         updateTodayMarker

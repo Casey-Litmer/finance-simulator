@@ -6,11 +6,8 @@ import { AccountState } from "../sim/accountState";
 
 export class Deposit extends AccountEvent {
 
-    depositAmount: number;
-
-    constructor({value = 0, ...kwargs}: EventArguments) {
+    constructor({...kwargs}: EventArguments) {
         super({_precedence_: 2}, kwargs);
-        this.depositAmount = value;
     };
 
     public Functor(E: AccountState, account: Account): boolean {
@@ -19,7 +16,7 @@ export class Deposit extends AccountEvent {
 
         E.t0 = t1;
         E.accruedInterest = E.Accrue(t0, t1);
-        E.bal = E.addBal(this.depositAmount);
+        E.bal = E.addBal(this.value);
 
         return true;
     };

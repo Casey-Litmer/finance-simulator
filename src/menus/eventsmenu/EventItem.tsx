@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
+import { Add, ChevronLeft, ChevronRight, Edit, KeyboardDoubleArrowRight } from "@mui/icons-material";
 import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
@@ -9,6 +9,8 @@ import { FixedText, MenuItemContainer } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NULL_MARKER_ID } from "src/globals";
+import { NewEventBreakpointMenu } from "./NewEventBreakpointMenu";
+import { EventBreakpointsMenu } from "./EventBreakpointsMenu";
 
 
 
@@ -44,42 +46,39 @@ export function EventItem(props: EventItemProps) {
   //=========================================================================================
   const handleEdit = () => { openMenu(<NewEventMenu eventId={eventId} />) };
   const handleExpand = () => { setOpenDropdown((prev) => !prev) };
+  const handleEventBreakpoints = () => { openMenu(<EventBreakpointsMenu eventId={eventId} />) };
+  const handleNewEventBreakpoint = () => { openMenu(<NewEventBreakpointMenu eventId={eventId} />) };
 
-  //=========================================================================================
-  const dropdownContents = () => {
-    const accountIds = event.accountIds;
-    const getAccountName = (id: UUID) => simulation.saveState.accounts[id]?.args.name ?? '';
+  //=================================================================================
+  const accountFieldCondition = ['Transfer', 'Periodic Transfer'].includes(event.eventType);
+  const eventFieldCondition = ['Deposit', 'Withdrawal', 'Transfer', 'Periodic Transfer', 
+    'Periodic Deposit', 'Periodic Withdrawal'].includes(event.eventType);
+  const adjustmentFieldCondition = ['Adjustment'].includes(event.eventType);
+  const changeInterestRateFieldCondition = ['Change Interest Rate'].includes(event.eventType);
+  const periodicEventFieldCondition = event.eventType.includes('Periodic');
+  const periodModeValue = `${event.args.eventPeriod} 
+    ${{ 'monthly': 'months', 'constant': 'days' }[event.args.periodMode ?? 'constant']}`;
+  const hasBreakpoints = Object.keys(event.args.breakpoints ?? []).length > 0;
 
-    //=================================================================================
-    const accountFieldCondition = ['Transfer', 'Periodic Transfer'].includes(event.eventType);
-    const eventFieldCondition = ['Deposit', 'Withdrawal', 'Transfer', 'Periodic Transfer', 
-      'Periodic Deposit', 'Periodic Withdrawal'].includes(event.eventType);
-    const adjustmentFieldCondition = ['Adjustment'].includes(event.eventType);
-    const changeInterestRateFieldCondition = ['Change Interest Rate'].includes(event.eventType);
-    const periodicEventFieldCondition = event.eventType.includes('Periodic');
+  //=================================================================================
+  const accountIds = event.accountIds;
+  const getAccountName = (id: UUID) => simulation.saveState.accounts[id]?.args.name ?? '';
 
-    const periodModeValue = `${event.args.eventPeriod} 
-      ${{ 'monthly': 'months', 'constant': 'days' }[event.args.periodMode ?? 'constant']}`;
-
-    //=================================================================================
-    const fields: DropdownFields[] = [
-      //Type 
-      { condition: true, row: { left: 'Type:', right: event.eventType } },
-      //Accounts
-      { condition: accountFieldCondition, row: { left: 'From:', right: getAccountName(accountIds[0])! } },
-      { condition: accountFieldCondition, row: { left: 'To:', right: getAccountName(accountIds[1])! } },
-      { condition: !accountFieldCondition, row: { left: 'Account:', right: getAccountName(accountIds[0])! } },
-      //Values
-      { condition: eventFieldCondition, row: { left: 'Amount:', right: (event.args.percentMode) ? `${event.args.value}%` : `$${event.args.value}` } },
-      { condition: adjustmentFieldCondition, row: { left: 'Balance:', right: `$${event.args.value}` } },
-      { condition: changeInterestRateFieldCondition, row: { left: 'New Rate:', right: `${event.args.value! * 100}%` } },
-      //Periods
-      { condition: periodicEventFieldCondition, row: { left: 'Period:', right: periodModeValue } },
-      { condition: periodicEventFieldCondition && !!event.args.doesEnd, row: { left: 'End Date:', right: `${formatDatetime(endDate, 'mdy')}` } },
-    ];
-
-    return fields;
-  };
+  const fields: DropdownFields[] = [
+    //Type 
+    { condition: true, row: { left: 'Type:', right: event.eventType } },
+    //Accounts
+    { condition: accountFieldCondition, row: { left: 'From:', right: getAccountName(accountIds[0])! } },
+    { condition: accountFieldCondition, row: { left: 'To:', right: getAccountName(accountIds[1])! } },
+    { condition: !accountFieldCondition, row: { left: 'Account:', right: getAccountName(accountIds[0])! } },
+    //Values
+    { condition: eventFieldCondition, row: { left: 'Amount:', right: (event.args.percentMode) ? `${event.args.value}%` : `$${event.args.value}` } },
+    { condition: adjustmentFieldCondition, row: { left: 'Balance:', right: `$${event.args.value}` } },
+    { condition: changeInterestRateFieldCondition, row: { left: 'New Rate:', right: `${event.args.value! * 100}%` } },
+    //Periods
+    { condition: periodicEventFieldCondition, row: { left: 'Period:', right: periodModeValue } },
+    { condition: periodicEventFieldCondition && !!event.args.doesEnd, row: { left: 'End Date:', right: `${formatDatetime(endDate, 'mdy')}` } },
+  ];
 
   //=========================================================================================
   return (
@@ -99,12 +98,47 @@ export function EventItem(props: EventItemProps) {
       <FixedText maxWidth={'90%'} text={eventName} />
       <VisibilityButton type='event' id={eventId} />
 
+      {/* Breakpoints */}
+      <DropdownMenu 
+        sx={ContainerSx} 
+        style={{gridTemplateColumns: 'auto 1fr'}}
+        open={openDropdown} 
+        fields={[
+          {
+            condition: periodicEventFieldCondition, 
+            row: { 
+              left: (
+                <UtilityButton
+                  name='New Breakpoint'
+                  icon={Add}
+                  handleClick={handleNewEventBreakpoint}
+                />
+              ), 
+              right: "New Breakpoint", 
+            },
+          },
+          {
+            condition: hasBreakpoints && periodicEventFieldCondition, 
+            row: { 
+              left: <UtilityButton
+                name='Breakpoints'
+                icon={KeyboardDoubleArrowRight}
+                handleClick={handleEventBreakpoints}
+              />, 
+              right: "Breakpoints", 
+            },
+          },
+        ]} 
+      />
+
+      {/* Info */}
       <DropdownMenu 
         sx={ContainerSx} 
         style={{gridTemplateColumns: 'auto 0.9fr'}}
-        fields={dropdownContents()} 
         open={openDropdown} 
+        fields={fields} 
       />
+
     </MenuItemContainer>
   );
 };

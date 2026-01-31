@@ -7,7 +7,7 @@ import { addToEventTable, filterEvents, makeEventQueue } from "src/utils";
 import { EventItem } from "./EventItem";
 import { FilterMenu } from "../FilterMenu";
 import { NewEventMenu } from "./NewEventMenu";
-import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
+import { Menu, MenuDivider, MenuItemContainer } from "src/components/menu";
 import { UtilityButton } from "src/components/buttons";
 import { AccountEvent } from "src/simulation/events";
 import { EventTable } from "src/types";

@@ -1,12 +1,12 @@
-import { CSSProperties, Fragment } from "react";
-import { FixedText, MenuItemContainer } from "./MenuItemContainer";
-import { SxProps } from "@mui/material";
+import { CSSProperties, Fragment, ReactNode } from "react";
 import { Theme } from "@emotion/react";
+import { SxProps } from "@mui/material";
+import { FixedText, MenuItemContainer } from "./MenuItemContainer";
 
 
 export type DropdownFields = {
   condition: boolean;
-  row: { left: any, right: any };
+  row: { left: any, right: any } | ReactNode;
 };
 
 //=================================================================================
@@ -18,24 +18,32 @@ export interface DropdownMenuProps {
 };
 
 export const DropdownMenu = ({ fields, open, sx, style }: DropdownMenuProps) => {
-  const properties: { left: any, right: any }[] = [];
-
-  //=================================================================================
-  //Add properties
+  
+  //Add rows
+  const rows: ({ left: any, right: any } | ReactNode)[] = [];
   for (const field of fields) {
     const { condition, row } = field;
-    if (condition) properties.push(row);
+    if (condition) rows.push(row);
   };
+
+  const mappedRows = rows.map((row, n) => {
+    if (row && typeof row === 'object' && 'left' in row) {
+      return (<Fragment key={n}>
+        <FixedText key={n + 0.1} text={row.left} maxWidth={'100%'} />
+        <FixedText key={n + 0.2} text={row.right} maxWidth={'100%'} />
+      </Fragment>);
+    } else {
+      return (<Fragment key={n}>
+        {row}
+        <div />
+      </Fragment>);
+    };
+  });
 
   //=================================================================================
   return (open ?
     <MenuItemContainer sx={sx} style={style} className="DropdownContainer">
-      {
-        properties.map(({ left, right }, n) => <Fragment key={n}>
-          <FixedText key={n + 0.1} text={left} maxWidth={'100%'} />
-          <FixedText key={n + 0.2} text={right} maxWidth={'100%'} />
-        </Fragment>)
-      }
+      {mappedRows}
     </MenuItemContainer> 
   : <></>);
 };
