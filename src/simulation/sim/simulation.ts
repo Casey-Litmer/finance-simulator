@@ -107,8 +107,7 @@ function prepAccounts(timeDomain: number[], step: number, accounts: Account[], e
 
         if (event.isPeriodic) {
             //#Generate all reoccuring events FIRST
-            const generatedEvents = event.generatePeriodicEvents(timeDomain, step)
-            console.log('GENERATED EVENTS', generatedEvents)
+            const generatedEvents = event.generatePeriodicEvents(timeDomain, step)  
 
             //#Update linked Accounts' generated event table
             for (const id in event.accounts) {

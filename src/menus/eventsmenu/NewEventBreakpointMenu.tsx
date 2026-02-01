@@ -1,12 +1,13 @@
 import { UUID } from "crypto";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSim } from "src/contexts";
 import { getToday } from "src/utils";
 import { DeleteButton, SaveButton } from "src/components/buttons";
-import { DateSelector, InputField } from "src/components/dataentry";
+import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventBreakpoint } from "src/simulation/events";
+import { NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 
 
 interface NewEventBreakpointMenuProps {
@@ -26,6 +27,13 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   const today = getToday().time;
   const event = simulation.saveState.events[eventId];
 
+  //=================================================================================
+  // Data Setup
+  //=================================================================================
+
+  const markers = Object.keys(simulation.saveState.markers)
+      .filter((key) => key !== TODAY_MARKER_ID);
+
   // ============================================================================
   // Form Setup
   // ============================================================================
@@ -34,8 +42,6 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
     handleSubmit,
     register,
     watch,
-    setValue,
-    trigger,
     control,
     formState: { errors },
   } = useForm<EventBreakpoint>({
@@ -46,6 +52,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
         : {
             time: today,
             value: event.args.value ?? 0,
+            markerControlId: NULL_MARKER_ID,
           },
   });
   const currentState = watch();
@@ -56,6 +63,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
 
   const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => event.eventType.includes(s));
   const percentMode = event.args.percentMode;
+  const isControlled = currentState.markerControlId !== NULL_MARKER_ID;
 
   // ============================================================================
   // Display Parameters
@@ -63,6 +71,9 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
 
   const title = breakpointId === undefined ? 'New Breakpoint' : 'Edit Breakpoint';
   const eventTypeParameters = paramsFromEventType(event.eventType);
+  const markerTime = isControlled ? 
+    simulation.saveState.markers[currentState.markerControlId as UUID].time : 
+    today;
 
   //=================================================================================
   // Errors
@@ -115,14 +126,31 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
 {/* Breakpoint Date */}
         <MenuItemContainer sx={dataEntryStyles}>
           Breakpoint Date
-          {/*!isControlled || markerAttribute !== 'eventDate'true ? (*/
+          {!isControlled ? (
             <DateSelector
               register={register('time')}
               control={control}
               selected={currentState.time}
             />
-          /*) : (<DateSelector selected={markerTime} />)*/}
+          ) : (<DateSelector selected={markerTime} />)}
         </MenuItemContainer>
+
+{/* Marker Control */}        
+        {markers.length > 0 && (
+          <MenuItemContainer sx={dataEntryStyles}>
+            Marker
+            <DropdownSelect
+              register={register('markerControlId')}
+              control={control}
+            >
+              {[NULL_MARKER_ID, ...markers].map((id) => (
+                <option key={id} value={id}>
+                  {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
+                </option>
+              ))}
+            </DropdownSelect>
+          </MenuItemContainer>
+        )}
 
 {/* Breakpoint Value */}
         <MenuItemContainer sx={dataEntryStyles}>

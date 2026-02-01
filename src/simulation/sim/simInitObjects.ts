@@ -8,6 +8,7 @@ import { NULL_MARKER_ID } from "src/globals/CONSTANTS";
 
 /*Converts JSON to valid simulation parameters involving dynamic objects.*/
 export const simInitObjects = (saveState: SaveState): SimParameters => {
+
     //  Record<UUID, AccountsJSON> => Record<UUID, Account>
     const accounts = {} as Record<UUID, Account>;
     Object.entries(saveState.accounts).forEach(([_id, account]) => {
@@ -30,13 +31,31 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
             const controlActive = markerId !== NULL_MARKER_ID;
             const eventActive = saveState.events[id].display.active;
 
+             // Apply breakpoint marker controllers
+            const breakpoints = !!event.args.breakpoints 
+                ? Object.fromEntries(Object.entries(event.args.breakpoints)
+                    .map(([id, breakpoint]) => {
+                        if (breakpoint.markerControlId !== NULL_MARKER_ID) {
+                            return [id, { 
+                                ...breakpoint, 
+                                time: saveState.markers[breakpoint.markerControlId].time,
+                            }];
+                        };
+                        return [id, breakpoint];
+                    }))
+                : undefined;
+
+            // Build args
             const args = {
                 ...event.args,
+                breakpoints: breakpoints,
                 // Apply marker controllers
-                eventTime: (controlActive && attribute === 'eventDate') ?
-                    saveState.markers[markerControl.markerId].time : event.args.eventTime,
-                endTime: (controlActive && attribute === 'endDate') ?
-                    saveState.markers[markerControl.markerId].time : event.args.endTime,
+                eventTime: (controlActive && attribute === 'eventDate') 
+                    ? saveState.markers[markerControl.markerId].time 
+                    : event.args.eventTime,
+                endTime: (controlActive && attribute === 'endDate') 
+                    ? saveState.markers[markerControl.markerId].time 
+                    : event.args.endTime,
             };
 
             return new eventType({
