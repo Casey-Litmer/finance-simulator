@@ -51,7 +51,7 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
     //Main Loop
     for (const n in timeDomain) {
         //t + 1 to write to the day opening (this is kindof a hack)
-        const t = timeDomain[n] + 1;
+        const t = timeDomain[n];// + 1;
 
         //Set pending event queue for all accounts
         for (const account of accounts) {
@@ -99,11 +99,6 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
  */
 function prepAccounts(timeDomain: number[], step: number, accounts: Account[], events: AccountEvent[]): void {
     for (const event of events) {
-
-        //for (const id in event.accounts) {
-        //    const account = event.accounts[id];
-        //    console.log('account', account)
-        //};
 
         if (event.isPeriodic) {
             //#Generate all reoccuring events FIRST

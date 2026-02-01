@@ -6,7 +6,7 @@ import { AccountDisplay, AccountJSON, EventDisplay, EventJSON, FilterJSON, Marke
 
 
 export const defaultSaveState = () => {
-    const today = getToday().time;
+    const today = Math.floor(getToday().time);
     const nAccounts = 2;
     const nEvents = 4;
     const accUUIDs = Array.from({length: nAccounts}, () => newUUID());
