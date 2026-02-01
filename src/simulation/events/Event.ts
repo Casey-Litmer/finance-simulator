@@ -132,15 +132,22 @@ export class AccountEvent {
 
         //Create 'generated' copies of the event at each reoccurence
         while (t <= t_max && t < this.endTime) {
+            //Copy parent event
             const newEvent =  Object.assign(Object.create(Object.getPrototypeOf(this)), this) as typeof this;
-            newEvent.isGenerated = true;
-            newEvent.eventTime = t;
-            
+
+            //Apply breakpoints / update time
             currentValue = this.applyBreakpoints(currentValue, t, breakpointsSorted);
             newEvent.value = currentValue;
+            newEvent.isGenerated = true;
+            newEvent.eventTime = t;
 
+            //Round down days that don't fit into monthly mode
+            if (this.periodMode === 'monthly') {
+                newEvent.eventTime = Math.min(28, t);
+            };
+
+            //Add to generated events
             generatedEvents[t] = [newEvent];
-
             t = increment(t);   
         };
         return generatedEvents;
