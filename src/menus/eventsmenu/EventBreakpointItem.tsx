@@ -31,17 +31,25 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
   };
 
   //=========================================================================================
+  // Data
+  //=========================================================================================
+
   const breakpointName = `\u00A0${breakpoint.name ?? "Breakpoint"}`;
   const breakpointTime = breakpoint.time;
   const breakpointDate = formatDatetime(convertTime(breakpointTime, 'DateTime')).padEnd(10, '\u00A0');
   const breakpointValue = breakpoint.value;
 
   //=========================================================================================
+  // Handlers
+  //=========================================================================================
+
   const handleEdit = () => { openMenu(<NewEventBreakpointMenu eventId={eventId} breakpointId={breakpointId} />) };
   const handleExpand = () => { setOpenDropdown((prev) => !prev) };
 
-  //=========================================================================================
-
+  //=================================================================================
+  // Dropdown Info
+  //=================================================================================
+  
   const fields: DropdownFields[] = [
     { condition: true, row: { left: 'New Value:', right: breakpointValue } },
   ];
@@ -49,16 +57,19 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
   //=========================================================================================
   return (
     <MenuItemContainer>
+
       <UtilityButton
         name='Edit Breakpoint'
         icon={Edit}
         handleClick={handleEdit}
       />
+
       <UtilityButton
         name='Expand'
         icon={(openDropdown) ? ChevronLeft : ChevronRight}
         handleClick={handleExpand}
       />
+
       {/*v- hotfix for chrome */}
       <FixedText text={breakpointDate} style={{ fontSize: '75%', lineHeight: 2 }} />
       <FixedText maxWidth={'90%'} text={breakpointName} />
@@ -70,6 +81,7 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
         fields={fields} 
         open={openDropdown} 
       />
+      
     </MenuItemContainer>
   );
 };

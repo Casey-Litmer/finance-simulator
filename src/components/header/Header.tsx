@@ -1,7 +1,6 @@
 import { useTheme } from '@mui/material';
 import { HEADER_HEIGHT } from '../../globals/CONSTANTS';
 import { useFile } from '../../contexts/FileProvider';
-import './Header.css';
 
 
 

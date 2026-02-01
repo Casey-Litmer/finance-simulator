@@ -28,31 +28,38 @@ export function EventBreakpointsMenu(props: EventBreakpointsMenuProps) {
     backgroundColor: palette.primary.top
   };
 
-  //=================================================================================
+  //=========================================================================================
+  // Data
+  //=========================================================================================
+
   const event = simulation.saveState.events[eventId];
   const breakpoints = event.args.breakpoints ?? {};
-  
   const breakpointItems = Object.keys(breakpoints).map((id) => 
     <EventBreakpointItem key={id} breakpointId={id as UUID} eventId={eventId} />
   );
 
   //=================================================================================
   // Close menu on empty
+  //=================================================================================
+
   useEffect(() => {
     if (!Object.keys(breakpoints).length) setOpenState(false);
   }, [JSON.stringify(breakpoints)]);
 
-  //=================================================================================
+  //=========================================================================================
   // Handlers
+  //=========================================================================================
+
   const handleNewBreakpoint = () => { openMenu(<NewEventBreakpointMenu eventId={eventId} />) };
 
   //=================================================================================
   return (
     <Menu 
-      title={`${event.args.name} Breakpoints`} 
+      title={`${event.args.name ?? event.eventType} Breakpoints`} 
       openState={openState} 
       setOpenState={setOpenState}
     >
+      
 {/* New Breakpoint */}        
       <MenuItemContainer sx={ContainerSx}>
         <UtilityButton

@@ -1,7 +1,6 @@
 import React from 'react';
 import { IconButton, SvgIconTypeMap, SxProps, Theme } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
-import './UtilityButton.css';
 
 
 
@@ -15,7 +14,6 @@ interface UtilityButtonProps {
   name?: string;
   sx?: SxProps<Theme>
 };
-
 
 export function UtilityButton(props: UtilityButtonProps) {
   const { handleClick, icon, sx } = props;

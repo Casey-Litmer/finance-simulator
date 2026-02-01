@@ -1,15 +1,16 @@
 import { UUID } from "crypto";
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlineBlankTwoTone, CheckBoxOutlined } from "@mui/icons-material";
 import { useSim } from "src/contexts";
-import { convertTime, getToday } from "src/utils";
+import { getToday } from "src/utils";
 import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
 import { ACC_SUM_TOTAL_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
+import { validateInterestRateBounds, validateMonthlyCanUseDay, validateMonthlyPeriodIsInt, validatePercentValueBounds, validatePeriodBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 
 
 interface NewEventMenuProps {
@@ -25,7 +26,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
   if (accountId === undefined && eventId === undefined) {
     throw Error('An id must be provided');
-  }
+  };
 
   const simulation = useSim();
   const today = getToday().time;
@@ -85,7 +86,12 @@ export function NewEventMenu(props: NewEventMenuProps) {
   });
   const currentState = watch();
 
-  //=========================================================================================
+  // Error updates
+  useEffect(() => {
+    trigger('args.periodMode');
+  }, [currentState.args.eventTime, currentState.args.periodMode]);
+
+  //=================================================================================
   // Conditions
   //=================================================================================
 
@@ -96,7 +102,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
   const percentMode = currentState.args.percentMode;
   const isChangeInterestRate = currentState.eventType === 'Change Interest Rate';
-  const isMonthlyMode = currentState.args.periodMode === 'monthly';
   const isControlled = currentState.markerControl.markerId !== NULL_MARKER_ID;
 
   // ============================================================================
@@ -104,7 +109,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   // ============================================================================
 
   const title = eventId === undefined ? 'New Event' : `Edit ${simulation.saveState.events[eventId]?.eventType}`;
-  const eventTypeParameters = paramsFromEventType(currentState.eventType);
+  const valueLabel = valueLabelFromEventType(currentState.eventType);
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
   const markerTime = isControlled ? 
@@ -112,47 +117,10 @@ export function NewEventMenu(props: NewEventMenuProps) {
     today;
   const markerAttribute = currentState.markerControl.attribute;
 
-  //=========================================================================================
-  // Errors
+  //=================================================================================
+  // Save / Delete
   //=================================================================================
 
-  const monthlyCanUseDay = (_: any) => {
-    const dayOfMonth = convertTime(currentState.args.eventTime, 'DateTime').day;
-    return (isMonthlyMode && isPeriodic && dayOfMonth >= 29) ?
-      'Monthly mode can only be used on days up to the 28th of the month.' : true;
-  };
-
-  const monthlyPeriodIsInt = (_: any) => {
-    const period = currentState.args.eventPeriod;
-    return (isMonthlyMode && isPeriodic && period !== Math.floor(period!)) ?
-      'Monthly mode requires an integer number of months.' : true;
-  };
-
-  const periodBounds = (value: any) => {
-    return value < 1 ? `Event period must be >= 1 ${periodUnits}` : true;
-  };
-
-  const valueBounds = (value: any) => {
-    return value < 0 ? `${eventTypeParameters.label} must be positive` : true;
-  };
-
-  const percentValueBounds = (value: any) => {
-    return (value < 0 || value > 100) ?
-      `${eventTypeParameters.label} must be in the range [0%, 100%]` : true;
-  };
-
-  const interestRateBounds = (value: any) => {
-    return (value > 1 || value < 0) ?
-      'Interest rate must be in the range [0, 100]' : true;
-  };
-
-  // Error updates
-  useEffect(() => {
-    trigger('args.periodMode');
-  }, [currentState.args.eventTime, currentState.args.periodMode]);
-
-  //=========================================================================================
-  // Dispatch to simProvider
   const handleSave = (eventJSON: EventJSON) => {
     setOpenState((prev) => !prev);
     if (eventId === undefined) {
@@ -162,13 +130,12 @@ export function NewEventMenu(props: NewEventMenuProps) {
     };
   };
 
-  // Delete Event
   const handleDelete = () => {
     setOpenState((prev) => !prev);
     simulation.deleteEvent(eventId!);
   };
 
-  //=========================================================================================
+  //=================================================================================
   // Swap transfer
   //=================================================================================
 
@@ -192,13 +159,13 @@ export function NewEventMenu(props: NewEventMenuProps) {
     };
   }, [isTransfer]);
 
-  //=========================================================================================
+  //=================================================================================
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
 
 {/* Event Name */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Event Name
           <InputField
             type="string"
@@ -211,7 +178,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
         </MenuItemContainer>
 
 {/* Event Date */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Event Date
           {!isControlled || markerAttribute !== 'eventDate' ? (
             <DateSelector
@@ -224,9 +191,9 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
 {/* Marker Control */}        
         {markers.length > 0 && (
-          <MenuItemContainer sx={{...dataEntryStyles, flexDirection: 'row'}}>
+          <MenuItemContainer className="DataEntryStyles" style={{flexDirection: 'row'}}>
   {/* Marker Id */}
-            <div style={{...dataEntryStyles, display: 'flex'}}>
+            <div style={{display: 'flex'}}>
               Marker
               <DropdownSelect
                 register={register('markerControl.markerId')}
@@ -241,7 +208,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             </div>
 
   {/* Marker Control Attribute */}
-            <div style={{...dataEntryStyles, display: 'flex'}}>
+            <div style={{display: 'flex'}}>
               Parameter
               <DropdownSelect
                 register={register('markerControl.attribute')}
@@ -255,7 +222,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
         )}
 
 {/* Event Type */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Event Type
           <DropdownSelect
             register={register('eventType')}
@@ -267,8 +234,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
 {/* Event Value */}
         {(hasValue && !isChangeInterestRate) && (
-          <MenuItemContainer sx={dataEntryStyles}>
-            {`${eventTypeParameters.label}:`}
+          <MenuItemContainer className="DataEntryStyles">
+            {`${valueLabel}:`}
             <InputField
               type="number"
               errors={errors}
@@ -277,8 +244,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
                 validate: {
                   validateValue:
                     percentMode && hasPercentMode
-                      ? percentValueBounds
-                      : valueBounds,
+                      ? validatePercentValueBounds(valueLabel)
+                      : validateValueBounds(valueLabel),
                 },
               })}
               control={control}
@@ -290,7 +257,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
 {/* Percent Mode */}
         {(hasPercentMode) && (
-          <MenuItemContainer sx={dataEntryStyles}>
+          <MenuItemContainer className="DataEntryStyles">
             Percentage Mode
             <UtilityButton
               name="Percentage"
@@ -302,14 +269,16 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
 {/* Event Rate (change interest rate) */}
         {(isChangeInterestRate) && (
-          <MenuItemContainer sx={dataEntryStyles}>
-            {`${eventTypeParameters.label}:`}
+          <MenuItemContainer className="DataEntryStyles">
+            {`${valueLabel}:`}
             <InputField
               type="number"
               errors={errors}
               register={register('args.value', {
                 valueAsNumber: true,
-                validate: { interestRateBounds },
+                validate: { 
+                  validateValue: validateInterestRateBounds(),
+                },
               })}
               control={control}
               defaultValue={currentState.args.value}
@@ -323,7 +292,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
         {isTransfer && otherAccounts.length > 0 && (
           <>
   {/* Transfer to */}
-            <MenuItemContainer sx={dataEntryStyles}>
+            <MenuItemContainer className="DataEntryStyles">
               Transfer To
               <DropdownSelect
                 register={register('accountIds')}
@@ -354,14 +323,17 @@ export function NewEventMenu(props: NewEventMenuProps) {
 {/* Periodic */}
         {isPeriodic && (<>
   {/* Period */}
-          <MenuItemContainer sx={dataEntryStyles}>
+          <MenuItemContainer className="DataEntryStyles">
             {`Period (${periodUnits})`}
             <InputField
               type="number"
               errors={errors}
               register={register('args.eventPeriod', {
                 valueAsNumber: true,
-                validate: { monthlyPeriodIsInt, periodBounds },
+                validate: { 
+                  validateInt: validateMonthlyPeriodIsInt(currentState), 
+                  validateValue: validatePeriodBounds(periodUnits),
+                },
               })}
               control={control}
               convertOutput={Number}
@@ -370,10 +342,14 @@ export function NewEventMenu(props: NewEventMenuProps) {
           </MenuItemContainer>
 
   {/* Period Mode */}
-          <MenuItemContainer sx={dataEntryStyles}>
+          <MenuItemContainer className="DataEntryStyles">
             Period Mode
             <DropdownSelect
-              register={register('args.periodMode', { validate: { monthlyCanUseDay } })}
+              register={register('args.periodMode', { 
+                validate: { 
+                  validateDay: validateMonthlyCanUseDay(currentState),
+                },
+              })}
               control={control}
               errors={errors}
             >
@@ -383,7 +359,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
           </MenuItemContainer>
 
   {/* Doesn't End */}
-          <MenuItemContainer sx={dataEntryStyles}>
+          <MenuItemContainer className="DataEntryStyles">
             Doesn't End
             <UtilityButton
               name="Doesn't End"
@@ -401,7 +377,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
           {doesEnd && (
             <>
     {/* End Date */}
-              <MenuItemContainer sx={dataEntryStyles}>
+              <MenuItemContainer className="DataEntryStyles">
                 End Date
                 {!isControlled || markerAttribute !== 'endDate' ? (
                   <DateSelector
@@ -415,7 +391,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
               </MenuItemContainer>
             </>
           )}
-
         </>)}
 
 {/* Save and Delete */}
@@ -427,37 +402,4 @@ export function NewEventMenu(props: NewEventMenuProps) {
       </form>
     </Menu>
   );
-};
-
-//=========================================================================================
-
-const dataEntryStyles = {
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-} as CSSProperties;
-
-// ============================================================================
-// Utility Functions
-// ============================================================================
-
-const paramsFromEventType = (eventType: string): {
-  bounds: { min?: number; max?: number };
-  label: string;
-} => {
-  if (eventType === 'Change Interest Rate') {
-    return {
-      label: 'New Rate',
-      bounds: { min: 0, max: 100 },
-    };
-  }
-  if (eventType === 'Adjustment') {
-    return {
-      label: 'New Balance',
-      bounds: {},
-    };
-  }
-  return {
-    label: 'Amount',
-    bounds: { min: 0 },
-  };
 };

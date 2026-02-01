@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSim } from "src/contexts";
 import { DeleteButton, SaveButton } from "src/components/buttons";
@@ -18,9 +18,12 @@ interface NewMarkerMenuProps {
 /*Create init arguments if no accountId is given, else, edit json.*/
 export function NewMarkerMenu(props: NewMarkerMenuProps) {
   const { markerId } = props;
-
   const simulation = useSim();
   const [openState, setOpenState] = useState(false);
+
+  // ============================================================================
+  // Form Setup
+  // ============================================================================
 
   const { 
     handleSubmit,
@@ -36,12 +39,16 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
   });
   const currentState = watch();
 
-  //=========================================================================================
-  // Params
+  // ============================================================================
+  // Display Parameters
+  // ============================================================================
+
   const title = (markerId === undefined) ? 'New Marker' : 'Edit Marker';
 
-  //=========================================================================================
-  // Dispatch to simProvider
+  //=================================================================================
+  // Save / Delete
+  //=================================================================================
+
   const handleSave = (markerJSON: MarkerJSON) => {
     setOpenState((prev) => !prev);
     if (markerId === undefined) {
@@ -62,7 +69,7 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
 {/* Marker Name */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Marker Name
           <InputField
             type='string'
@@ -74,7 +81,7 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
           />
         </MenuItemContainer>
 {/* Marker Time */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Marker Location
           <DateSelector
             register={register('time')}
@@ -92,11 +99,4 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
     </Menu>
   );
 };
-
-//=========================================================================================
-
-const dataEntryStyles = {
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-} as CSSProperties;
 

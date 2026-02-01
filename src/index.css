@@ -6,7 +6,6 @@
     cursor: pointer;
 }
 
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -20,3 +19,113 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+.Header {
+    border-style: solid;
+    border-width: 1px;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+.Menu {
+    /*background-color: rgb(185, 122, 39);*/
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    position: absolute;
+    border-radius: 0;
+}
+
+.Title {
+    height: 48px;
+    vertical-align: center;
+    border-radius: 0px;
+    border-style:inset;
+    border-width: 2px;
+    border-top: 0px;
+    border-right: 0px;
+    border-color: black;
+}
+
+.MenuContents {
+    display: flex;
+    flex-direction: column;
+}
+
+.ScrollContainer {
+    overflow-y: auto;
+    white-space: nowrap;
+    scrollbar-width: "thin"; /*for FireFox*/
+    scrollbar-color: "rgba(0, 0, 0, 0.5) transparent";
+    height: 100%; 
+}
+
+.MenuContainer {
+    height: 100%;
+    z-index: 100;
+    border-radius: 0;
+}
+
+.MenuItemContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    padding: 1px;
+    padding-left: 16px;
+    margin-left: 16px;
+    margin-right: 16px;
+    position: relative;
+}
+
+.DropdownContainer {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    flex-basis: 100%;
+    text-align: left;
+    order: 1;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+/* This is for the data entry COMPONENTS */
+.DataEntry {
+    margin-left: 8px;
+    margin-bottom: 8px;
+}
+
+/* This is for the data entry ROWS */
+.DataEntryStyles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.BoundSelectors {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100vw;
+    z-index: 101;
+    bottom: 0;
+
+    border-style: solid;
+    border-width: 1px;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+
+    .BoundSelector {
+        position: absolute;      
+    }
+}
+
+.DateSelector {
+    width: 70%;
+    display: flex;
+    padding-right: 0;
+    margin-right: 0px;   
+}
+

@@ -13,7 +13,6 @@ import { AccountEvent } from "src/simulation/events";
 import { EventTable } from "src/types";
 
 
-
 interface EventsMenuProps {
   accountId?: UUID
 }
@@ -25,18 +24,16 @@ export function EventsMenu(props: EventsMenuProps) {
   const { openMenu } = useMenu();
   const [openState, setOpenState] = useState(false);
 
-  //=================================================================================
-  // Styles
   const ContainerSx = {
     borderRadius: '4px',
     backgroundColor: palette.primary.top
   };
 
-  //=================================================================================
-  const account = accountId ? simulation.saveState.accounts[accountId] : undefined;
+  //=========================================================================================
+  // Data
+  //=========================================================================================
 
-  //=================================================================================
-  // Filter eventJSON
+  const account = accountId ? simulation.saveState.accounts[accountId] : undefined;
   const events = (accountId === undefined) ? 
     simulation.saveState.events :                        // If all events
     Object.fromEntries(                                  // If account events
@@ -50,6 +47,15 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   // Event Mapping
+  //=================================================================================
+
+  /**
+   * Uses event data from the simulation in order to make use of the sorting
+   * of addToEventTable.
+   * It might be worth it to rewrite that algorithm for this paticular use case
+   * or abstract this out into a function
+   */
+
   // Get all objects from the sim that pass the filter (non active events included)
   const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
     .map(evData => evData.event)
@@ -67,12 +73,16 @@ export function EventsMenu(props: EventsMenuProps) {
 
   //=================================================================================
   // Close menu on empty
+  //=================================================================================
+
   useEffect(() => {
     if (!eventIds.length) setOpenState(false);
   }, [eventIds]);
 
-  //=================================================================================
+  //=========================================================================================
   // Handlers
+  //=========================================================================================
+
   const handleFilterMenu = () => { openMenu(<FilterMenu />) };
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
 
@@ -83,6 +93,7 @@ export function EventsMenu(props: EventsMenuProps) {
       openState={openState} 
       setOpenState={setOpenState}
     >
+
 {/* Filter */}
       <MenuItemContainer>
         <UtilityButton

@@ -30,11 +30,17 @@ export function AccountItem(props: AccountItemProps) {
   };
 
   //=========================================================================================
+  // Data
+  //=========================================================================================
+  
   const account = simulation.saveState.accounts[accountId]
   const accountName = account.args.name ?? account.accountType;
   const line = account.display.line;
 
   //=========================================================================================
+  // Handlers
+  //=========================================================================================
+
   const handleEdit = () => openMenu(<NewAccountMenu accountId={accountId} />);
   const handleExpand = () => setOpenDropdown((prev) => !prev);
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
@@ -49,7 +55,7 @@ export function AccountItem(props: AccountItemProps) {
         name='Edit Account'
         icon={Edit}
         handleClick={handleEdit}
-      />
+        />
 
       <UtilityButton
         name='Expand'
@@ -83,6 +89,7 @@ export function AccountItem(props: AccountItemProps) {
         ]} 
         open={openDropdown} 
       />
+      
     </MenuItemContainer>
   );
 };

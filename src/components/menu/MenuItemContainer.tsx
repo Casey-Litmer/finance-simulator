@@ -16,8 +16,8 @@ export function MenuItemContainer(props: MenuItemContainerProps) {
   return (
     <Paper
       className={`MenuItemContainer ${className ?? ''}`}
-      style={style}
-      sx={{ borderRadius: 0, ...sx }}
+      style={{ borderRadius: 0, ...style}}
+      sx={sx}
     >
       {children}
     </Paper>

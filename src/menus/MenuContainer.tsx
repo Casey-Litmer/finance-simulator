@@ -4,12 +4,12 @@ import { useMenu, useWindow } from 'src/contexts';
 import { MainMenu } from './accountsmenu';
 import { ExitButton } from 'src/components/buttons';
 import { MENU_MAX_SCALE, MENU_MIN_WIDTH } from 'src/globals/CONSTANTS';
-import './MenuContainer.css';
 
 
 
-
-/**Blocks out space for menus in the main div*/
+/**
+ * Blocks out space for menus in the main div
+ * */
 export function MenuContainer() {
   const {
     openState,
@@ -24,6 +24,7 @@ export function MenuContainer() {
   const menuDivRef = useRef<HTMLDivElement>(null);
 
   //=========================================================================================
+
   useEffect(() => {
     const resizeObserver = new ResizeObserver(([entry]) => {
       setMenuHeight(entry.contentRect.height);
@@ -51,19 +52,24 @@ export function MenuContainer() {
         width: menuWidth,
         minWidth: MENU_MIN_WIDTH,
         backgroundColor: palette.primary.main,
-      }}>
+      }}
+    >
 
+{/* Exit Button */}
       {!openState &&
         <ExitButton openState={openState} setOpenState={setOpenState}
           sx={{ top: 12, right: -32 }}
-        />}
+        />
+      }
 
+{/* Main Menu */}
       <MainMenu openState={openState} setOpenState={setOpenState} />
 
+{/* Other Menus */}
       {activeMenus.map((menu, i) => (
         React.cloneElement(menu as React.ReactElement, { key: i })
       ))}
-
+      
     </div>
   );
 };

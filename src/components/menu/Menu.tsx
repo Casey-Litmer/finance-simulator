@@ -4,7 +4,6 @@ import { Paper, useTheme } from '@mui/material';
 import { useMenu } from 'src/contexts';
 import { MENU_TITLE_HEIGHT } from 'src/globals';
 import { ExitButton } from '../buttons';
-import './Menu.css';
 import { ScrollContainer } from './ScrollContainer';
 
 

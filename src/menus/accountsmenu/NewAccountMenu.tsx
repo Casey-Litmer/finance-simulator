@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from "@mui/icons-material";
 import { useSim } from "src/contexts";
@@ -97,7 +97,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
 
-        <MenuItemContainer sx={dataEntryStyles}>
+{/* Account Name */}
+        <MenuItemContainer className="DataEntryStyles">
           Account Name
           <InputField
             type='string'
@@ -107,7 +108,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           />
         </MenuItemContainer>
 
-        <MenuItemContainer sx={dataEntryStyles}>
+{/* Open Date */}
+        <MenuItemContainer className="DataEntryStyles">
           Open Date
           <DateSelector
             errors={errors}
@@ -117,7 +119,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           />
         </MenuItemContainer>
 
-        <MenuItemContainer sx={dataEntryStyles}>
+{/* Starting Balance */}
+        <MenuItemContainer className="DataEntryStyles">
           Starting Balance
           <InputField
             type='number'
@@ -132,7 +135,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           />
         </MenuItemContainer>
 
-        <MenuItemContainer sx={dataEntryStyles}>
+{/* Account Type */}
+        <MenuItemContainer className="DataEntryStyles">
           Account Type
           <DropdownSelect
             register={register('accountType')}
@@ -142,8 +146,10 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           </DropdownSelect>
         </MenuItemContainer>
 
+{/* Savings Account */}
         {(isSavingsAccount) && <>
-          <MenuItemContainer sx={dataEntryStyles}>
+  {/* Interest Rate */}
+          <MenuItemContainer className="DataEntryStyles">
             Interest Rate (%)
             <InputField
               type='number'
@@ -159,7 +165,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
             />
           </MenuItemContainer>
 
-          <MenuItemContainer sx={dataEntryStyles}>
+  {/* Interest Period */}
+          <MenuItemContainer className="DataEntryStyles">
             Interest Period (Days)
             <InputField
               type='number'
@@ -174,7 +181,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
             />
           </MenuItemContainer>
 
-          <MenuItemContainer sx={dataEntryStyles}>
+  {/* Period Start Date */}
+          <MenuItemContainer className="DataEntryStyles">
             Period Start Date
             <DateSelector
               register={register('args.periodStart')}
@@ -183,7 +191,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
             />
           </MenuItemContainer>
 
-          <MenuItemContainer sx={dataEntryStyles}>
+  {/* Prorate */}
+          <MenuItemContainer className="DataEntryStyles">
             Prorate
             <UtilityButton
               name="Prorate"
@@ -193,6 +202,7 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           </MenuItemContainer>
         </>}
 
+{/* Save and Delete */}
         <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
           <SaveButton />
           {(accountId !== undefined) &&
@@ -203,9 +213,3 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
     </Menu>
   );
 };
-
-//=========================================================================================
-const dataEntryStyles = {
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-} as CSSProperties;

@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSim } from "src/contexts";
 import { getToday } from "src/utils";
@@ -8,6 +8,7 @@ import { DateSelector, DropdownSelect, InputField } from "src/components/dataent
 import { Menu, MenuItemContainer } from "src/components/menu";
 import { EventBreakpoint } from "src/simulation/events";
 import { NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
+import { validatePercentValueBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 
 
 interface NewEventBreakpointMenuProps {
@@ -34,9 +35,9 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   const markers = Object.keys(simulation.saveState.markers)
       .filter((key) => key !== TODAY_MARKER_ID);
 
-  // ============================================================================
-  // Form Setup
-  // ============================================================================
+  //============================================================================
+  //  Form Setup
+  //============================================================================
 
   const {
     handleSubmit,
@@ -65,31 +66,20 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   const percentMode = event.args.percentMode;
   const isControlled = currentState.markerControlId !== NULL_MARKER_ID;
 
-  // ============================================================================
+  // ================================================================================
   // Display Parameters
-  // ============================================================================
+  // ================================================================================
 
   const title = breakpointId === undefined ? 'New Breakpoint' : 'Edit Breakpoint';
-  const eventTypeParameters = paramsFromEventType(event.eventType);
+  const valueLabel = valueLabelFromEventType(event.eventType);
   const markerTime = isControlled ? 
     simulation.saveState.markers[currentState.markerControlId as UUID].time : 
     today;
 
   //=================================================================================
-  // Errors
+  // Save / Delete
   //=================================================================================
 
-  const valueBounds = (value: any) => {
-    return value < 0 ? `${eventTypeParameters.label} must be positive` : true;
-  };
-  
-  const percentValueBounds = (value: any) => {
-    return (value < 0 || value > 100) ?
-      `${eventTypeParameters.label} must be in the range [0%, 100%]` : true;
-  };
-
-  //=================================================================================
-  // Dispatch to simProvider
   const handleSave = (breakpoint: EventBreakpoint) => {
     setOpenState((prev) => !prev);
     if (breakpointId === undefined) {
@@ -111,7 +101,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
       <form onSubmit={handleSubmit(handleSave)}>
 
 {/* Breakpoint Name */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Breakpoint Name
           <InputField
             type="string"
@@ -124,7 +114,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
         </MenuItemContainer>
 
 {/* Breakpoint Date */}
-        <MenuItemContainer sx={dataEntryStyles}>
+        <MenuItemContainer className="DataEntryStyles">
           Breakpoint Date
           {!isControlled ? (
             <DateSelector
@@ -137,7 +127,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
 
 {/* Marker Control */}        
         {markers.length > 0 && (
-          <MenuItemContainer sx={dataEntryStyles}>
+          <MenuItemContainer className="DataEntryStyles">
             Marker
             <DropdownSelect
               register={register('markerControlId')}
@@ -153,8 +143,9 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
         )}
 
 {/* Breakpoint Value */}
-        <MenuItemContainer sx={dataEntryStyles}>
-          {`${eventTypeParameters.label}:`}
+        <MenuItemContainer className="DataEntryStyles">
+          Amount
+          {/*`${valueLabel}:`*/}
           <InputField
             type="number"
             errors={errors}
@@ -163,8 +154,8 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
               validate: {
                 validateValue:
                   percentMode && hasPercentMode
-                    ? percentValueBounds
-                    : valueBounds,
+                    ? validatePercentValueBounds(valueLabel)
+                    : validateValueBounds(valueLabel),
               },
             })}
             control={control}
@@ -182,37 +173,4 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
       </form>
     </Menu>
   );
-};
-
-//=============================================================================
-
-const dataEntryStyles = {
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-} as CSSProperties;
-
-// ============================================================================
-// Utility Functions
-// ============================================================================
-
-const paramsFromEventType = (eventType: string): {
-  bounds: { min?: number; max?: number };
-  label: string;
-} => {
-  if (eventType === 'Change Interest Rate') {
-    return {
-      label: 'New Rate',
-      bounds: { min: 0, max: 100 },
-    };
-  }
-  if (eventType === 'Adjustment') {
-    return {
-      label: 'New Balance',
-      bounds: {},
-    };
-  }
-  return {
-    label: 'Amount',
-    bounds: { min: 0 },
-  };
 };

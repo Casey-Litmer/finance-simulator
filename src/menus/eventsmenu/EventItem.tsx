@@ -33,6 +33,9 @@ export function EventItem(props: EventItemProps) {
   };
 
   //=========================================================================================
+  // Data
+  //=========================================================================================
+
   const eventTime = event.markerControl.markerId === NULL_MARKER_ID 
     || event.markerControl.attribute !== 'eventDate' ?
       event.args.eventTime : simulation.saveState.markers[event.markerControl.markerId].time;
@@ -44,12 +47,18 @@ export function EventItem(props: EventItemProps) {
   const eventName = `\u00A0${event.args.name ?? event.eventType}`;
 
   //=========================================================================================
+  // Handlers
+  //=========================================================================================
+
   const handleEdit = () => { openMenu(<NewEventMenu eventId={eventId} />) };
   const handleExpand = () => { setOpenDropdown((prev) => !prev) };
   const handleEventBreakpoints = () => { openMenu(<EventBreakpointsMenu eventId={eventId} />) };
   const handleNewEventBreakpoint = () => { openMenu(<NewEventBreakpointMenu eventId={eventId} />) };
 
   //=================================================================================
+  // Conditions
+  //=================================================================================
+  
   const accountFieldCondition = ['Transfer', 'Periodic Transfer'].includes(event.eventType);
   const eventFieldCondition = ['Deposit', 'Withdrawal', 'Transfer', 'Periodic Transfer', 
     'Periodic Deposit', 'Periodic Withdrawal'].includes(event.eventType);
@@ -61,6 +70,9 @@ export function EventItem(props: EventItemProps) {
   const hasBreakpoints = Object.keys(event.args.breakpoints ?? []).length > 0;
 
   //=================================================================================
+  // Dropdown Info
+  //=================================================================================
+  
   const accountIds = event.accountIds;
   const getAccountName = (id: UUID) => simulation.saveState.accounts[id]?.args.name ?? '';
 
@@ -81,24 +93,30 @@ export function EventItem(props: EventItemProps) {
   ];
 
   //=========================================================================================
-  return (
+  return (<>
     <MenuItemContainer>
+
       <UtilityButton
         name='Edit Event'
         icon={Edit}
         handleClick={handleEdit}
       />
+
       <UtilityButton
         name='Expand'
         icon={(openDropdown) ? ChevronLeft : ChevronRight}
         handleClick={handleExpand}
       />
+      
       {/*v- hotfix for chrome */}
       <FixedText text={eventDate} style={{ fontSize: '75%', lineHeight: 2 }} />
       <FixedText maxWidth={'90%'} text={eventName} />
       <VisibilityButton type='event' id={eventId} />
+      
+    </MenuItemContainer>
 
-      {/* Breakpoints */}
+    <MenuItemContainer>
+{/* Breakpoints */}
       <DropdownMenu 
         sx={ContainerSx} 
         position='top'
@@ -132,7 +150,7 @@ export function EventItem(props: EventItemProps) {
         ]} 
       />
 
-      {/* Info */}
+{/* Info */}
       <DropdownMenu 
         sx={ContainerSx}
         position={periodicEventFieldCondition ? 'bottom' : ''} 
@@ -142,5 +160,5 @@ export function EventItem(props: EventItemProps) {
       />
 
     </MenuItemContainer>
-  );
+  </>);
 };

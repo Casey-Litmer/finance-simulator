@@ -5,18 +5,18 @@ import { DateSelector, InputField } from "src/components/dataentry";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { useSim } from "src/contexts";
 import { defaultFilter } from "src/globals";
-import { FilterJSON } from "src/simulation/types";
+import { FilterJSON } from "src/types";
 
 
 
-interface FilterMenuProps {
 
-};
-
-export const FilterMenu = (props: FilterMenuProps) => {
-  const { } = props;
+export const FilterMenu = () => {
   const simulation = useSim();
   const [openState, setOpenState] = useState(false);
+
+  //============================================================================
+  //  Form Setup
+  //============================================================================
 
   const {
     handleSubmit,
@@ -30,8 +30,9 @@ export const FilterMenu = (props: FilterMenuProps) => {
   });
   const currentState = watch();
 
-  //=========================================================================================
-  //Dispatch to simProvider
+  //=================================================================================
+  // Save 
+  //=================================================================================
 
   const handleSave = (filterJSON: FilterJSON) => {
     setOpenState((prev) => !prev);
@@ -43,6 +44,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
     <Menu title='Filter' openState={openState} setOpenState={setOpenState}>
       <ScrollContainer>
         <form onSubmit={handleSubmit(handleSave)}>
+
 {/* Singular */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -53,6 +55,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Singular
           </MenuItemContainer>
+
 {/* Periodic */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -76,6 +79,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Deposits
           </MenuItemContainer>
+
 {/* Withdrawals */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -86,6 +90,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Withdrawals
           </MenuItemContainer>
+
 {/* Transfers */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -96,6 +101,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Transfers
           </MenuItemContainer>
+
 {/* Close Account */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -106,6 +112,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Close Account
           </MenuItemContainer>
+
 {/* Rate Changes */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -116,6 +123,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Rate Changes
           </MenuItemContainer>
+
 {/* Adjustments */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -139,6 +147,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Periodic Deposits
           </MenuItemContainer>
+
 {/* Periodic Withdrawals */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -149,6 +158,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Periodic Withdrawals
           </MenuItemContainer>
+
 {/* Periodic Transfers */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -172,6 +182,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             After
           </MenuItemContainer>
+
 {/* Start Time */}
           <MenuItemContainer>
             <DateSelector
@@ -180,6 +191,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
               selected={currentState.range.startTime}
             />
           </MenuItemContainer>
+
 {/* Before */}
           <MenuItemContainer>
             <InputField className='checkbox'
@@ -190,6 +202,7 @@ export const FilterMenu = (props: FilterMenuProps) => {
             />
             Before
           </MenuItemContainer>
+
 {/* End Time */}
           <MenuItemContainer>
             <DateSelector
@@ -198,10 +211,12 @@ export const FilterMenu = (props: FilterMenuProps) => {
               selected={currentState.range.endTime}
             />
           </MenuItemContainer>
+
 {/* Save */}
           <MenuItemContainer sx={{paddingTop: '8px' }}>
             <SaveButton text='Apply' />
           </MenuItemContainer>
+
         </form>
       </ScrollContainer>
     </Menu>

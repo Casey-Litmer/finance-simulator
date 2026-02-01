@@ -12,7 +12,6 @@ import { ColorSelect } from "src/components/colorselector";
 import { ScatterLine } from "plotly.js";
 
 
-
 interface MarkerItemProps {
   markerId: UUID;
 };
@@ -31,33 +30,38 @@ export function MarkerItem(props: MarkerItemProps) {
   };
 
   //=========================================================================================
+  // Data
+  //=========================================================================================
+
   const marker = simulation.saveState.markers[markerId];
   const markerTime = formatDatetime(convertTime(marker.time, 'DateTime')).padEnd(10, '\u00A0');
   const markerName = `\u00A0${marker.name || 'Marker'}`;
   const line = marker.display.line;
 
   //=========================================================================================
+  // Handlers
+  //=========================================================================================
+
   const handleExpand = () => { setOpenDropdown((prev) => !prev) };
   const handleEdit = () => { openMenu(<NewMarkerMenu markerId={markerId} />) };
   const handleColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState({ partial: { markers: { [markerId]: { display: { line } } } } }) };
 
-  //=========================================================================================
-  const dropdownContents = () => {
-    const fields = Object.values(simulation.saveState.events)
-      .filter(event => event.markerControl.markerId === markerId)
-      .map(event => ({
-        condition: true,
-        row: {
-          left: `"${event.args.name || event.eventType}":`,
-          right: {
-            'eventDate': 'Event Date',
-            'endDate': 'End Date',
-          }[event.markerControl.attribute]
-        },
-      }));
-
-    return fields;
-  };
+  //=================================================================================
+  // Dropdown Info
+  //=================================================================================
+  
+  const fields = Object.values(simulation.saveState.events)
+    .filter(event => event.markerControl.markerId === markerId)
+    .map(event => ({
+      condition: true,
+      row: {
+        left: `"${event.args.name || event.eventType}":`,
+        right: {
+          'eventDate': 'Event Date',
+          'endDate': 'End Date',
+        }[event.markerControl.attribute]
+      },
+    }));
 
   //=========================================================================================
   return (
@@ -84,9 +88,10 @@ export function MarkerItem(props: MarkerItemProps) {
       <DropdownMenu 
         style={{ gridTemplateColumns: 'auto 0.9fr' }}
         sx={ContainerSx}
-        fields={dropdownContents()}
+        fields={fields}
         open={openDropdown}
       />
+
     </MenuItemContainer>
   );
 };

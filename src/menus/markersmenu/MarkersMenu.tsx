@@ -11,23 +11,20 @@ import { TODAY_MARKER_ID } from "src/globals";
 
 
 
-
 export function MarkersMenu() {
   const simulation = useSim();
   const { palette } = useTheme();
   const { openMenu } = useMenu();
   const [openState, setOpenState] = useState(false);
 
-  //=================================================================================
-  // Styles
-
   const ContainerSx = {
     borderRadius: '4px',
     backgroundColor: palette.primary.top
   };
 
-  //=================================================================================
-  // Filter markerJSON
+  //=========================================================================================
+  // Data
+  //=========================================================================================
 
   const markerIds = Object.keys(simulation.saveState.markers) as UUID[];
   const markerItems = markerIds
@@ -36,13 +33,15 @@ export function MarkersMenu() {
 
   //=================================================================================
   // Close menu on empty
+  //=================================================================================
 
   useEffect(() => {
     if (!markerIds.length) setOpenState(false);
   }, [markerIds]);
 
-  //=================================================================================
+  //=========================================================================================
   // Handlers
+  //=========================================================================================
 
   const handleNewMarker = () => { openMenu(<NewMarkerMenu/>) };
 

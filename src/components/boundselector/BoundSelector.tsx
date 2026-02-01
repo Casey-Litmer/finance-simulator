@@ -1,5 +1,4 @@
 import React from 'react';
-import './BoundSelector.css';
 import { useSim } from '../../contexts/SimProvider';
 import DatePicker from 'react-datepicker';
 import { convertTime } from '../../utils/timeMethods';
