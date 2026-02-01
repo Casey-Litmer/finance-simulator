@@ -12,13 +12,22 @@ export type DropdownFields = {
 //=================================================================================
 export interface DropdownMenuProps {
   open: boolean;
+  position?: '' | 'top' | 'middle' | 'bottom';
   sx?: SxProps<Theme>;
   style?: CSSProperties;
   fields: DropdownFields[];
 };
 
-export const DropdownMenu = ({ fields, open, sx, style }: DropdownMenuProps) => {
+export const DropdownMenu = ({ fields, open, position, sx, style }: DropdownMenuProps) => {
   
+  const radiusStyles = {
+    '': {},
+    'top': { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
+    'middle': { borderRadius: 0 },
+    'bottom': {  borderTopLeftRadius: 0, borderTopRightRadius: 0  },
+  }[position ?? ''];
+
+  //=================================================================================
   //Add rows
   const rows: ({ left: any, right: any } | ReactNode)[] = [];
   for (const field of fields) {
@@ -41,8 +50,8 @@ export const DropdownMenu = ({ fields, open, sx, style }: DropdownMenuProps) => 
   });
 
   //=================================================================================
-  return (open ?
-    <MenuItemContainer sx={sx} style={style} className="DropdownContainer">
+  return (open && mappedRows.length > 0 ?
+    <MenuItemContainer sx={sx} style={{ ...style, ...radiusStyles }} className="DropdownContainer">
       {mappedRows}
     </MenuItemContainer> 
   : <></>);

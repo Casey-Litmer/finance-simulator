@@ -101,6 +101,7 @@ export function EventItem(props: EventItemProps) {
       {/* Breakpoints */}
       <DropdownMenu 
         sx={ContainerSx} 
+        position='top'
         style={{gridTemplateColumns: 'auto 1fr'}}
         open={openDropdown} 
         fields={[
@@ -133,7 +134,8 @@ export function EventItem(props: EventItemProps) {
 
       {/* Info */}
       <DropdownMenu 
-        sx={ContainerSx} 
+        sx={ContainerSx}
+        position={periodicEventFieldCondition ? 'bottom' : ''} 
         style={{gridTemplateColumns: 'auto 0.9fr'}}
         open={openDropdown} 
         fields={fields} 
