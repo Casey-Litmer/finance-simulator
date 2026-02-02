@@ -35,7 +35,7 @@ export const validateMonthlyCanUseDay = (currentState: EventJSON) => (_: any) =>
     const isMonthlyMode = currentState.args.periodMode === 'monthly';
     const isPeriodic = currentState.eventType.includes('Periodic');
     const dayOfMonth = convertTime(currentState.args.eventTime, 'DateTime').day;
-    return (isMonthlyMode && isPeriodic && dayOfMonth >= 29) ?
+    return (isMonthlyMode && isPeriodic && dayOfMonth >= 29 + 1) ?
         'Monthly mode can only be used on days up to the 28th of the month.' : true;
 };
 

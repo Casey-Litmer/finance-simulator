@@ -78,6 +78,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             },
             eventType: 'Deposit',
             accountIds: [accountId],
+            breakpointIds: [],
             markerControl: {
               markerId: NULL_MARKER_ID,
               attribute: 'eventDate',
@@ -193,7 +194,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
         {markers.length > 0 && (
           <MenuItemContainer className="DataEntryStyles" style={{flexDirection: 'row'}}>
   {/* Marker Id */}
-            <div style={{display: 'flex'}}>
+            <div style={{display: 'flex', flexDirection: 'column'}}>
               Marker
               <DropdownSelect
                 register={register('markerControl.markerId')}
@@ -208,7 +209,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             </div>
 
   {/* Marker Control Attribute */}
-            <div style={{display: 'flex'}}>
+            <div style={{display: 'flex', flexDirection: 'column'}}>
               Parameter
               <DropdownSelect
                 register={register('markerControl.attribute')}

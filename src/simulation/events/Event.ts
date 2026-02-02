@@ -7,7 +7,7 @@ import {
     addPeriod,
     convertTime,
     makeIdTable,
-    newUUID
+    newUUID,
 } from 'src/utils';
 import { EventTable } from 'src/types';
 
@@ -137,11 +137,6 @@ export class AccountEvent {
             newEvent.value = currentValue;
             newEvent.isGenerated = true;
             newEvent.eventTime = t;
-
-            //Round down days that don't fit into monthly mode
-            if (this.periodMode === 'monthly') {
-                newEvent.eventTime = Math.min(28, t);
-            };
 
             //Add to generated events
             generatedEvents[t] = [newEvent];
