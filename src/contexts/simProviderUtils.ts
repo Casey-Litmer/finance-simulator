@@ -1,9 +1,11 @@
 import { UUID } from "crypto";
 import { NULL_MARKER_ID } from "src/globals";
-import { EventJSON, SaveState } from "src/types";
+import { BreakpointJSON, EventJSON, SaveState } from "src/types";
 
 
 //=================================================================================
+
+//TODO: Make these update ID functions have cleaner logic?
 
 /**
    * Updates all accounts' eventIds with changes in event-account relations.
@@ -33,6 +35,18 @@ export function updateAccountEventIds(saveState: SaveState, eventsPartial: Recor
                         currentAccount.eventIds = currentAccount.eventIds.filter((id) => id !== eventId);
                 };
             };
+        };
+    });
+};
+
+export function updateEventBreakpointIds(saveState: SaveState, breakpointsPartial: Record<UUID, BreakpointJSON>) {
+    // For each event in the partial,
+    Object.entries(breakpointsPartial).forEach(([_breakpointId, breakpoint]) => {
+        if (breakpoint.eventId !== undefined) {
+            const breakpointId = _breakpointId as UUID;
+            const eventId = breakpoint.eventId;
+            const event = saveState.events[eventId];
+            event.breakpointIds.push(breakpointId);
         };
     });
 };
@@ -68,12 +82,11 @@ export const _deleteEvent = (eventId: UUID, saveState: SaveState) => {
 };
 
 /**Deletes an event and removes it from all linked accounts*/
-export const _deleteEventBreakpoint = (breakpointId: UUID, saveState: SaveState) => {
-    const event = Object.values(saveState.events)
-        .find((event) => 
-            Object.keys(event.args.breakpoints ?? []).includes(breakpointId)
-        );
-    delete event?.args.breakpoints?.[breakpointId];
+export const _deleteBreakpoint = (breakpointId: UUID, saveState: SaveState) => {
+    const eventId = saveState.breakpoints[breakpointId].eventId;
+    const event = saveState.events[eventId];
+    event.breakpointIds = event.breakpointIds.filter((id) => id !== breakpointId);
+    delete saveState.breakpoints[breakpointId];
 };
 
 /**Deletes a marker and clears the marker control from all linked events*/

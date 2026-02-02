@@ -31,19 +31,18 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
             const controlActive = markerId !== NULL_MARKER_ID;
             const eventActive = saveState.events[id].display.active;
 
-             // Apply breakpoint marker controllers
-            const breakpoints = !!event.args.breakpoints 
-                ? Object.fromEntries(Object.entries(event.args.breakpoints)
-                    .map(([id, breakpoint]) => {
-                        if (breakpoint.markerControlId !== NULL_MARKER_ID) {
-                            return [id, { 
-                                ...breakpoint, 
-                                time: saveState.markers[breakpoint.markerControlId].time,
-                            }];
+            // Apply active breakpoint marker controllers
+            const breakpoints = Object.values(saveState.breakpoints)
+                .filter(breakpoint => breakpoint.eventId === id && breakpoint.display.active)
+                .map(breakpoint => {
+                    if (breakpoint.markerControlId !== NULL_MARKER_ID) {
+                        return { 
+                            time: saveState.markers[breakpoint.markerControlId].time, 
+                            value: breakpoint.value,
                         };
-                        return [id, breakpoint];
-                    }))
-                : undefined;
+                    };
+                    return { time: breakpoint.time, value: breakpoint.value };
+                });
 
             // Build args
             const args = {

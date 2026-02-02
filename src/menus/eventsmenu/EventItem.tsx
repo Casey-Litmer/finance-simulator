@@ -67,7 +67,7 @@ export function EventItem(props: EventItemProps) {
   const periodicEventFieldCondition = event.eventType.includes('Periodic');
   const periodModeValue = `${event.args.eventPeriod} 
     ${{ 'monthly': 'months', 'constant': 'days' }[event.args.periodMode ?? 'constant']}`;
-  const hasBreakpoints = Object.keys(event.args.breakpoints ?? []).length > 0;
+  const hasBreakpoints = event.breakpointIds.length > 0;
 
   //=================================================================================
   // Dropdown Info

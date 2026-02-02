@@ -33,8 +33,11 @@ export function EventBreakpointsMenu(props: EventBreakpointsMenuProps) {
   //=========================================================================================
 
   const event = simulation.saveState.events[eventId];
-  const breakpoints = event.args.breakpoints ?? {};
-  const breakpointItems = Object.keys(breakpoints).map((id) => 
+  const eventBreakpoints = Object.entries(simulation.saveState.breakpoints)
+    .filter(([_, breakpoint]) => breakpoint.eventId === eventId)
+    .sort(([_, A], [__, B]) => A.time - B.time)
+    .map(([id, _]) => id);
+  const breakpointItems = eventBreakpoints.map((id) => 
     <EventBreakpointItem key={id} breakpointId={id as UUID} eventId={eventId} />
   );
 
@@ -43,8 +46,8 @@ export function EventBreakpointsMenu(props: EventBreakpointsMenuProps) {
   //=================================================================================
 
   useEffect(() => {
-    if (!Object.keys(breakpoints).length) setOpenState(false);
-  }, [JSON.stringify(breakpoints)]);
+    if (!eventBreakpoints.length) setOpenState(false);
+  }, [JSON.stringify(eventBreakpoints)]);
 
   //=========================================================================================
   // Handlers

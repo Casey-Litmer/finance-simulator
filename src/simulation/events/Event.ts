@@ -29,7 +29,7 @@ export class AccountEvent {
     eventPeriod: number;
     periodMode: string;
     endTime: number;
-    breakpoints: Record<UUID, EventBreakpoint>;
+    breakpoints: EventBreakpoint[];
     
     isGenerated: boolean;
     isConsumable: boolean = true;
@@ -51,7 +51,7 @@ export class AccountEvent {
         endTime = REF_TIME,
         doesEnd = false,
         isActive = true,
-        breakpoints = {},
+        breakpoints = [],
     }: EventArguments ) {      
         this.id = id ?? newUUID();; //Change later to be required?
         this.isActive = isActive;
@@ -124,11 +124,8 @@ export class AccountEvent {
         let currentValue = this.value;
 
         //Backwards sort breakpoints
-        const breakpointsSorted = this.isPeriodic 
-            ? Object.entries(this.breakpoints)
-                .sort(([_, A], [__, B]) => B.time - A.time)
-                .map(([_, breakpoint]) => breakpoint)
-            : [];
+        const breakpointsSorted = this.isPeriodic ? 
+            this.breakpoints.sort((A, B) => B.time - A.time) : [];
 
         //Create 'generated' copies of the event at each reoccurence
         while (t <= t_max && t < this.endTime) {

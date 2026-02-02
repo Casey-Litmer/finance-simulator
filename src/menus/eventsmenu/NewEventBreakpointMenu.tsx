@@ -6,9 +6,10 @@ import { getToday } from "src/utils";
 import { DeleteButton, SaveButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuItemContainer } from "src/components/menu";
-import { EventBreakpoint } from "src/simulation/events";
 import { NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { validatePercentValueBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
+import { BreakpointJSON } from "src/types";
+
 
 
 interface NewEventBreakpointMenuProps {
@@ -45,14 +46,15 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
     watch,
     control,
     formState: { errors },
-  } = useForm<EventBreakpoint>({
+  } = useForm<BreakpointJSON>({
     mode: 'onChange',
     defaultValues:
       breakpointId !== undefined
-        ? simulation.saveState.events[eventId].args.breakpoints![breakpointId]
+        ? simulation.saveState.breakpoints[breakpointId]
         : {
             time: today,
             value: event.args.value ?? 0,
+            eventId: eventId,
             markerControlId: NULL_MARKER_ID,
           },
   });
@@ -80,19 +82,19 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   // Save / Delete
   //=================================================================================
 
-  const handleSave = (breakpoint: EventBreakpoint) => {
+  const handleSave = (breakpoint: BreakpointJSON) => {
     setOpenState((prev) => !prev);
     if (breakpointId === undefined) {
-      simulation.addEventBreakpoint(breakpoint, eventId);
+      simulation.addBreakpoint(breakpoint);
     } else {
-      simulation.dispatchSaveState({ partial: { events: { [eventId]: { args: { breakpoints: { [breakpointId!]: breakpoint } } } } } });
+      simulation.dispatchSaveState({ partial: { breakpoints: { [breakpointId!]: breakpoint } } });
     };
   };
 
   // Delete Event
   const handleDelete = () => {
     setOpenState((prev) => !prev);
-    simulation.deleteEventBreakpoint(breakpointId!);
+    simulation.deleteBreakpoint(breakpointId!);
   };
 
   //=================================================================================

@@ -15,6 +15,7 @@ export type SaveState = {
     version: string;
     accounts: Record<UUID, AccountJSON>;
     events: Record<UUID, EventJSON>;
+    breakpoints: Record<UUID, BreakpointJSON>
     markers: Record<UUID, MarkerJSON>;
     filter?: FilterJSON;                                   
     xDomain: {start: number, stop: number, step: number};  
@@ -34,7 +35,17 @@ export type EventJSON = {
     eventType: string;
     markerControl: { markerId: UUID, attribute: 'eventDate' | 'endDate' };
     accountIds: UUID[];
+    breakpointIds: UUID[];
     display: EventDisplay;
+};
+
+export type BreakpointJSON = {
+    name?: string;
+    time: number;
+    value: number;
+    eventId: UUID;
+    markerControlId: UUID;
+    display: BreakpointDisplay;
 };
 
 export type MarkerJSON = {
@@ -51,6 +62,10 @@ export type AccountDisplay = {
 };
 
 export type EventDisplay = {
+    active: boolean;
+};
+
+export type BreakpointDisplay = {
     active: boolean;
 };
 

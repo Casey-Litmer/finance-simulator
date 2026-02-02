@@ -2,7 +2,7 @@ import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
 import { ACC_SUM_TOTAL_ID, APP_VERSION, NULL_MARKER_ID, TODAY_MARKER_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
-import { AccountDisplay, AccountJSON, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
+import { AccountDisplay, AccountJSON, BreakpointDisplay, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
 
 
 export const defaultSaveState = () => {
@@ -56,9 +56,14 @@ export const defaultSaveState = () => {
                 eventType: 'Deposit',
                 markerControl: { markerId: NULL_MARKER_ID, attribute: 'eventDate' },
                 accountIds: [accUUIDs[n % nAccounts]],
+                breakpointIds: [],
                 display: defaultEventDisplay
             }]))
         ) as Record<UUID, EventJSON>,
+        //=================================================================================
+        // Breakpoints
+        //=================================================================================
+        breakpoints: {},
         //=================================================================================
         // Markers
         //=================================================================================
@@ -86,6 +91,10 @@ export const defaultAccountDisplay = ({ color, dash }: { color?: Color, dash?: D
 export const defaultEventDisplay = {
     active: true
 } as EventDisplay;
+
+export const defaultBreakpointDisplay = {
+    active: true
+} as BreakpointDisplay;
 
 export const defaultMarkerDisplay = ({ color, dash }: { color?: Color, dash?: Dash }) => ({
     visible: true,

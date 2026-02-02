@@ -4,13 +4,6 @@ import { DateFloat } from "src/utils";
 
 
 
-export type EventBreakpoint = {
-    name?: string;
-    value: number;
-    time: number;
-    markerControlId: UUID;
-};
-
 export interface EventArguments {
     id?: UUID;
     eventTime: DateFloat;
@@ -29,7 +22,12 @@ export interface EventArguments {
     isActive?: boolean;
 
     //Breakpoints
-    breakpoints?: Record<UUID, EventBreakpoint>;
+    breakpoints?: EventBreakpoint[];
+};
+
+export interface EventBreakpoint {
+    time: number;
+    value: number;
 };
 
 //Event children may have to pass settings at some point.  Maybe nest it inside EventArguments?

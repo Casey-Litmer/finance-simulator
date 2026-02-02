@@ -17,12 +17,12 @@ interface EventBreakpointItemProps {
 };
 
 export function EventBreakpointItem(props: EventBreakpointItemProps) {
-  const { breakpointId, eventId } = props;
+  const { eventId, breakpointId } = props;
   const { palette } = useTheme();
   const simulation = useSim();
   const { openMenu } = useMenu();
   const [openDropdown, setOpenDropdown] = useState(false);
-  const breakpoint = simulation.saveState.events[eventId].args.breakpoints![breakpointId];
+  const breakpoint = simulation.saveState.breakpoints[breakpointId];
 
   const ContainerSx = {
     borderRadius: '4px',
@@ -73,7 +73,7 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
       {/*v- hotfix for chrome */}
       <FixedText text={breakpointDate} style={{ fontSize: '75%', lineHeight: 2 }} />
       <FixedText maxWidth={'90%'} text={breakpointName} />
-      <VisibilityButton type='event' id={eventId} />
+      <VisibilityButton type='breakpoint' id={breakpointId} />
 
       <DropdownMenu 
         sx={ContainerSx} 
