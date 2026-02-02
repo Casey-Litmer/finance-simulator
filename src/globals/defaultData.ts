@@ -54,7 +54,7 @@ export const defaultSaveState = () => {
                     periodMode: 'constant',
                 },
                 eventType: 'Deposit',
-                markerControl: { markerId: NULL_MARKER_ID, attribute: 'eventDate' },
+                markerControl: { startMarkerId: NULL_MARKER_ID, endMarkerId: NULL_MARKER_ID },
                 accountIds: [accUUIDs[n % nAccounts]],
                 breakpointIds: [],
                 display: defaultEventDisplay

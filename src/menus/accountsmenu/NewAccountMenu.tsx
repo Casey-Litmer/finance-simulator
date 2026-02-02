@@ -21,7 +21,7 @@ interface NewAccountMenuProps {
 export function NewAccountMenu(props: NewAccountMenuProps) {
   const { accountId } = props;
   const simulation = useSim();
-  const today = getToday().time;
+  const today = Math.floor(getToday().time);
   const [openState, setOpenState] = useState(false);
   const { handleSubmit,
     register,
@@ -38,7 +38,7 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
             name: `Checking Account`,
           },
           accountType: 'Checking Account',
-          eventIds: []
+          eventIds: [],
         }
     }
     );

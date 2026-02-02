@@ -27,8 +27,7 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
             const eventType = EventConstructorMap[event.eventType];
             const withAccounts = event.accountIds.map((id) => accounts[id]); 
             const markerControl = event.markerControl;
-            const { markerId, attribute } = markerControl;
-            const controlActive = markerId !== NULL_MARKER_ID;
+            const { startMarkerId, endMarkerId } = markerControl;
             const eventActive = saveState.events[id].display.active;
 
             // Apply active breakpoint marker controllers
@@ -49,11 +48,11 @@ export const simInitObjects = (saveState: SaveState): SimParameters => {
                 ...event.args,
                 breakpoints: breakpoints,
                 // Apply marker controllers
-                eventTime: (controlActive && attribute === 'eventDate') 
-                    ? saveState.markers[markerControl.markerId].time 
+                eventTime: (startMarkerId !== NULL_MARKER_ID) 
+                    ? saveState.markers[markerControl.startMarkerId].time 
                     : event.args.eventTime,
-                endTime: (controlActive && attribute === 'endDate') 
-                    ? saveState.markers[markerControl.markerId].time 
+                endTime: (endMarkerId !== NULL_MARKER_ID) 
+                    ? saveState.markers[markerControl.endMarkerId].time 
                     : event.args.endTime,
             };
 

@@ -80,8 +80,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
             accountIds: [accountId],
             breakpointIds: [],
             markerControl: {
-              markerId: NULL_MARKER_ID,
-              attribute: 'eventDate',
+              startMarkerId: NULL_MARKER_ID,
+              endMarkerId: NULL_MARKER_ID,
             },
           },
   });
@@ -103,7 +103,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
   const percentMode = currentState.args.percentMode;
   const isChangeInterestRate = currentState.eventType === 'Change Interest Rate';
-  const isControlled = currentState.markerControl.markerId !== NULL_MARKER_ID;
+  const isControlledStartMarker = currentState.markerControl.startMarkerId !== NULL_MARKER_ID;
+  const isControlledEndDate = currentState.markerControl.endMarkerId !== NULL_MARKER_ID;
 
   // ============================================================================
   // Display Parameters
@@ -113,10 +114,12 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const valueLabel = valueLabelFromEventType(currentState.eventType);
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
-  const markerTime = isControlled ? 
-    simulation.saveState.markers[currentState.markerControl.markerId as UUID].time : 
-    today;
-  const markerAttribute = currentState.markerControl.attribute;
+  const hasMarkers = markers.length > 0;
+  const startMarkerTime = isControlledStartMarker ? 
+    simulation.saveState.markers[currentState.markerControl.startMarkerId as UUID].time : today;
+  const endMarkerTime = isControlledEndDate ? 
+    simulation.saveState.markers[currentState.markerControl.endMarkerId as UUID].time : today;
+  
 
   //=================================================================================
   // Save / Delete
@@ -181,44 +184,29 @@ export function NewEventMenu(props: NewEventMenuProps) {
 {/* Event Date */}
         <MenuItemContainer className="DataEntryStyles">
           Event Date
-          {!isControlled || markerAttribute !== 'eventDate' ? (
+          {isControlledStartMarker ? (
             <DateSelector
               register={register('args.eventTime')}
               control={control}
               selected={currentState.args.eventTime}
             />
-          ) : (<DateSelector selected={markerTime} />)}
+          ) : (<DateSelector selected={startMarkerTime} />)}
         </MenuItemContainer>
 
-{/* Marker Control */}        
-        {markers.length > 0 && (
-          <MenuItemContainer className="DataEntryStyles" style={{flexDirection: 'row'}}>
-  {/* Marker Id */}
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              Marker
-              <DropdownSelect
-                register={register('markerControl.markerId')}
-                control={control}
-              >
-                {[NULL_MARKER_ID, ...markers].map((id) => (
-                  <option key={id} value={id}>
-                    {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
-                  </option>
-                ))}
-              </DropdownSelect>
-            </div>
-
-  {/* Marker Control Attribute */}
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              Parameter
-              <DropdownSelect
-                register={register('markerControl.attribute')}
-                control={control}
-              >
-                <option key='eventDate' value='eventDate'>Event Date</option>
-                <option key='endDate' value='endDate'>End Date</option>
-              </DropdownSelect>
-            </div>
+{/* Marker Control Start */}        
+        {hasMarkers && (
+          <MenuItemContainer className="DataEntryStyles">
+            Marker
+            <DropdownSelect
+              register={register('markerControl.startMarkerId')}
+              control={control}
+            >
+              {[NULL_MARKER_ID, ...markers].map((id) => (
+                <option key={id} value={id}>
+                  {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
+                </option>
+              ))}
+            </DropdownSelect>
           </MenuItemContainer>
         )}
 
@@ -322,77 +310,93 @@ export function NewEventMenu(props: NewEventMenuProps) {
         )}
 
 {/* Periodic */}
-        {isPeriodic && (<>
+        {isPeriodic && (
+          <>
   {/* Period */}
-          <MenuItemContainer className="DataEntryStyles">
-            {`Period (${periodUnits})`}
-            <InputField
-              type="number"
-              errors={errors}
-              register={register('args.eventPeriod', {
-                valueAsNumber: true,
-                validate: { 
-                  validateInt: validateMonthlyPeriodIsInt(currentState), 
-                  validateValue: validatePeriodBounds(periodUnits),
-                },
-              })}
-              control={control}
-              convertOutput={Number}
-              defaultValue={currentState.args.eventPeriod ?? 7}
-            />
-          </MenuItemContainer>
+            <MenuItemContainer className="DataEntryStyles">
+              {`Period (${periodUnits})`}
+              <InputField
+                type="number"
+                errors={errors}
+                register={register('args.eventPeriod', {
+                  valueAsNumber: true,
+                  validate: { 
+                    validateInt: validateMonthlyPeriodIsInt(currentState), 
+                    validateValue: validatePeriodBounds(periodUnits),
+                  },
+                })}
+                control={control}
+                convertOutput={Number}
+                defaultValue={currentState.args.eventPeriod ?? 7}
+              />
+            </MenuItemContainer>
 
   {/* Period Mode */}
-          <MenuItemContainer className="DataEntryStyles">
-            Period Mode
-            <DropdownSelect
-              register={register('args.periodMode', { 
-                validate: { 
-                  validateDay: validateMonthlyCanUseDay(currentState),
-                },
-              })}
-              control={control}
-              errors={errors}
-            >
-              <option key="constant" value="constant">constant</option>
-              <option key="monthly" value="monthly">monthly</option>
-            </DropdownSelect>
-          </MenuItemContainer>
+            <MenuItemContainer className="DataEntryStyles">
+              Period Mode
+              <DropdownSelect
+                register={register('args.periodMode', { 
+                  validate: { 
+                    validateDay: validateMonthlyCanUseDay(currentState),
+                  },
+                })}
+                control={control}
+                errors={errors}
+              >
+                <option key="constant" value="constant">constant</option>
+                <option key="monthly" value="monthly">monthly</option>
+              </DropdownSelect>
+            </MenuItemContainer>
 
   {/* Doesn't End */}
-          <MenuItemContainer className="DataEntryStyles">
-            Doesn't End
-            <UtilityButton
-              name="Doesn't End"
-              icon={doesEnd ? CheckBoxOutlineBlank : CheckBoxOutlined}
-              handleClick={() => {
-                if (currentState.args.endTime === undefined) {
-                  setValue('args.endTime', currentState.args.eventTime);
-                };
-                setValue('args.doesEnd', !doesEnd);
-              }}
-            />
-          </MenuItemContainer>
+            <MenuItemContainer className="DataEntryStyles">
+              Doesn't End
+              <UtilityButton
+                name="Doesn't End"
+                icon={doesEnd ? CheckBoxOutlineBlank : CheckBoxOutlined}
+                handleClick={() => {
+                  if (currentState.args.endTime === undefined) {
+                    setValue('args.endTime', currentState.args.eventTime);
+                  };
+                  setValue('args.doesEnd', !doesEnd);
+                }}
+              />
+            </MenuItemContainer>
 
-  {/* Does End */}
-          {doesEnd && (
-            <>
-    {/* End Date */}
+  {/* End Date */}
+            {doesEnd && (
               <MenuItemContainer className="DataEntryStyles">
                 End Date
-                {!isControlled || markerAttribute !== 'endDate' ? (
+                {isControlledEndDate ? (
                   <DateSelector
                     register={register('args.endTime')}
                     control={control}
                     selected={currentState.args.endTime!}
                   />
                 ) : (
-                  <DateSelector selected={markerTime} />
+                  <DateSelector selected={endMarkerTime} />
                 )}
               </MenuItemContainer>
-            </>
-          )}
-        </>)}
+            )}
+
+  {/* Marker Control End */}
+            {doesEnd && hasMarkers && (
+              <MenuItemContainer className="DataEntryStyles">
+                Marker
+                <DropdownSelect
+                  register={register('markerControl.endMarkerId')}
+                  control={control}
+                >
+                  {[NULL_MARKER_ID, ...markers].map((id) => (
+                    <option key={id} value={id}>
+                      {simulation.saveState.markers[id as UUID]?.name ?? 'None'}
+                    </option>
+                  ))}
+                </DropdownSelect>
+              </MenuItemContainer>
+            )}
+        </>
+      )}
 
 {/* Save and Delete */}
         <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>

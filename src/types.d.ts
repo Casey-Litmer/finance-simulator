@@ -33,7 +33,7 @@ export type AccountJSON = {
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
-    markerControl: { markerId: UUID, attribute: 'eventDate' | 'endDate' };
+    markerControl: { startMarkerId: UUID, endMarkerId: UUID };
     accountIds: UUID[];
     breakpointIds: UUID[];
     display: EventDisplay;
