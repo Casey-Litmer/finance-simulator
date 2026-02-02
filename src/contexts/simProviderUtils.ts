@@ -46,7 +46,8 @@ export function updateEventBreakpointIds(saveState: SaveState, breakpointsPartia
             const breakpointId = _breakpointId as UUID;
             const eventId = breakpoint.eventId;
             const event = saveState.events[eventId];
-            event.breakpointIds.push(breakpointId);
+            if (!event.breakpointIds.includes(breakpointId))
+                event.breakpointIds.push(breakpointId);
         };
     });
 };
@@ -94,11 +95,25 @@ export const _deleteBreakpoint = (breakpointId: UUID, saveState: SaveState) => {
 /**Deletes a marker and clears the marker control from all linked events*/
 export const _deleteMarker = (markerId: UUID, saveState: SaveState) => {
     const linkedEventIds = Object.entries(saveState.events)
-        .filter(([_, event]) => event.markerControl?.markerId === markerId)
+        .filter(([_, event]) => {
+            return event.markerControl?.startMarkerId === markerId
+                || event.markerControl?.endMarkerId === markerId;
+        })
+        .map(([id, _]) => id) as UUID[];
+    const linkedBreakpointIds = Object.entries(saveState.breakpoints)
+        .filter(([_, breakpoint]) => breakpoint.markerControlId === markerId)
         .map(([id, _]) => id) as UUID[];
     // Turn off control for linked events
     linkedEventIds.forEach(eventId => {
-        saveState.events[eventId].markerControl.markerId = NULL_MARKER_ID;
+        const markerControl = saveState.events[eventId].markerControl;
+        if (markerControl?.startMarkerId === markerId)
+            saveState.events[eventId].markerControl.startMarkerId = NULL_MARKER_ID;
+        if (markerControl?.endMarkerId === markerId)
+            saveState.events[eventId].markerControl.endMarkerId = NULL_MARKER_ID;
+    });
+    // Turn off control for linked breakpoints
+    linkedBreakpointIds.forEach(breakpointId => {
+        saveState.breakpoints[breakpointId].markerControlId = NULL_MARKER_ID;
     });
     delete saveState.markers[markerId];
 };

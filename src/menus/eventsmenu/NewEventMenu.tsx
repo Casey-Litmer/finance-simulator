@@ -184,7 +184,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
 {/* Event Date */}
         <MenuItemContainer className="DataEntryStyles">
           Event Date
-          {isControlledStartMarker ? (
+          {!isControlledStartMarker ? (
             <DateSelector
               register={register('args.eventTime')}
               control={control}
@@ -367,7 +367,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             {doesEnd && (
               <MenuItemContainer className="DataEntryStyles">
                 End Date
-                {isControlledEndDate ? (
+                {!isControlledEndDate ? (
                   <DateSelector
                     register={register('args.endTime')}
                     control={control}

@@ -36,7 +36,7 @@ export function MarkersMenu() {
   //=================================================================================
 
   useEffect(() => {
-    if (!markerIds.length) setOpenState(false);
+    if (markerIds.length <= 1) setOpenState(false);
   }, [markerIds]);
 
   //=========================================================================================
