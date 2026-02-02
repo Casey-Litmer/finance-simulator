@@ -73,10 +73,12 @@ export const _deleteAccount = (accountId: UUID, saveState: SaveState) => {
 /**Deletes an event and removes it from all linked accounts*/
 export const _deleteEvent = (eventId: UUID, saveState: SaveState) => {
     const event = saveState.events[eventId];
-    const eventAccountIds = event.accountIds;
-    eventAccountIds.forEach((accId) => { // Remove eventId in each linked account
+    event.accountIds.forEach((accId) => { // Remove eventId in each linked account
         const accountEventIds = saveState.accounts[accId].eventIds;
         saveState.accounts[accId].eventIds = accountEventIds.filter((evId) => evId !== eventId);
+    });
+    event.breakpointIds.forEach((bpId) => {
+        delete saveState.breakpoints[bpId];
     });
     delete saveState.events[eventId];
 };
