@@ -4,7 +4,6 @@ import { Paper, useTheme } from '@mui/material';
 import { useMenu } from 'src/contexts';
 import { MENU_TITLE_HEIGHT } from 'src/globals';
 import { ExitButton } from '../buttons';
-import { ScrollContainer } from './ScrollContainer';
 
 
 
@@ -67,9 +66,7 @@ export function Menu(props: MenuProps) {
             paddingBottom: `${menuContentsPadding / 2}px`
           }}
         >
-          <ScrollContainer>
-            {props.children}
-          </ScrollContainer>
+          {props.children}
         </Paper>
 
       </Paper>

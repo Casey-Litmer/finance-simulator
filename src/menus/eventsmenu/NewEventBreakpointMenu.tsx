@@ -5,7 +5,7 @@ import { useSim } from "src/contexts";
 import { getToday } from "src/utils";
 import { DeleteButton, SaveButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
-import { Menu, MenuItemContainer } from "src/components/menu";
+import { Menu, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { validatePercentValueBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 import { BreakpointJSON } from "src/types";
@@ -100,6 +100,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   //=================================================================================
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
+      <ScrollContainer>
       <form onSubmit={handleSubmit(handleSave)}>
 
 {/* Breakpoint Name */}
@@ -173,6 +174,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
         </MenuItemContainer>
 
       </form>
+      </ScrollContainer>
     </Menu>
   );
 };

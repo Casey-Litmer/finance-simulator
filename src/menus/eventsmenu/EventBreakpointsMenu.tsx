@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
-import { Menu, MenuDivider, MenuItemContainer } from "src/components/menu";
+import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { UtilityButton } from "src/components/buttons";
 import { EventBreakpointItem } from "./EventBreakpointItem";
 import { NewEventBreakpointMenu } from "./NewEventBreakpointMenu";
@@ -72,10 +72,13 @@ export function EventBreakpointsMenu(props: EventBreakpointsMenuProps) {
         />
         New Breakpoint
       </MenuItemContainer>
+      
       <MenuDivider />
       
 {/* Breakpoints */}
-      {breakpointItems}
+      <ScrollContainer>
+        {breakpointItems}
+      </ScrollContainer>
         
     </Menu>
   );

@@ -48,23 +48,23 @@ export function MarkersMenu() {
   //=================================================================================
   return (
     <Menu title='Markers' openState={openState} setOpenState={setOpenState}>
-      <ScrollContainer>
 {/* New Marker */}        
-        <MenuItemContainer sx={ContainerSx}>
-          <UtilityButton
-            name='New Marker'
-            icon={Add}
-            handleClick={handleNewMarker}
-          />
-          New Marker
-        </MenuItemContainer>
-        
-        <MenuDivider />
+      <MenuItemContainer sx={ContainerSx}>
+        <UtilityButton
+          name='New Marker'
+          icon={Add}
+          handleClick={handleNewMarker}
+        />
+        New Marker
+      </MenuItemContainer>
+      
+      <MenuDivider />
 
 {/* Markers */}
+      <ScrollContainer>
         {markerItems}
-          
       </ScrollContainer>
+      
     </Menu>
   );
 };

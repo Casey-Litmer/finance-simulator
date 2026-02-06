@@ -6,7 +6,7 @@ import { useSim } from "src/contexts";
 import { getToday } from "src/utils";
 import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
-import { Menu, MenuItemContainer } from "src/components/menu";
+import { Menu, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
 import { ACC_SUM_TOTAL_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
@@ -166,6 +166,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   //=================================================================================
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
+      <ScrollContainer>
       <form onSubmit={handleSubmit(handleSave)}>
 
 {/* Event Name */}
@@ -405,6 +406,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
         </MenuItemContainer>
 
       </form>
+      </ScrollContainer>
     </Menu>
   );
 };
