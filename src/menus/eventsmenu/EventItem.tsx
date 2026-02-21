@@ -36,13 +36,11 @@ export function EventItem(props: EventItemProps) {
   // Data
   //=========================================================================================
 
-  const eventTime = event.markerControl.markerId === NULL_MARKER_ID 
-    || event.markerControl.attribute !== 'eventDate' ?
-      event.args.eventTime : simulation.saveState.markers[event.markerControl.markerId].time;
+  const eventTime = event.markerControl.startMarkerId === NULL_MARKER_ID ?
+      event.args.eventTime : simulation.saveState.markers[event.markerControl.startMarkerId].time;
   const eventDate = formatDatetime(convertTime(eventTime, 'DateTime')).padEnd(10, '\u00A0');
-  const endTime = event.markerControl.markerId === NULL_MARKER_ID 
-    || event.markerControl.attribute !== 'endDate' ?
-      event.args.endTime ?? 0 : simulation.saveState.markers[event.markerControl.markerId].time; 
+  const endTime = event.markerControl.endMarkerId === NULL_MARKER_ID ?
+      event.args.endTime ?? 0 : simulation.saveState.markers[event.markerControl.endMarkerId].time; 
   const endDate = convertTime(endTime, 'DateTime');
   const eventName = `\u00A0${event.args.name ?? event.eventType}`;
 
