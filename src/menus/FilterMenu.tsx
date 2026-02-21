@@ -212,8 +212,10 @@ export const FilterMenu = () => {
             />
           </MenuItemContainer>
 
+          <MenuDivider />
+
 {/* Save */}
-          <MenuItemContainer sx={{paddingTop: '8px' }}>
+          <MenuItemContainer className='SaveDeleteStyles'>
             <SaveButton text='Apply' />
           </MenuItemContainer>
 

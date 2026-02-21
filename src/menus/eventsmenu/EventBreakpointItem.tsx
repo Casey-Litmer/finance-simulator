@@ -72,7 +72,7 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
 
       {/*v- hotfix for chrome */}
       <FixedText text={breakpointDate} style={{ fontSize: '75%', lineHeight: 2 }} />
-      <FixedText maxWidth={'90%'} text={breakpointName} />
+      <FixedText maxWidth={'46%'} text={breakpointName} />
       <VisibilityButton type='breakpoint' id={breakpointId} />
 
       <DropdownMenu 

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from "@mui/icons-material";
 import { useSim } from "src/contexts";
 import { AccountConstructorMap } from "src/simulation";
-import { Menu, MenuItemContainer } from "src/components/menu";
+import { Menu, MenuDivider, MenuItemContainer } from "src/components/menu";
 import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { getToday } from "src/utils";
@@ -108,6 +108,8 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           />
         </MenuItemContainer>
 
+        <MenuDivider />
+
 {/* Open Date */}
         <MenuItemContainer className="DataEntryStyles">
           Open Date
@@ -148,6 +150,7 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
 
 {/* Savings Account */}
         {(isSavingsAccount) && <>
+          <MenuDivider />
   {/* Interest Rate */}
           <MenuItemContainer className="DataEntryStyles">
             Interest Rate (%)
@@ -202,8 +205,10 @@ export function NewAccountMenu(props: NewAccountMenuProps) {
           </MenuItemContainer>
         </>}
 
+        <MenuDivider />
+
 {/* Save and Delete */}
-        <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
+        <MenuItemContainer className='SaveDeleteStyles'>
           <SaveButton />
           {(accountId !== undefined) &&
             <DeleteButton onClick={handleDelete} />}

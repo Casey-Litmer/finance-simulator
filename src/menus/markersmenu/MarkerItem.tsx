@@ -51,17 +51,39 @@ export function MarkerItem(props: MarkerItemProps) {
   //=================================================================================
   
   const fields = Object.values(simulation.saveState.events)
-    .filter(event => event.markerControl.markerId === markerId)
-    .map(event => ({
-      condition: true,
-      row: {
-        left: `"${event.args.name || event.eventType}":`,
-        right: {
-          'eventDate': 'Event Date',
-          'endDate': 'End Date',
-        }[event.markerControl.attribute]
-      },
-    }));
+    .map(event => {
+      const isStartMarker = event.markerControl.startMarkerId === markerId;
+      const isEndMarker = event.markerControl.endMarkerId === markerId 
+        && !!event.args.doesEnd && event.eventType.includes('Periodic');
+      const breakpointIds = Object.values(event.breakpointIds)
+        .map(id => simulation.saveState.breakpoints[id])
+        .filter(breakpoint => breakpoint.markerControlId === markerId);
+
+      return [
+        {
+          condition: isStartMarker,
+          row: {
+            left: event.args.name || event.eventType,
+            right: 'Start Date',
+          },
+        }, 
+        {
+          condition: isEndMarker,
+          row: {
+            left: event.args.name || event.eventType,
+            right: 'End Date',
+          },
+        }, 
+        ...breakpointIds.map(breakpoint => ({
+          condition: true,
+          row: {
+            left: event.args.name || event.eventType,
+            right: breakpoint.name || 'Breakpoint',
+          },
+        })),
+      ];
+    })
+    .flatMap(arr => arr);
 
   //=========================================================================================
   return (
@@ -81,7 +103,7 @@ export function MarkerItem(props: MarkerItemProps) {
 
       {/*v- hotfix for chrome */}
       <FixedText text={markerTime} style={{ fontSize: '75%', lineHeight: 2 }} />
-      <FixedText maxWidth={'90%'} text={markerName} />
+      <FixedText text={markerName} maxWidth={'38%'} />
       <ColorSelect line={line} callback={handleColorCallback} />
       <VisibilityButton type='marker' id={markerId} />
 

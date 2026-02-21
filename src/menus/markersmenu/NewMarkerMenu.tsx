@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useSim } from "src/contexts";
 import { DeleteButton, SaveButton } from "src/components/buttons";
 import { DateSelector, InputField } from "src/components/dataentry";
-import { Menu, MenuItemContainer } from "src/components/menu";
+import { Menu, MenuDivider, MenuItemContainer } from "src/components/menu";
 import { defaultMarker } from "src/globals";
 import { MarkerJSON } from "src/types";
 
@@ -68,6 +68,7 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
   return (
     <Menu title={title} openState={openState} setOpenState={setOpenState}>
       <form onSubmit={handleSubmit(handleSave)}>
+
 {/* Marker Name */}
         <MenuItemContainer className="DataEntryStyles">
           Marker Name
@@ -80,6 +81,9 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
             convertOutput={nm => nm.length ? nm : undefined}
           />
         </MenuItemContainer>
+
+        <MenuDivider />
+
 {/* Marker Time */}
         <MenuItemContainer className="DataEntryStyles">
           Marker Location
@@ -89,8 +93,11 @@ export function NewMarkerMenu(props: NewMarkerMenuProps) {
             selected={currentState.time}
           />
         </MenuItemContainer>
+
+        <MenuDivider />
+
 {/* Save and Delete */}
-        <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
+        <MenuItemContainer className='SaveDeleteStyles'>
           <SaveButton />
           {(markerId !== undefined) &&
           <DeleteButton onClick={handleDelete} />}

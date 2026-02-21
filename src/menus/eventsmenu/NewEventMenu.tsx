@@ -199,10 +199,10 @@ export function NewEventMenu(props: NewEventMenuProps) {
           ) : (<DateSelector selected={startMarkerTime} />)}
         </MenuItemContainer>
 
-{/* Marker Control Start */}        
+{/* Marker Control */}
         {hasMarkers && (<>
-          <MenuItemRow className="DataEntryStyles">
-        
+          <MenuItemRow className="DataEntryStyles">      
+    {/* Marker Control Start */}        
             <div className="DataEntryStyles" style={{ maxWidth: '50%' }}>
               Marker
               <DropdownSelect
@@ -217,6 +217,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
               </DropdownSelect>
             </div>
 
+    {/* Set Day */}  
             {canClampStartMarker && (
               <div className="DataEntryStyles">
                 Set Day
@@ -229,6 +230,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             )}
           </MenuItemRow>
 
+  {/* Day Of Month */}  
           {canClampStartMarker && clampToMonthlyDate && (
               <MenuItemContainer className="DataEntryStyles">
                 Day Of Month
@@ -431,6 +433,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
               <DropdownSelect
                 register={register('markerControl.endMarkerId')}
                 control={control}
+                style={{ maxWidth: '50%' }}
               >
                 {[NULL_MARKER_ID, ...markers].map((id) => (
                   <option key={id} value={id}>

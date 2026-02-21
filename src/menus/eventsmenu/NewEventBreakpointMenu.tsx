@@ -5,7 +5,7 @@ import { useSim } from "src/contexts";
 import { getToday } from "src/utils";
 import { DeleteButton, SaveButton } from "src/components/buttons";
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
-import { Menu, MenuItemContainer, ScrollContainer } from "src/components/menu";
+import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
 import { NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { validatePercentValueBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 import { BreakpointJSON } from "src/types";
@@ -116,6 +116,8 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
           />
         </MenuItemContainer>
 
+        <MenuDivider />
+
 {/* Breakpoint Date */}
         <MenuItemContainer className="DataEntryStyles">
           Breakpoint Date
@@ -135,6 +137,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
             <DropdownSelect
               register={register('markerControlId')}
               control={control}
+              style={{ maxWidth: '50%' }}
             >
               {[NULL_MARKER_ID, ...markers].map((id) => (
                 <option key={id} value={id}>
@@ -167,8 +170,10 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
           />
         </MenuItemContainer>
 
+        <MenuDivider />
+
 {/* Save and Delete */}
-        <MenuItemContainer sx={{ gap: '16px', paddingTop: '8px' }}>
+        <MenuItemContainer className='SaveDeleteStyles'>
           <SaveButton />
           {eventId !== undefined && <DeleteButton onClick={handleDelete} />}
         </MenuItemContainer>

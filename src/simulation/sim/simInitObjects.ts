@@ -59,8 +59,7 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
             const args = {
                 ...event.args,
                 breakpoints: breakpoints,
-
-                // Apply marker controllers
+            // Apply marker controllers
                 eventTime: (startMarkerId !== NULL_MARKER_ID)
                     ? applyEventTimeMarker(event, saveState)
                     : event.args.eventTime,
@@ -80,11 +79,12 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
 
 function applyEventTimeMarker(event: EventJSON, saveState: SaveState) {
     const markerControl = event.markerControl;
-    const monthlyMode = event.args.periodMode === 'monthly' && event.eventType.includes('Periodic');
+    const clampDayOfMonth = event.args.periodMode === 'monthly' 
+        && event.eventType.includes('Periodic')  && event.markerControl.clampToMonthlyDate;
     let markerTime = saveState.markers[markerControl.startMarkerId].time;
 
     // Clamp to day of month
-    if (monthlyMode && event.markerControl.clampToMonthlyDate) {
+    if (clampDayOfMonth) {
         const markerDate = convertTime(markerTime, 'Date');
         markerDate.setDate(markerControl.dayOfMonth);
         if (convertTime(markerDate, 'number') < markerTime)
