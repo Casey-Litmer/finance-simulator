@@ -299,7 +299,6 @@ export function NewEventMenu(props: NewEventMenuProps) {
           </MenuItemRow>
         )}
 
-
 {/* Event Rate (change interest rate) */}
         {(isChangeInterestRate) && (
           <MenuItemContainer className="DataEntryStyles">
@@ -331,7 +330,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
                 register={register('accountIds')}
                 control={control}
                 convertInput={(accIds) => accIds[1]}
-                convertOutput={(accId) => [currentAccountId, Number(accId)]}
+                convertOutput={(accId) => [currentAccountId, accId]}
               >
                 {otherAccounts.map((key) => (
                   <option key={key} value={key}>

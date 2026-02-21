@@ -42,12 +42,12 @@ export type EventJSON = {
 export type EventMarkerControl = {
     startMarkerId: UUID,
     endMarkerId: UUID,
-    clampToMonthlyDate: boolean;
+    clampToMonthlyDate: boolean; // What to call other than "clamp"?
     dayOfMonth: number;
 };
 
 //TODO 
-//- Clamp to Date (for monthly)
+//- Better descriptions / coding conventions for "clamp mode"
 //- Precedence correction
 //-   
 

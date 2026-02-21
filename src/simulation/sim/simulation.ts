@@ -98,8 +98,8 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
  * @param step - The time step used for calculations.
  */
 function prepAccounts(timeDomain: number[], step: number, accounts: Account[], events: AccountEvent[]): void {
-    for (const event of events) {
 
+    for (const event of events) {
         if (event.isPeriodic) {
             //#Generate all reoccuring events FIRST
             const generatedEvents = event.generatePeriodicEvents(timeDomain, step)  
