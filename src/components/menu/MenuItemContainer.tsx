@@ -24,6 +24,16 @@ export function MenuItemContainer(props: MenuItemContainerProps) {
   );
 };
 
+export function MenuItemRow(props: MenuItemContainerProps) {
+  return <MenuItemContainer
+    className={props.className}
+    sx={props.sx}
+    style={{ flexDirection: 'row', flexWrap: 'nowrap', gap: '5%', ...props.style}}
+  >
+    {props.children}
+  </MenuItemContainer>
+};
+
 //=================================================================================
 
 interface DropdownContainerProps {

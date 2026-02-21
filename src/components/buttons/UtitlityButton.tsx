@@ -19,7 +19,7 @@ export function UtilityButton(props: UtilityButtonProps) {
   const { handleClick, icon, sx } = props;
 
   return (
-    <div className='UtilityButton'>
+    <div className='UtilityButton' style={{ marginBottom: 0 }}>
       <IconButton onClick={handleClick}
         sx={{...buttonSX, ...sx}}>
         {icon && React.createElement(icon)}

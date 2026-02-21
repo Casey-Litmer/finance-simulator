@@ -31,6 +31,11 @@ export const validateInterestRateBounds = () => (value: any) => {
         'Interest rate must be in the range [0, 100]' : true;
 };
 
+export const validateMarkerDayOfMonthBounds = () => (value: any) => {
+    return (value > 28 || value < 1) ?
+        'Day of month must be in the range [1, 28]' : true;
+};
+
 export const validateMonthlyCanUseDay = (currentState: EventJSON) => (_: any) => {
     const isMonthlyMode = currentState.args.periodMode === 'monthly';
     const isPeriodic = currentState.eventType.includes('Periodic');

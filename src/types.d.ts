@@ -17,8 +17,8 @@ export type SaveState = {
     events: Record<UUID, EventJSON>;
     breakpoints: Record<UUID, BreakpointJSON>
     markers: Record<UUID, MarkerJSON>;
-    filter?: FilterJSON;                                   
-    xDomain: {start: number, stop: number, step: number};  
+    filter?: FilterJSON;
+    xDomain: { start: number, stop: number, step: number };
 };
 
 // Data
@@ -33,11 +33,23 @@ export type AccountJSON = {
 export type EventJSON = {
     args: EventArguments;
     eventType: string;
-    markerControl: { startMarkerId: UUID, endMarkerId: UUID };
+    markerControl: EventMarkerControl;
     accountIds: UUID[];
     breakpointIds: UUID[];
     display: EventDisplay;
 };
+
+export type EventMarkerControl = {
+    startMarkerId: UUID,
+    endMarkerId: UUID,
+    clampToMonthlyDate: boolean;
+    dayOfMonth: number;
+};
+
+//TODO 
+//- Clamp to Date (for monthly)
+//- Precedence correction
+//-   
 
 export type BreakpointJSON = {
     name?: string;
@@ -106,7 +118,7 @@ export type FilterJSON = {
 // SimParameters -> SimulatonData
 
 export type SimParameters = {
-    xDomain: {start: number, stop: number, step: number};
+    xDomain: { start: number, stop: number, step: number };
     accounts: Account[];
     events: AccountEvent[];
 };
@@ -118,14 +130,14 @@ export type SimulationData = {
 };
 
 export type AccountsData = {
-    [key: UUID] : {
+    [key: UUID]: {
         bals: (number | null)[];
         account: Account;
     };
 };
 
 export type EventsData = {
-    [key: UUID] : {
+    [key: UUID]: {
         event: AccountEvent;
     };
 };

@@ -140,12 +140,12 @@ export function InputField(props: InputFieldProps) {
   if (!control) {
     return (
       <input
-        className={`DataEntry ${className}`}
+        className={`DataEntry ${className ?? ''}`}
+        style={{ minWidth: 0, boxSizing: 'border-box', ...style }}
         type={type}
         step='any'
         onKeyDown={handleEnter}
         autoComplete='off'
-        style={style}
         defaultValue={convertInput(defaultValue)}
         defaultChecked={(type === 'checkbox' && typeof defaultValue === 'boolean') ? defaultValue : undefined}
         readOnly
@@ -161,12 +161,12 @@ export function InputField(props: InputFieldProps) {
       {...register}
       render={({ field }) => <>
         <input
-          className={`DataEntry ${className}`}
+          className={`DataEntry ${className ?? ''}`}
+          style={{ boxSizing: 'border-box', ...style }}
           type={type}
           step='any'
           onKeyDown={handleEnter}
           autoComplete='off'
-          style={style}
           defaultValue={convertInput(field.value ?? defaultValue)}
           defaultChecked={(field.value && type === 'checkbox') ?? defaultValue}
           onChange={(e) => {
