@@ -64,7 +64,7 @@ export function NewEventBreakpointMenu(props: NewEventBreakpointMenuProps) {
   // Conditions
   //=================================================================================
 
-  const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => event.eventType.includes(s));
+  const hasPercentMode = ['Deposit', 'Withdrawal', 'Transfer'].some(s => event.eventType.includes(s));
   const percentMode = event.args.percentMode;
   const isControlled = currentState.markerControlId !== NULL_MARKER_ID;
 

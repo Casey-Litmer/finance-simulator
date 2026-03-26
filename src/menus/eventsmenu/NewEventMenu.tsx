@@ -102,7 +102,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const isPeriodic = currentState.eventType.includes('Periodic');
   const doesEnd = currentState.args.doesEnd;
   const hasValue = !['Close Account'].includes(currentState.eventType);
-  const hasPercentMode = ['Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
+  const hasPercentMode = ['Deposit', 'Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
   const percentMode = currentState.args.percentMode;
   const isChangeInterestRate = currentState.eventType === 'Change Interest Rate';
   const isControlledStartMarker = currentState.markerControl.startMarkerId !== NULL_MARKER_ID;
