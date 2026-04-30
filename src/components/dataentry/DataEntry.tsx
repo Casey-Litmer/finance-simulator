@@ -56,6 +56,7 @@ interface DropdownSelectProps extends FormHookProps {
   children?: ReactNode;
   style?: CSSProperties;
   defaultValue?: any;
+  multiple?: boolean;
 };
 
 export function DropdownSelect(props: DropdownSelectProps) {
@@ -63,6 +64,7 @@ export function DropdownSelect(props: DropdownSelectProps) {
     children,
     style,
     defaultValue,
+    multiple,
     errors,
     register,
     control,
@@ -73,6 +75,7 @@ export function DropdownSelect(props: DropdownSelectProps) {
   if (!control) {
     return (
       <select
+        multiple={multiple}
         style={style}
         className='DataEntry'
         value={convertInput(defaultValue)}
@@ -91,11 +94,15 @@ export function DropdownSelect(props: DropdownSelectProps) {
       {...register}
       render={({ field }) => <>
         <select
+          multiple={multiple}
           style={style}
           className='DataEntry'
           value={convertInput(field.value ?? defaultValue)}
           onChange={(e) => {
-            const output = convertOutput(e.target.value);
+            const value = multiple
+              ? Array.from(e.target.selectedOptions).map((option) => option.value)
+              : e.target.value;
+            const output = convertOutput(value);
             field.onChange({ target: { value: output } });
           }}
         >

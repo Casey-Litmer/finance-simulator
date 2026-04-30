@@ -5,13 +5,13 @@ import { DeepPartial, deepPartialReducer } from "src/utils/deepPartial";
 import { defaultBreakpointDisplay, defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { getToday, newUUID } from "src/utils";
-import { AccountJSON, BreakpointJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
-import { _deleteAccount, _deleteEvent, _deleteBreakpoint, _deleteMarker, updateAccountEventIds, updateEventBreakpointIds } from "./simProviderUtils";
+import { AccountJSON, BreakpointJSON, EventGroupJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
+import { _deleteAccount, _deleteEvent, _deleteBreakpoint, _deleteMarker, _deleteGroup, updateAccountEventIds, updateEventBreakpointIds, updateGroupEventIds } from "./simProviderUtils";
 
 
 
 type DispatchDeleteEvent = {
-  type: 'account' | 'event' | 'eventBreakpoint' | 'marker';
+  type: 'account' | 'event' | 'eventBreakpoint' | 'marker' | 'eventGroup';
   id: UUID;
 };
 
@@ -27,10 +27,12 @@ type SimContextType = {
   addEvent: (event: EventJSON) => void;
   addMarker: (event: MarkerJSON) => void;
   addBreakpoint: (breakpoint: BreakpointJSON) => void;
+  addEventGroup: (group: EventGroupJSON) => void;
   deleteAccount: (accountId: UUID) => void;
   deleteEvent: (eventId: UUID) => void;
   deleteBreakpoint: (breakpointId: UUID) => void;
   deleteMarker: (markerId: UUID) => void;
+  deleteEventGroup: (groupId: UUID) => void;
   dispatchDelete: () => void;
   updateTodayMarker: () => void;
 };
@@ -72,9 +74,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
       return partial as SaveState;
     };
     
-    //If the events change, update the eventIds in accounts
-    if ('events' in partial) updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);
-    if ('breakpoints' in partial) updateEventBreakpointIds(prev, partial.breakpoints as Record<number, BreakpointJSON>)
+    //If the events change, update the eventIds in accounts and group ids
+    if ('events' in partial) {
+      updateAccountEventIds(prev, partial.events as Record<number, EventJSON>);
+      updateGroupEventIds(prev, partial.events as Record<number, EventJSON>);
+    };
+    if ('breakpoints' in partial) updateEventBreakpointIds(prev, partial.breakpoints as Record<number, BreakpointJSON>);
      
     return deepPartialReducer(prev, partial);
   };
@@ -113,6 +118,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     saveState.accounts, 
     saveState.events, 
     saveState.breakpoints,
+    saveState.groups,
     // exclude today marker changes
     JSON.stringify({...saveState.markers, [TODAY_MARKER_ID]: null}), 
     saveState.xDomain, 
@@ -171,6 +177,13 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     }});
   };
 
+  /**Creates a new Record key before dispatching new event group*/
+  const addEventGroup = (group: EventGroupJSON) => {
+    dispatchSaveState({ partial: { 
+      groups: { [newUUID()]: group },
+    }});
+  };
+
   //=================================================================================
   //// Deletion ///
 
@@ -186,6 +199,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         if (type === 'event') _deleteEvent(id, saveState);
         if (type === 'eventBreakpoint') _deleteBreakpoint(id, saveState);
         if (type === 'marker') _deleteMarker(id, saveState);
+        if (type === 'eventGroup') _deleteGroup(id, saveState);
       });
       setDeletionQueue([]);
       dispatchForceRun();
@@ -216,6 +230,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
     return true;
   };
 
+  /**Adds an event group to be deleted to the queue*/
+  const deleteEventGroup = (groupId: UUID) => {
+    deletionQueue.push({ type: 'eventGroup', id: groupId });
+    return true;
+  };
+
   //=================================================================================
   // Automatically update today marker
   const updateTodayMarker = () => { 
@@ -233,10 +253,12 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
         addEvent,
         addMarker,
         addBreakpoint,
+        addEventGroup,
         deleteAccount,
         deleteEvent,
         deleteBreakpoint,
         deleteMarker,
+        deleteEventGroup,
         dispatchDelete,
         updateTodayMarker
       }}

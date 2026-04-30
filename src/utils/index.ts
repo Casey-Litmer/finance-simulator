@@ -4,3 +4,5 @@ export * from './timeMethods';
 export * from  './sim/eventTableMethods';
 export * from  './sim/makeIdTable';
 export  * from './common';
+
+//DO NOT INCLUDE './eventDisplay';

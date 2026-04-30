@@ -10,6 +10,7 @@ import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/compo
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
 import { ACC_SUM_TOTAL_ID, TODAY_MARKER_ID } from "src/globals";
+import { GroupsMenu, NewGroupMenu } from "../groupsmenu";
 
 
 interface MainMenuProps {
@@ -42,6 +43,7 @@ export function MainMenu(props: MainMenuProps) {
   const hasAccounts = accountItems.length > 0;
   const hasEvents = Object.keys(simulation.saveState.events).length > 0;
   const hasMarkers = Object.keys(simulation.saveState.markers).length > 1;
+  const hasGroups = Object.keys(simulation.saveState.groups).length > 0;
 
   //=========================================================================================
   // Handlers
@@ -51,6 +53,8 @@ export function MainMenu(props: MainMenuProps) {
   const handleAllEvents = () => openMenu(<EventsMenu />);
   const handleNewMarker = () => openMenu(<NewMarkerMenu />);
   const handleMarkers = () => openMenu(<MarkersMenu />);
+  const handleNewGroup = () => openMenu(<NewGroupMenu />);
+  const handleGroups = () => openMenu(<GroupsMenu />);
 
   const handleTotalColorCallback = (line: Partial<ScatterLine>) => { simulation.dispatchSaveState(
     { partial: { accounts: { [ACC_SUM_TOTAL_ID]: { display: { line } } } } }) 
@@ -84,6 +88,30 @@ export function MainMenu(props: MainMenuProps) {
             handleClick={handleMarkers}
           />
           Markers
+        </MenuItemContainer>
+      }
+
+      <MenuDivider />
+
+{/* Add Groups */}
+      <MenuItemContainer>
+        <UtilityButton
+          name='Add Group'
+          icon={Add}
+          handleClick={handleNewGroup}
+        />
+        Add Group
+      </MenuItemContainer>
+
+{/* Groups */}
+      {hasGroups &&
+        <MenuItemContainer>
+          <UtilityButton
+            name="Groups"
+            icon={KeyboardDoubleArrowRight}
+            handleClick={handleGroups}
+          />
+          Groups
         </MenuItemContainer>
       }
 

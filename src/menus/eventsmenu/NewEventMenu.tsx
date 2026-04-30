@@ -8,7 +8,7 @@ import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons"
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuDivider, MenuItemContainer, MenuItemRow, ScrollContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
-import { ACC_SUM_TOTAL_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
+import { ACC_SUM_TOTAL_ID, NULL_GROUP_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
 import { validateInterestRateBounds, validateMarkerDayOfMonthBounds, validateMonthlyCanUseDay, validateMonthlyPeriodIsInt, validatePercentValueBounds, validatePeriodBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 
@@ -16,13 +16,14 @@ import { validateInterestRateBounds, validateMarkerDayOfMonthBounds, validateMon
 interface NewEventMenuProps {
   accountId?: UUID;
   eventId?: UUID;
+  groupId?: UUID;
 }
 
 /**
  * Create init arguments if no accountId is given, else edit json.
  */
 export function NewEventMenu(props: NewEventMenuProps) {
-  const { eventId, accountId } = props;
+  const { eventId, accountId, groupId } = props;
 
   if (accountId === undefined && eventId === undefined) {
     throw Error('An id must be provided');
@@ -50,6 +51,8 @@ export function NewEventMenu(props: NewEventMenuProps) {
 
   const markers = Object.keys(simulation.saveState.markers)
     .filter((key) => key !== TODAY_MARKER_ID);
+
+  const groupIds = Object.keys(simulation.saveState.groups);
 
   // ============================================================================
   // Form Setup
@@ -79,6 +82,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
             eventType: 'Deposit',
             accountIds: [accountId],
             breakpointIds: [],
+            eventGroupId: groupId ?? NULL_GROUP_ID,
             markerControl: {
               startMarkerId: NULL_MARKER_ID,
               endMarkerId: NULL_MARKER_ID,
@@ -119,6 +123,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const periodUnits = { 'monthly': 'months', 'constant': 'days' }[currentState.args.periodMode ?? 'constant']
     ?.replace(currentState.args.eventPeriod === 1 ? 's' : '', '');
   const hasMarkers = markers.length > 0;
+  const hasGroups = groupIds.length > 0;
   const startMarkerTime = isControlledStartMarker ? 
     simulation.saveState.markers[currentState.markerControl.startMarkerId as UUID].time : today;
   const endMarkerTime = isControlledEndDate ? 
@@ -185,7 +190,24 @@ export function NewEventMenu(props: NewEventMenuProps) {
           />
         </MenuItemContainer>
 
-        <MenuDivider />
+{/* Event Group */}
+        {hasGroups && <>
+          <MenuItemContainer className="DataEntryStyles">
+            Event Groups
+            <DropdownSelect
+              register={register('eventGroupId')}
+              control={control}
+            >
+              {[NULL_GROUP_ID, ...groupIds].map(groupId => (
+                <option key={groupId} value={groupId}>
+                  {simulation.saveState.groups[groupId as UUID]?.name ?? 'None'}
+                </option>
+              ))}
+            </DropdownSelect>
+          </MenuItemContainer>
+
+          <MenuDivider />
+        </>}
 
 {/* Event Date */}
         <MenuItemContainer className="DataEntryStyles">
@@ -208,7 +230,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
               <DropdownSelect
                 register={register('markerControl.startMarkerId')}
                 control={control}
-                >
+              >
                 {[NULL_MARKER_ID, ...markers].map((id) => (
                   <option key={id} value={id}>
                     {simulation.saveState.markers[id as UUID]?.name ?? 'None'}

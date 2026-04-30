@@ -9,7 +9,7 @@ import { UtilityButton } from './UtitlityButton';
 
 interface VisibilityButtonProps {
   id: UUID;
-  type: 'account' | 'event' | 'breakpoint' | 'marker';
+  type: 'account' | 'event' | 'breakpoint' | 'marker' | 'group';
   sx?: SxProps<Theme>;
 };
 
@@ -23,14 +23,16 @@ export function VisibilityButton(props: VisibilityButtonProps) {
     "account": simulation.saveState.accounts[id]?.display.visible,
     "event": simulation.saveState.events[id]?.display.active,
     "breakpoint": simulation.saveState.breakpoints[id]?.display.active,
-    "marker": simulation.saveState.markers[id]?.display.visible
+    "marker": simulation.saveState.markers[id]?.display.visible,
+    "group": simulation.saveState.groups[id]?.active,
   }[type];
 
   const handleVisible = () => simulation.dispatchSaveState({
     "account": { partial : { accounts: { [id]: { display: { visible: !visible } } }}},
     "event": { partial : { events: { [id]: { display: { active: !visible } } }}},
     "breakpoint": { partial : { breakpoints: { [id]: { display: { active: !visible } } }}},
-    "marker": { partial : { markers: { [id]: { display: { visible: !visible } } }}}
+    "marker": { partial : { markers: { [id]: { display: { visible: !visible } } }}},
+    "group": { partial : { groups: { [id]: { active: !visible } }}},
   }[type]);
 
   //=================================================================================

@@ -2,7 +2,7 @@ import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
 import { ACC_SUM_TOTAL_ID, APP_VERSION, TODAY_MARKER_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
-import { AccountDisplay, AccountJSON, BreakpointDisplay, EventDisplay, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
+import { AccountDisplay, AccountJSON, BreakpointDisplay, EventDisplay, EventGroupJSON, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
 
 
 export const defaultSaveState = () => {
@@ -84,6 +84,9 @@ export const defaultSaveState = () => {
         //=================================================================================
         breakpoints: {},
         //=================================================================================
+        groups: {},
+        //=================================================================================
+        //=================================================================================
         // Markers
         //=================================================================================
         markers: {
@@ -134,6 +137,7 @@ export const defaultFilter = {
     periodicTransfer: true,
     singular: true,
     periodic: true,
+    groups: {},
     name: '',
     range: {
         after: false,
@@ -148,5 +152,13 @@ export const defaultFilter = {
 export const defaultMarker = ({ color, dash }: { color?: Color, dash?: Dash }) => ({
     time: getToday().time,
     name: 'Today',
-    display: defaultMarkerDisplay({color, dash})
+    display: defaultMarkerDisplay({ color, dash })
 } as MarkerJSON);
+
+//=================================================================================
+
+export const defaultEventGroup = () => ({
+    name: 'New Group',
+    active: true,
+    eventIds: [],
+} as EventGroupJSON);

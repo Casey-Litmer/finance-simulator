@@ -1,11 +1,9 @@
 import { UUID } from "crypto";
-import { NULL_MARKER_ID } from "src/globals";
+import { NULL_GROUP_ID, NULL_MARKER_ID } from "src/globals";
 import { BreakpointJSON, EventJSON, SaveState } from "src/types";
 
 
 //=================================================================================
-
-//TODO: Make these update ID functions have cleaner logic?
 
 /**
    * Updates all accounts' eventIds with changes in event-account relations.
@@ -48,6 +46,26 @@ export function updateEventBreakpointIds(saveState: SaveState, breakpointsPartia
             const event = saveState.events[eventId];
             if (!event.breakpointIds.includes(breakpointId))
                 event.breakpointIds.push(breakpointId);
+        };
+    });
+};
+
+export function updateGroupEventIds(saveState: SaveState, eventsPartial: Record<UUID, EventJSON>) {
+    Object.entries(eventsPartial).forEach(([_eventId, event]) => {
+        const eventId = _eventId as UUID;
+        const groupId = event.eventGroupId as UUID;
+        if (groupId !== NULL_GROUP_ID) {
+            // Add event id to group if not included and not null group
+            const group = saveState.groups[groupId];
+            if (!group.eventIds.includes(eventId))
+                group.eventIds.push(eventId);
+        } else {
+            // Remove event id from group that includes it if null group
+            const groupId = Object.keys(saveState.groups)
+                .find(id => saveState.groups[id as UUID].eventIds.includes(eventId)); 
+            if (groupId === undefined) return;
+            const group = saveState.groups[groupId as UUID];
+            saveState.groups[groupId as UUID].eventIds = group.eventIds.filter(id => id !== eventId);
         };
     });
 };
@@ -116,4 +134,13 @@ export const _deleteMarker = (markerId: UUID, saveState: SaveState) => {
         saveState.breakpoints[breakpointId].markerControlId = NULL_MARKER_ID;
     });
     delete saveState.markers[markerId];
+};
+
+/** Remove an event group and update all linked events */
+export function _deleteGroup(groupId: UUID, saveState: SaveState) {
+    const group = saveState.groups[groupId];
+    group.eventIds.forEach(eventId => {
+        saveState.events[eventId].eventGroupId = NULL_GROUP_ID;
+    });
+    delete saveState.groups[groupId];
 };

@@ -24,9 +24,13 @@ export function filterEvents(events: Record<UUID, EventJSON>, settings?: FilterJ
     if (!isPeriodic && !settings.singular) continue;
 
     // Filter By Time Range
-    const time = convertTime(args.eventTime, 'number');
-    if (settings.range.after && time <= settings.range.startTime) continue;
-    if (settings.range.before && time >= settings.range.endTime) continue;
+    const startTime = convertTime(args.eventTime, 'number');
+    const endTime = (isPeriodic && args.endTime !== undefined)
+      ? convertTime(args.endTime, 'number')
+      : (isPeriodic ? Infinity : startTime);
+
+    if (settings.range.after && endTime <= settings.range.startTime) continue;
+    if (settings.range.before && startTime >= settings.range.endTime) continue;
 
     result[id as UUID] = event;
   };
@@ -42,4 +46,3 @@ function typeToFilterKey(type: string): keyof FilterJSON {
     .replace(/\s+/g, "")
     .replace(/^./, c => c.toLowerCase()) as keyof FilterJSON;
 };
-

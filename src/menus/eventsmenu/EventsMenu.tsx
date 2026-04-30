@@ -1,16 +1,17 @@
+import React from "react";
 import { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
-import { Add, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { Add, Edit, KeyboardDoubleArrowRight } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
-import { addToEventTable, filterEvents, makeEventQueue } from "src/utils";
-import { EventItem } from "./EventItem";
-import { FilterMenu } from "../FilterMenu";
+import { filterEvents } from "src/utils";
+import { eventDisplay } from "src/utils/eventDisplay";
+import { FilterMenu } from "../filtermenu";
 import { NewEventMenu } from "./NewEventMenu";
 import { Menu, MenuDivider, MenuItemContainer, ScrollContainer } from "src/components/menu";
-import { UtilityButton } from "src/components/buttons";
-import { AccountEvent } from "src/simulation/events";
-import { EventTable } from "src/types";
+import { UtilityButton, VisibilityButton } from "src/components/buttons";
+import { EventGroupMenu, NewGroupMenu } from "../groupsmenu";
+import { NULL_GROUP_ID } from "src/globals";
 
 
 interface EventsMenuProps {
@@ -42,34 +43,20 @@ export function EventsMenu(props: EventsMenuProps) {
     );
   
   const filteredEvents = filterEvents(events, simulation.saveState.filter);
+
   const eventIds = Object.keys(events);
   const filteredEventIds = Object.keys(filteredEvents);
+  const ungroupedEventIds = filteredEventIds
+    .filter(id => simulation.saveState.events[id as UUID].eventGroupId === NULL_GROUP_ID);
+
+  const groups = Object.entries(simulation.saveState.groups)
+    .filter(([_, { eventIds }]) => eventIds.length > 0);
 
   //=================================================================================
   // Event Mapping
   //=================================================================================
 
-  /**
-   * Uses event data from the simulation in order to make use of the sorting
-   * of addToEventTable.
-   * It might be worth it to rewrite that algorithm for this paticular use case
-   * or abstract this out into a function
-   */
-
-  // Get all objects from the sim that pass the filter (non active events included)
-  const eventObjects = Object.values(simulation.simData?.eventsData ?? {})
-    .map(evData => evData.event)
-    .filter(ev => filteredEventIds.includes(ev.id));
-
-  // Use eventTableMethods to order by time/precedence like in the sim
-  let orderedEvents = {} as EventTable;
-  for (const ev of eventObjects) {
-    orderedEvents = addToEventTable(orderedEvents, ev as AccountEvent);
-  };
-
-  // Squash list and map back to ids, components...
-  const orderedEventIds = makeEventQueue(orderedEvents).getItems().map((ev) => ev.id);
-  const eventItems = orderedEventIds.map((id) => <EventItem key={id} eventId={id} />);
+  const eventItems = eventDisplay(simulation.simData?.eventsData ?? {}, ungroupedEventIds as UUID[]);
 
   //=================================================================================
   // Close menu on empty
@@ -79,12 +66,20 @@ export function EventsMenu(props: EventsMenuProps) {
     if (!eventIds.length) setOpenState(false);
   }, [eventIds]);
 
+  //=================================================================================
+  // Conditions
+  //=================================================================================
+
+  const hasGroups = Object.keys(simulation.saveState.groups).length > 0;
+
   //=========================================================================================
   // Handlers
   //=========================================================================================
 
   const handleFilterMenu = () => { openMenu(<FilterMenu />) };
+  const handleEventGroupsMenu = (groupId: UUID) => { openMenu(<EventGroupMenu groupId={groupId} accountId={accountId} />) };
   const handleNewEvent = () => { openMenu(<NewEventMenu accountId={accountId} />) };
+  const handleEditGroup = (groupId: UUID) => () => { openMenu(<NewGroupMenu groupId={groupId} />) };
 
   //=================================================================================
   return (
@@ -119,6 +114,32 @@ export function EventsMenu(props: EventsMenuProps) {
         
         <MenuDivider />
       </>}
+
+{/* Groups */}
+      {hasGroups && groups.map(([groupId, { name }]) => <React.Fragment key={groupId}>
+        <MenuItemContainer>
+          
+          <UtilityButton
+            name='Edit Event'
+            icon={Edit}
+            handleClick={handleEditGroup(groupId as UUID)}
+          />
+
+          <UtilityButton
+            name={name}
+            icon={KeyboardDoubleArrowRight}
+            handleClick={() => handleEventGroupsMenu(groupId as UUID)}
+            />
+
+            {name}
+
+            <VisibilityButton type='group' id={groupId as UUID} />
+
+        </MenuItemContainer>
+        
+        <MenuDivider />
+      </React.Fragment>)}
+
 
 {/* Events */}
       <ScrollContainer>
