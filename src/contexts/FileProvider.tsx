@@ -1,5 +1,5 @@
 import { createContext, useContext, useRef, useState } from 'react';
-import { useSim } from './SimProvider';
+import { useSim } from './simprovider';
 import { useMenu } from './MenuProvider';
 
 

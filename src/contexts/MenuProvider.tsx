@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { useSim } from './SimProvider';
+import { useSim } from './simprovider';
 import { MENU_MAX_SCALE, MENU_MIN_WIDTH } from '../globals/CONSTANTS';
 import { useWindow } from './WindowProvider';
 

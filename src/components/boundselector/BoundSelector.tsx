@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSim } from '../../contexts/SimProvider';
+import { useSim } from 'src/contexts';
 import DatePicker from 'react-datepicker';
-import { convertTime } from '../../utils/timeMethods';
-import { FOOTER_HEIGHT } from '../../globals/CONSTANTS';
+import { convertTime } from 'src/utils/timeMethods';
+import { FOOTER_HEIGHT } from 'src/globals/CONSTANTS';
 import { useTheme } from '@mui/material';
 
 
