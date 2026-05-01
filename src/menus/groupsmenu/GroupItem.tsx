@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 import { useTheme } from "@mui/material";
 import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
-import { FixedText, MenuItemContainer } from "src/components/menu";
+import { MenuItemContainer, PanText } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NewGroupMenu } from "./NewGroupMenu";
@@ -69,7 +69,7 @@ export function GroupItem(props: GroupItemProps) {
       />
 
       {/*v- hotfix for chrome */}
-      <FixedText text={groupName} maxWidth={'38%'} />
+      <PanText maxWidth={'72%'} text={groupName} />
       {/* Toggle Active */}
       <VisibilityButton type='group' id={groupId} />
 

@@ -1,7 +1,8 @@
 import { CSSProperties, Fragment, ReactNode } from "react";
 import { Theme } from "@emotion/react";
 import { SxProps } from "@mui/material";
-import { FixedText, MenuItemContainer } from "./MenuItemContainer";
+import { MenuItemContainer } from "./MenuItemContainer";
+import { FixedText } from "./TextContainer";
 
 
 export type DropdownFields = {

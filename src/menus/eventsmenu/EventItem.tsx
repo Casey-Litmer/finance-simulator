@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
 import { NewEventMenu } from "./NewEventMenu";
-import { FixedText, MenuItemContainer } from "src/components/menu";
+import { FixedText, MenuItemContainer, PanText } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NULL_MARKER_ID } from "src/globals";
@@ -108,7 +108,8 @@ export function EventItem(props: EventItemProps) {
       
       {/*v- hotfix for chrome */}
       <FixedText text={eventDate} style={{ fontSize: '75%', lineHeight: 2 }} />
-      <FixedText maxWidth={'90%'} text={eventName} />
+      <PanText maxWidth={'56%'} text={eventName} />
+      {/*<FixedText maxWidth={'46%'} text={eventName} />*/}
       <VisibilityButton type='event' id={eventId} />
       
     </MenuItemContainer>

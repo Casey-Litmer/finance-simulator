@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material";
 import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
-import { FixedText, MenuItemContainer } from "src/components/menu";
+import { FixedText, MenuItemContainer, PanText } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NewMarkerMenu } from "./NewMarkerMenu";
@@ -103,7 +103,7 @@ export function MarkerItem(props: MarkerItemProps) {
 
       {/*v- hotfix for chrome */}
       <FixedText text={markerTime} style={{ fontSize: '75%', lineHeight: 2 }} />
-      <FixedText text={markerName} maxWidth={'38%'} />
+      <PanText style={{marginLeft: '4px'}} maxWidth={'48%'} text={markerName}  />
       <ColorSelect line={line} callback={handleColorCallback} />
       <VisibilityButton type='marker' id={markerId} />
 

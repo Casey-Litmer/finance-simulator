@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { NewAccountMenu } from "./NewAccountMenu";
 import { EventsMenu, NewEventMenu } from "../eventsmenu";
-import { FixedText, MenuItemContainer } from "src/components/menu";
+import { MenuItemContainer, PanText } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { ColorSelect } from "src/components/colorselector";
 import { DropdownMenu } from "src/components/menu/DropDownMenu";
@@ -63,7 +63,7 @@ export function AccountItem(props: AccountItemProps) {
         handleClick={handleExpand}
       />
 
-      <FixedText text={accountName} />
+      <PanText text={accountName} />
       <ColorSelect line={line} callback={handleColorCallback} />
       <VisibilityButton type='account' id={accountId} />
 

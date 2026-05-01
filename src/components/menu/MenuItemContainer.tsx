@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { Theme } from '@emotion/react';
 import { Divider, Paper, SxProps, useTheme } from '@mui/material';
 
@@ -49,29 +49,6 @@ export function DropdownContainer(props: DropdownContainerProps) {
         {children}
       </div> : <></>}
   </>);
-};
-
-//=================================================================================
-
-interface FixedTextProps {
-  text: string;
-  maxWidth?: number | string;
-  style?: CSSProperties;
-}
-
-export function FixedText(props: FixedTextProps) {
-  const { text, maxWidth, style } = props;
-  return (
-    <div style={{
-      maxWidth: maxWidth ?? '60%',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      alignContent: 'center',
-      ...style
-    }}>
-      {text}
-    </div>
-  );
 };
 
 //=================================================================================
