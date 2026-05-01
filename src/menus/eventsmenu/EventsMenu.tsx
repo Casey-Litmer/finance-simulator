@@ -115,35 +115,36 @@ export function EventsMenu(props: EventsMenuProps) {
         <MenuDivider />
       </>}
 
-{/* Groups */}
-      {hasGroups && groups.map(([groupId, { name }]) => <React.Fragment key={groupId}>
-        <MenuItemContainer>
-          
-          <UtilityButton
-            name='Edit Event'
-            icon={Edit}
-            handleClick={handleEditGroup(groupId as UUID)}
-          />
+      <ScrollContainer>
 
-          <UtilityButton
-            name={name}
-            icon={KeyboardDoubleArrowRight}
-            handleClick={() => handleEventGroupsMenu(groupId as UUID)}
+  {/* Groups */}
+        {hasGroups && groups.map(([groupId, { name }]) => <React.Fragment key={groupId}>
+          <MenuItemContainer>
+            
+            <UtilityButton
+              name='Edit Event'
+              icon={Edit}
+              handleClick={handleEditGroup(groupId as UUID)}
             />
 
-            {name}
+            <UtilityButton
+              name={name}
+              icon={KeyboardDoubleArrowRight}
+              handleClick={() => handleEventGroupsMenu(groupId as UUID)}
+              />
 
-            <VisibilityButton type='group' id={groupId as UUID} />
+              {name}
 
-        </MenuItemContainer>
-        
-        <MenuDivider />
-      </React.Fragment>)}
+              <VisibilityButton type='group' id={groupId as UUID} />
 
+          </MenuItemContainer>
+          
+          <MenuDivider />
+        </React.Fragment>)}
 
-{/* Events */}
-      <ScrollContainer>
+  {/* Events */}
         {eventItems}
+
       </ScrollContainer>
         
     </Menu>

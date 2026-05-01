@@ -54,18 +54,20 @@ export function updateGroupEventIds(saveState: SaveState, eventsPartial: Record<
     Object.entries(eventsPartial).forEach(([_eventId, event]) => {
         const eventId = _eventId as UUID;
         const groupId = event.eventGroupId as UUID;
-        if (groupId !== NULL_GROUP_ID) {
-            // Add event id to group if not included and not null group
-            const group = saveState.groups[groupId];
-            if (!group.eventIds.includes(eventId))
-                group.eventIds.push(eventId);
-        } else {
-            // Remove event id from group that includes it if null group
-            const groupId = Object.keys(saveState.groups)
-                .find(id => saveState.groups[id as UUID].eventIds.includes(eventId)); 
-            if (groupId === undefined) return;
-            const group = saveState.groups[groupId as UUID];
-            saveState.groups[groupId as UUID].eventIds = group.eventIds.filter(id => id !== eventId);
+        if (groupId !== undefined) {
+            if (groupId !== NULL_GROUP_ID) {
+                // Add event id to group if not included and not null group
+                const group = saveState.groups[groupId];
+                if (!group.eventIds.includes(eventId))
+                    group.eventIds.push(eventId);
+            } else {
+                // Remove event id from group that includes it if null group
+                const groupId = Object.keys(saveState.groups)
+                    .find(id => saveState.groups[id as UUID].eventIds.includes(eventId)); 
+                if (groupId === undefined) return;
+                const group = saveState.groups[groupId as UUID];
+                saveState.groups[groupId as UUID].eventIds = group.eventIds.filter(id => id !== eventId);
+            };
         };
     });
 };

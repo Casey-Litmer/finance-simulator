@@ -43,7 +43,6 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
 
             // Event and group must be active
             const groupActive = saveState.groups[event.eventGroupId]?.active ?? true;
-            console.log(groupActive)
             const eventActive = saveState.events[id].display.active && groupActive;
 
             // Apply active breakpoint marker controllers

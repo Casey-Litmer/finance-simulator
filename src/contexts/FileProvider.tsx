@@ -1,6 +1,7 @@
 import { createContext, useContext, useRef, useState } from 'react';
 import { useSim } from './simprovider';
 import { useMenu } from './MenuProvider';
+import { migrateData } from 'src/compatability';
 
 
 type FileContextProviderProps = {
@@ -65,12 +66,13 @@ export const FileProvider = ({ children }: FileContextProviderProps) => {
       try {
         const contents = event.target?.result;
         const parsed = JSON.parse(contents as string);
+        const migrated = migrateData(parsed);
         // Close Menus
         setActiveMenus([]);
         // Update Today
         updateTodayMarker();
         // Set sim save state
-        dispatchSaveState({partial: parsed, init: true});
+        dispatchSaveState({partial: migrated, init: true});
         setGraphName(stripExtension(file.name));
       } catch (err) {
         alert('Invalid JSON file');
