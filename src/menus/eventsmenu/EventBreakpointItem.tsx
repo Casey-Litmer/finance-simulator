@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Edit } from "@mui/icons-material";
 import { useTheme } from "@mui/material";
 import { useMenu, useSim } from "src/contexts";
 import { convertTime, formatDatetime } from "src/utils";
-import { FixedText, MenuItemContainer } from "src/components/menu";
+import { FixedText, MenuItemContainer, PanText } from "src/components/menu";
 import { UtilityButton, VisibilityButton } from "src/components/buttons";
 import { DropdownFields, DropdownMenu } from "src/components/menu/DropDownMenu";
 import { NewEventBreakpointMenu } from "./NewEventBreakpointMenu";
@@ -72,7 +72,7 @@ export function EventBreakpointItem(props: EventBreakpointItemProps) {
 
       {/*v- hotfix for chrome */}
       <FixedText text={breakpointDate} style={{ fontSize: '75%', lineHeight: 2 }} />
-      <FixedText maxWidth={'46%'} text={breakpointName} />
+      <PanText maxWidth={'60%'} text={breakpointName} />
       <VisibilityButton type='breakpoint' id={breakpointId} />
 
       <DropdownMenu 

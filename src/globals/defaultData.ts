@@ -1,6 +1,6 @@
 import { Color, Dash } from "plotly.js";
 import { getToday, newUUID, REF_TIME } from "src/utils";
-import { ACC_SUM_TOTAL_ID, APP_VERSION, TODAY_MARKER_ID } from "./CONSTANTS";
+import { ACC_SUM_TOTAL_ID, APP_VERSION, NULL_GROUP_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "./CONSTANTS";
 import { UUID } from "crypto";
 import { AccountDisplay, AccountJSON, BreakpointDisplay, EventDisplay, EventGroupJSON, EventJSON, FilterJSON, MarkerDisplay, MarkerJSON, SaveState } from "src/types";
 
@@ -26,8 +26,8 @@ export const defaultSaveState = () => {
                 display: defaultAccountDisplay({ color: 'hsl(0, 100%, 50%)', dash: 'dash' })
             },
             [newUUID()]: {
-                args: { 
-                    openDate: today, 
+                args: {
+                    openDate: today,
                     initialBal: 100,
                 },
                 accountType: 'Checking Account',
@@ -35,8 +35,8 @@ export const defaultSaveState = () => {
                 display: defaultAccountDisplay({ color: 'hsl(31, 81%, 48%)', dash: 'solid' })
             },
             [newUUID()]: {
-                args: { 
-                    openDate: today, 
+                args: {
+                    openDate: today,
                     initialBal: 50,
                 },
                 accountType: 'Checking Account',
@@ -146,6 +146,33 @@ export const defaultFilter = {
         endTime: getToday().time + 365 * 2,
     }
 } as FilterJSON;
+
+//=================================================================================
+
+export const defaultEvent = ({accountId, groupId}: {
+    accountId: UUID,
+    groupId?: UUID,
+}) => ({
+    args: {
+        eventTime: getToday().time,
+        value: 0,
+        eventPeriod: 7,
+        periodMode: 'constant',
+        doesEnd: false,
+        onFirstPeriod: true,
+    },
+    eventType: 'Deposit',
+    accountIds: [accountId],
+    breakpointIds: [],
+    eventGroupId: groupId ?? NULL_GROUP_ID,
+    markerControl: {
+        startMarkerId: NULL_MARKER_ID,
+        endMarkerId: NULL_MARKER_ID,
+        clampToMonthlyDate: true,
+        dayOfMonth: 1,
+    },
+    display: defaultEventDisplay,
+} as EventJSON);
 
 //=================================================================================
 

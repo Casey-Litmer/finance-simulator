@@ -2,6 +2,7 @@ import { Account } from "../accounts";
 import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
 import { AccountState } from "../sim/accountState";
+import { AccountMetadata } from "src/types";
 
 
 
@@ -12,7 +13,7 @@ export class CompoundInterest extends AccountEvent {
         this.isConsumable = false;
     };
 
-    public Functor(E: AccountState, account: Account): boolean {
+    public Functor(E: AccountState, account: Account): AccountMetadata {
         const t1 = this.eventTime;
         const t0 = E.t0;
 
@@ -22,6 +23,6 @@ export class CompoundInterest extends AccountEvent {
         E.t0 = t1;
         E.accruedInterest = 0;
 
-        return true;
+        return { continue: true };
     };
 };

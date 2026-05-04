@@ -3,6 +3,7 @@ import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
 import { AccountState } from "../sim/accountState";
 import { eventStackLoop } from "../sim";
+import { AccountMetadata } from "src/types";
 
 
 
@@ -20,69 +21,77 @@ export class Transfer extends AccountEvent {
         this.to = accounts[1];
     };
     
-    public Functor(E: AccountState, account: Account): boolean {
+    public Functor(E: AccountState, account: Account): AccountMetadata {
+        if (this.skipFirstPeriod()) return { continue: true };
         
-        //Value Mode 
+        // Value Mode 
         const transferAmount = (this.percentMode) ? 
             this.from.bundle.state!.mulBal(this.value / 100) : this.value;
 
-        //Receiving account
+        // Receiving account
         if (account === this.to) {
             const fromPendingEvents = this.from.bundle.pendingEvents;
             const from_E = this.from.bundle.state;
 
-            //Apply Transfer if the sending account has approved
+            // Apply Transfer if the sending account has approved
             if (this.approveTransfer === true) {
                 this.applyTransfer(transferAmount);
-                return false;
-            //If it hasn't calculated yet, switch to sending account's stack
+                return { continue: false };
+            // If it hasn't calculated yet, switch to sending account's stack
             } else if (this.approveTransfer === null) {
                 this.approveTransfer = true;
                 eventStackLoop(fromPendingEvents, from_E!, this.from);
-                return true;
+                return { continue: true };
             };
-        //Sending Account
+        // Sending Account
         } else if (account === this.from) {
             if (E.addBal(-transferAmount) >= 0) {
                 const toPendingEvents = this.to.bundle.pendingEvents;
                 const to_E = this.to.bundle.state;
 
-                //Apply Transfer if the receiving account has approved
+                // Apply Transfer if the receiving account has approved
                 if (this.approveTransfer === true) {
                     this.applyTransfer(transferAmount);
-                    return false;
-                //Otherwise switch to receiving account's stack
+                    return { continue: false };
+                // Otherwise switch to receiving account's stack
                 } else {
                     this.approveTransfer = true;
                     eventStackLoop(toPendingEvents, to_E!, this.to);
-                    return true;
+                    return { continue: true };
                 };
+            // Inusfficient Funds
             } else {
                 const approved = this.approveTransfer;
                 this.approveTransfer = false;
-                return !approved;
+                return { 
+                    continue: !approved,
+                    balanceStatus: {
+                        status: "Insufficient Funds",
+                        eventId: this.id,
+                    },
+                };
             };
         };
-        return true;
+        return { continue: true };
     };
 
 
     private applyTransfer(transferAmount: number): void {
-        //Get states
+        // Get states
         const to_E = this.to.bundle.state;
         const from_E = this.from.bundle.state;
 
-        //Get last event times
+        // Get last event times
         const t1 = this.eventTime;
         const to_t0 = to_E!.t0;
         const from_t0 = from_E!.t0;
         to_E!.t0 = from_E!.t0 = t1;
 
-        //Accrue interests separately
+        // Accrue interests separately
         to_E!.accruedInterest = to_E!.Accrue(to_t0, t1)
         from_E!.accruedInterest = from_E!.Accrue(from_t0, t1)
 
-        //Transfer balances
+        // Transfer balances
         to_E!.bal = to_E!.addBal(transferAmount);
         from_E!.bal = from_E!.addBal(-transferAmount);
     };

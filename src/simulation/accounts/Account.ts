@@ -64,7 +64,8 @@ export class Account {
             times: [],
             pendingEvents: new Deque<AccountEvent>(),
             remainingEvents: new Deque<AccountEvent>(),
-            state: null
+            state: null,
+            metadata: {},
         };
     }
 

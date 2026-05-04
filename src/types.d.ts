@@ -137,11 +137,13 @@ export type SimulationData = {
     timeDomain: number[];
     accountsData: AccountsData;
     eventsData: EventsData;
+    metadata: SimMetadata;
 };
 
 export type AccountsData = {
     [key: UUID]: {
         bals: (number | null)[];
+        //metadata: Record<number, AccountMetadata[]>;
         account: Account;
     };
 };
@@ -150,6 +152,11 @@ export type EventsData = {
     [key: UUID]: {
         event: AccountEvent;
     };
+};
+
+export type SimMetadata = {
+    //account.id       //time
+    [key: UUID]: Record<number, AccountMetadata[]>
 };
 
 //Sim Usage
@@ -164,5 +171,14 @@ export type SimulationBundle = {
     remainingEvents: Deque<AccountEvent>;
     state: AccountState | null;
     times: number[];
+    metadata: Record<number, AccountMetadata[]>;
+};
+
+export type AccountMetadata = {
+    continue: boolean;
+    balanceStatus?: {
+        status: string;
+        eventId: UUID;
+    };
 };
 

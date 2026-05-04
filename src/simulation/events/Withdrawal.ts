@@ -2,6 +2,7 @@ import { Account } from "../accounts";
 import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
 import { AccountState } from "../sim";
+import { AccountMetadata } from "src/types";
 
 
 
@@ -15,7 +16,9 @@ export class Withdrawal extends AccountEvent {
         this.percentMode = percentMode;
     };
 
-    public Functor(E: AccountState, account: Account): boolean {
+    public Functor(E: AccountState, account: Account): AccountMetadata {
+        if (this.skipFirstPeriod()) return { continue: true };
+
         const t1 = this.eventTime;
         const t0 = E.t0;
 
@@ -28,8 +31,16 @@ export class Withdrawal extends AccountEvent {
             E.accruedInterest = E.Accrue(t0, t1);
             E.bal = E.addBal(-withdrawalAmount);
         } else {
-            ///this.no_funds()
+            console.log(this.id)
+            return { 
+                continue: true,  
+                balanceStatus: {
+                    status: "Insufficient Funds",
+                    eventId: this.id
+                }
+            };
         };
-        return true;
+
+        return { continue: true };
     };
 };

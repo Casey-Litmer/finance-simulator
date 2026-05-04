@@ -2,6 +2,7 @@ import { Account } from "../accounts";
 import { AccountEvent } from "./Event";
 import { EventArguments } from "./EventInterfaces";
 import { AccountState } from "../sim/accountState";
+import { AccountMetadata } from "src/types";
 
 
 
@@ -12,10 +13,10 @@ export class OpenAccount extends AccountEvent {
         this.isConsumable = false;
     };
     
-    public Functor(E: AccountState, account: Account): boolean {
+    public Functor(E: AccountState, account: Account): AccountMetadata {
         E.bal = account.initialBal;
         E.open = true;
 
-        return true;
+        return { continue: true };
     };
 };

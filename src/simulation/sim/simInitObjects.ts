@@ -36,7 +36,7 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
     return Object.entries(saveState.events)
         .flatMap(([_id, event]) => {
             const id = _id as UUID;
-            const eventType = EventConstructorMap[event.eventType];
+            const _EventType = EventConstructorMap[event.eventType];
             const withAccounts = event.accountIds.map((id) => accounts[id]);
             const markerControl = event.markerControl;
             const { startMarkerId, endMarkerId } = markerControl;
@@ -71,7 +71,7 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
                     : event.args.endTime
             };
 
-            return new eventType({
+            return new _EventType({
                 ...args,
                 accounts: withAccounts,
                 id: id,

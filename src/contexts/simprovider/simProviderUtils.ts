@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { NULL_GROUP_ID, NULL_MARKER_ID } from "src/globals";
+import { ACC_SUM_TOTAL_ID, NULL_GROUP_ID, NULL_MARKER_ID } from "src/globals";
 import { BreakpointJSON, EventJSON, SaveState } from "src/types";
 
 
@@ -145,4 +145,15 @@ export function _deleteGroup(groupId: UUID, saveState: SaveState) {
         saveState.events[eventId].eventGroupId = NULL_GROUP_ID;
     });
     delete saveState.groups[groupId];
+};
+
+//=================================================================================
+// Misc
+
+export function omitFromSaveState(saveState: SaveState) {
+    const accounts = Object.fromEntries(
+        Object.entries(saveState.accounts)
+            .filter(([id, _]) => (id !== ACC_SUM_TOTAL_ID))
+    );
+    return { ...saveState, accounts };
 };

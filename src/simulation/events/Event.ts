@@ -9,7 +9,7 @@ import {
     makeIdTable,
     newUUID,
 } from 'src/utils';
-import { EventTable } from 'src/types';
+import { AccountMetadata, EventTable } from 'src/types';
 
 
 
@@ -29,6 +29,7 @@ export class AccountEvent {
     eventPeriod: number;
     periodMode: string;
     endTime: number;
+    onFirstPeriod: boolean;
     breakpoints: EventBreakpoint[];
     
     isGenerated: boolean;
@@ -50,6 +51,7 @@ export class AccountEvent {
         periodMode = 'constant',
         endTime = REF_TIME,
         doesEnd = false,
+        onFirstPeriod = true,
         isActive = true,
         breakpoints = [],
     }: EventArguments ) {      
@@ -75,6 +77,7 @@ export class AccountEvent {
         this.isPeriodic = isPeriodic;
         this.eventPeriod = eventPeriod;
         this.periodMode = periodMode;
+        this.onFirstPeriod = onFirstPeriod;
 
         //End of period event.  If None, the event will not end...
         this.endTime = (doesEnd) ? convertTime(endTime, 'number') : 10**7; //...(in our lifetimes)
@@ -101,8 +104,8 @@ export class AccountEvent {
      * @param E AccountState
      * @param account Account
      */
-    public Functor(E: AccountState, account: Account): boolean {
-        return true;
+    public Functor(E: AccountState, account: Account): AccountMetadata {
+        return { continue: true };
     };
 
     //=========================================================================================
@@ -143,6 +146,11 @@ export class AccountEvent {
             t = increment(t);   
         };
         return generatedEvents;
+    };
+
+    /** Skips first event in generated chain */
+    protected skipFirstPeriod(): boolean {
+        return (this.isPeriodic && !this.isGenerated && !this.onFirstPeriod);
     };
 
     private applyBreakpoints(currentValue: number, t: number, breakpoints: EventBreakpoint[]): number {

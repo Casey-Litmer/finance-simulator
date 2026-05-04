@@ -2,7 +2,7 @@ import { CSSProperties, Fragment, ReactNode } from "react";
 import { Theme } from "@emotion/react";
 import { SxProps } from "@mui/material";
 import { MenuItemContainer } from "./MenuItemContainer";
-import { FixedText } from "./TextContainer";
+import { PanText } from "./TextContainer";
 
 
 export type DropdownFields = {
@@ -39,8 +39,8 @@ export const DropdownMenu = ({ fields, open, position, sx, style }: DropdownMenu
   const mappedRows = rows.map((row, n) => {
     if (row && typeof row === 'object' && 'left' in row) {
       return (<Fragment key={n}>
-        <FixedText key={n + 0.1} text={row.left} maxWidth={'100%'} />
-        <FixedText key={n + 0.2} text={row.right} maxWidth={'100%'} />
+        <PanText key={n + 0.1} text={row.left} maxWidth={'100%'} />
+        <PanText key={n + 0.2} text={row.right} maxWidth={'100%'} />
       </Fragment>);
     } else {
       return (<Fragment key={n}>

@@ -19,20 +19,22 @@ import {AccountsData, EventsData, SimParameters, SimulationData} from 'src/types
 
 export const ACCOUNTS: Account[] = [];
 
-//=========================================================================================
-//Main
+//=================================================================================
+// Main
+//=================================================================================
+
 export function runSim({xDomain, accounts, events}: SimParameters): SimulationData {
-    //Get Raw Times
+    // Get Raw Times
     const {start, stop, step} = xDomain;
 
-    //Create a list of times to sample
+    // Create a list of times to sample
     const roundErr = (x: number) => Math.round(x * 10 ** 6) / (10 ** 6);
     const timeDomain: number[] = [];
     for (let n = start; n <= stop + step; n += step) {
         timeDomain.push(roundErr(n));
     };
 
-    //Initialize data
+    // Initialize data
     const accountsData = makeIdTable(accounts, 
         (acc: Account) => ({
             account: acc,
@@ -45,41 +47,54 @@ export function runSim({xDomain, accounts, events}: SimParameters): SimulationDa
         })
     ) as EventsData;
 
-    //Initialize accounts for simulation
+    // Initialize accounts for simulation
     prepAccounts(timeDomain, step, accounts, events);
 
-    //Main Loop
+    // Main Loop
     for (const n in timeDomain) {
-        //t + 1 to write to the day opening (this is kindof a hack)
-        const t = timeDomain[n];// + 1;
+        // t + 1 to write to the day opening (this is kindof a hack)
+        const t = timeDomain[n];//  + 1;
 
-        //Set pending event queue for all accounts
+        // Set pending event queue for all accounts
         for (const account of accounts) {
             const remainingEvents = account.bundle.remainingEvents;
             account.bundle.pendingEvents = sliceQueueBeforeT(remainingEvents, t);
         };
 
         for (const account of accounts) {
-            //Unpack
+            // Unpack
             const pendingEvents = account.bundle.pendingEvents;
             const E = account.bundle.state;
 
             if (!E) throw Error(`%Account {account} state has not been initialized!`);
 
-            //Loop over current events
+            // Loop over current events
             eventStackLoop(pendingEvents, E, account);
 
-            //Add final balance
+            // Add final balance
             accountsData[account.id].bals.push(E.bal);
         };
     };
 
+    // Pass Metadata
+    //for (const account of accounts) {
+    //    accountsData[account.id].metadata = account.bundle.metadata;
+    //};
+
+    const metadata = Object.fromEntries(accounts.map(account => ([
+        account.id,
+        account.bundle.metadata
+    ])));
+
     const accountsTotal = new Account({name: "Total", openDate: REF_DATE, id: ACC_SUM_TOTAL_ID});
     
-    //add sum and other indicators here
-    accountsData[ACC_SUM_TOTAL_ID] = {bals: accountsSumTotal(accountsData, timeDomain), account: accountsTotal};
+    // add sum and other indicators here
+    accountsData[ACC_SUM_TOTAL_ID] = {
+        bals: accountsSumTotal(accountsData, timeDomain), 
+        account: accountsTotal,
+    };
     
-    return {timeDomain, accountsData, eventsData} as SimulationData;
+    return {timeDomain, accountsData, eventsData, metadata} as SimulationData;
 };
 
 
@@ -101,10 +116,10 @@ function prepAccounts(timeDomain: number[], step: number, accounts: Account[], e
 
     for (const event of events) {
         if (event.isPeriodic) {
-            //#Generate all reoccuring events FIRST
+            // Generate all reoccuring events FIRST
             const generatedEvents = event.generatePeriodicEvents(timeDomain, step)  
 
-            //#Update linked Accounts' generated event table
+            // Update linked Accounts' generated event table
             for (const id in event.accounts) {
                 const account = event.accounts[id];
                 account.periodicEvents = addToEventTable(account.periodicEvents, generatedEvents);
@@ -113,15 +128,15 @@ function prepAccounts(timeDomain: number[], step: number, accounts: Account[], e
     };
 
     for (const account of accounts) {
-        //#Account event table merged with CompoundInterest events
+        // Account event table merged with CompoundInterest events
         let totalEvents = account.generateInterestPeriods(timeDomain, step);
         totalEvents = addToEventTable(totalEvents, new OpenAccount({eventTime: account.openDate}));
 
-        //#de facto table of events.  User defined + interest periods + periodic events
+        // de facto table of events.  User defined + interest periods + periodic events
         totalEvents = addToEventTable(totalEvents, account.periodicEvents);
         account.periodicEvents = {};
 
-        //#Set Initial Account State
+        // Set Initial Account State
         const E_initial = new AccountState({
             bal: null,
             t0: dateTimeToFloat(account.openDate),
@@ -131,21 +146,22 @@ function prepAccounts(timeDomain: number[], step: number, accounts: Account[], e
             prorate: account.prorate
         });
 
-        //#Squash events to ordered list
+        // Squash events to ordered list
         const remainingEvents = makeEventQueue(totalEvents);
 
-        //set bundle here
+        // set bundle here
         account.bundle = {
             pendingEvents: new Deque<AccountEvent>(),
             remainingEvents: remainingEvents,
             state: E_initial,
-            times: timeDomain
+            times: timeDomain,
+            metadata: {},
         };
     };
 };
 
-//=========================================================================================
-//Refactor these into new file?
+// =========================================================================================
+// Refactor these into new file?
 function accountsSumTotal(accountsData: AccountsData, timeDomain: number[]): number[] {
     let sumBals: number[] = [];
 

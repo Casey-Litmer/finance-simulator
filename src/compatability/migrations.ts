@@ -5,9 +5,9 @@ import { SaveState } from "src/types";
 
 export const migrations = {
     "0.1.0": migrate_0_1_0_to_0_1_1,
-    //migrate_0_1_1_to_0_1_2,
-    //migrate_0_1_2_to_0_1_3,
-    //migrate_0_1_3_to_0_1_4,
+    "0.1.1": migrate_0_1_1_to_0_1_2,
+    //"0.1.2": migrate_0_1_2_to_0_1_3,
+    //"0.1.3": migrate_0_1_3_to_0_1_4,
 };
 
 //=================================================================================
@@ -19,5 +19,15 @@ function migrate_0_1_0_to_0_1_1(data: SaveState): SaveState {
         data.events[id as UUID].eventGroupId = NULL_GROUP_ID;
     };
     data.groups = {};
+    return data;
+};
+
+// 0.1.1 -> 0.1.2
+// - Add onFirstperiod
+//
+function migrate_0_1_1_to_0_1_2(data: SaveState): SaveState {
+    for (const id in data.events) {
+        data.events[id as UUID].args.onFirstPeriod = true;
+    };
     return data;
 };

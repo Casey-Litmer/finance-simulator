@@ -8,7 +8,7 @@ import { DeleteButton, SaveButton, UtilityButton } from "src/components/buttons"
 import { DateSelector, DropdownSelect, InputField } from "src/components/dataentry";
 import { Menu, MenuDivider, MenuItemContainer, MenuItemRow, ScrollContainer } from "src/components/menu";
 import { EventConstructorMap } from "src/simulation";
-import { ACC_SUM_TOTAL_ID, NULL_GROUP_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
+import { ACC_SUM_TOTAL_ID, defaultEvent, NULL_GROUP_ID, NULL_MARKER_ID, TODAY_MARKER_ID } from "src/globals";
 import { EventJSON } from "src/types";
 import { validateInterestRateBounds, validateMarkerDayOfMonthBounds, validateMonthlyCanUseDay, validateMonthlyPeriodIsInt, validatePercentValueBounds, validatePeriodBounds, validateValueBounds, valueLabelFromEventType } from "./eventsMenuUtils";
 
@@ -71,25 +71,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
     defaultValues:
       eventId !== undefined
         ? simulation.saveState.events[eventId]
-        : {
-            args: {
-              eventTime: today,
-              value: 0,
-              eventPeriod: 7,
-              periodMode: 'constant',
-              doesEnd: false,
-            },
-            eventType: 'Deposit',
-            accountIds: [accountId],
-            breakpointIds: [],
-            eventGroupId: groupId ?? NULL_GROUP_ID,
-            markerControl: {
-              startMarkerId: NULL_MARKER_ID,
-              endMarkerId: NULL_MARKER_ID,
-              clampToMonthlyDate: true,
-              dayOfMonth: 1,
-            },
-          },
+        : defaultEvent({ accountId: currentAccountId, groupId }),
   });
   const currentState = watch();
 
@@ -105,6 +87,7 @@ export function NewEventMenu(props: NewEventMenuProps) {
   const isTransfer = ['Transfer', 'Periodic Transfer'].includes(currentState.eventType);
   const isPeriodic = currentState.eventType.includes('Periodic');
   const doesEnd = currentState.args.doesEnd;
+  const onFirstPeriod = currentState.args.onFirstPeriod;
   const hasValue = !['Close Account'].includes(currentState.eventType);
   const hasPercentMode = ['Deposit', 'Withdrawal', 'Transfer'].some(s => currentState.eventType.includes(s));
   const percentMode = currentState.args.percentMode;
@@ -413,6 +396,17 @@ export function NewEventMenu(props: NewEventMenuProps) {
               </DropdownSelect>
             </div>
           </MenuItemRow>
+
+          <MenuItemContainer>
+            Start on First Period
+            <UtilityButton 
+              name="OnFirstPeriod"
+              icon={!onFirstPeriod ? CheckBoxOutlineBlank : CheckBoxOutlined}
+              handleClick={() => {
+                setValue('args.onFirstPeriod', !onFirstPeriod);
+              }}
+            />
+          </MenuItemContainer>
 
           <MenuItemRow className="DataEntryStyles">
     {/* End */}

@@ -2,11 +2,11 @@ import { UUID } from "crypto";
 import { debounce } from "lodash";
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { DeepPartial, deepPartialReducer } from "src/utils/deepPartial";
-import { defaultBreakpointDisplay, defaultEventDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/globals";
+import { defaultBreakpointDisplay, defaultSaveState, TODAY_MARKER_ID } from "src/globals";
 import { runSim, simInitObjects } from "src/simulation";
 import { getToday, newUUID } from "src/utils";
 import { AccountJSON, BreakpointJSON, EventGroupJSON, EventJSON, MarkerJSON, SaveState, SimulationData } from "src/types";
-import { _deleteAccount, _deleteEvent, _deleteBreakpoint, _deleteMarker, _deleteGroup, updateAccountEventIds, updateEventBreakpointIds, updateGroupEventIds } from "./simProviderUtils";
+import { _deleteAccount, _deleteEvent, _deleteBreakpoint, _deleteMarker, _deleteGroup, updateAccountEventIds, updateEventBreakpointIds, updateGroupEventIds, omitFromSaveState } from "./simProviderUtils";
 
 
 
@@ -95,7 +95,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   // Mount 
   useEffect(() => {
     // Run with initial data bc worker takes a second to start
-    const simParams = simInitObjects(saveState);
+    const simParams = simInitObjects(omitFromSaveState(saveState));
     const simData = runSim(simParams);
     setSimData(simData);
     // Update Today
@@ -112,7 +112,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
       // Update today
       updateTodayMarker();
       // Run worker
-      invokeSimWorker(saveState);
+      invokeSimWorker(omitFromSaveState(saveState));
     }, 10),
   [
     saveState.accounts, 
@@ -147,10 +147,7 @@ export const SimProvider = ({ children }: ContextProviderProps) => {
   /**Creates a new Record key before dispatching new event*/
   const addEvent = (event: EventJSON) => {
     dispatchSaveState({ partial: { 
-      events: { [newUUID()]: {
-        ...event,
-        display: defaultEventDisplay,
-      } },
+      events: { [newUUID()]: event },
     }});
   };
 

@@ -17,6 +17,7 @@ export interface EventArguments {
     periodMode?: string;
     endTime?: DateFloat;
     doesEnd?: boolean;
+    onFirstPeriod?: boolean;
 
     //Toggle Active
     isActive?: boolean;

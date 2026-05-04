@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 import { useMenu, useSim, useWindow } from 'src/contexts';
 import { formatDatetime } from "src/utils";
 import { FOOTER_HEIGHT, HEADER_HEIGHT, MENU_MIN_WIDTH } from "src/globals/CONSTANTS";
-import { MarkerJSON, SimulationData } from "src/types";
+import { MarkerJSON, SimMetadata, SimulationData } from "src/types";
 
 
 
@@ -21,7 +21,7 @@ export const SimPlot = () => {
   const { menuWidth, openState } = useMenu();
 
   //=========================================================================================
-  
+
   // Set height from constants
   useEffect(() => {
     setPlotHeight(
@@ -41,7 +41,7 @@ export const SimPlot = () => {
   }, [openState, windowWidth, menuWidth]);
 
   //=================================================================================
-  
+
   const { start, stop } = simulation.saveState.xDomain;
 
   //=========================================================================================
@@ -101,7 +101,7 @@ export const SimPlot = () => {
   /////////////
 
   const formatMarkers = (markers: Record<UUID, MarkerJSON>) => {
-    if (!markers) return {markerShapes: [], markerTraces: []};
+    if (!markers) return { markerShapes: [], markerTraces: [] };
 
     // Filter Visible
     const visibleMarkers = Object.entries(markers)
@@ -115,14 +115,14 @@ export const SimPlot = () => {
       const markerTime = formatDatetime(marker.time, 'plot');
       const label = `${marker.name}<br>${markerTime}`;
 
-      return {  
+      return {
         shape: {
           type: 'line',
           x0: markerTime, x1: markerTime,
           y0: 0, y1: 1,
           xref: 'x', yref: 'paper',
-          line: { width: 2, ...marker.display.line}
-        } as Partial<Shape>, 
+          line: { width: 2, ...marker.display.line }
+        } as Partial<Shape>,
         trace: {
           x: [markerTime],
           y: [0],
@@ -142,9 +142,74 @@ export const SimPlot = () => {
     };
   };
 
-  const { markerShapes, markerTraces } = useMemo(() => 
-    formatMarkers(simulation.saveState.markers), 
+  const { markerShapes, markerTraces } = useMemo(() =>
+    formatMarkers(simulation.saveState.markers),
     [simulation.saveState.markers, Object.keys(simulation.saveState.markers).join(',')]
+  );
+
+  //=================================================================================
+
+  //////////////
+  // Metadata //
+  //////////////
+
+  const formatMetadata = (metadata: SimMetadata) => {
+    const metadataData = [];
+
+    for (const accountId in metadata) {
+      const accountMetadata = metadata[accountId as UUID];
+      const accountName = simulation.saveState.accounts[accountId as UUID].args.name;
+
+      for (const time in accountMetadata) {
+        let traceString = "";
+
+        for (const eventData of accountMetadata[time]) {
+          const balanceStatus = eventData.balanceStatus;
+
+          if (balanceStatus !== undefined) {
+            const { eventId } = balanceStatus;
+            const eventName = simulation.saveState.events[eventId as UUID].args.name;
+            traceString += `<br>- ${eventName}`;
+          };
+        };
+
+        if (!!traceString) {
+          const metadataTime = formatDatetime(Number(time), 'plot')
+          metadataData.push({
+            shape: {
+              type: 'line',
+              x0: metadataTime, x1: metadataTime,
+              y0: 0, y1: 1,
+              xref: 'x', yref: 'paper',
+              line: { 
+                width: 3,
+                color: "red"
+              }
+            } as Partial<Shape>,
+            trace: {
+              x: [metadataTime],
+              y: [0],
+              name: '',
+              mode: 'markers',
+              marker: { size: 1, opacity: 0 },
+              line: { color: 'red' },
+              hovertemplate: `Account: ${accountName}<br>Events: ${traceString}`,
+              showlegend: false
+            } as PlotData
+          });
+        };
+      };
+    };
+
+    return {
+      metadataShapes: metadataData.map(data => data.shape),
+      metadataTraces: metadataData.map(data => data.trace),
+    };
+  };
+
+  const { metadataShapes, metadataTraces } = useMemo(() => 
+    formatMetadata(simulation.simData?.metadata ?? {}), 
+    [JSON.stringify(simulation.simData?.metadata)],
   );
 
   //=========================================================================================
@@ -164,7 +229,7 @@ export const SimPlot = () => {
   return (
     <Plot
       style={{ color: 'black', transform: `translateX(${plotTranslateX}px)` }}
-      data={[...traces, ...markerTraces]}
+      data={[...traces, ...markerTraces, ...metadataTraces]}
       onClick={handleClick}
       config={{ displayModeBar: false }}
       layout={{
@@ -208,7 +273,7 @@ export const SimPlot = () => {
         //=================================================================================
         // Markers
         //=================================================================================
-        shapes: markerShapes
+        shapes: [...markerShapes, ...metadataShapes]
       }}
     />
   );
