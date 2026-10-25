@@ -99,6 +99,9 @@ export const defaultSaveState = () => {
             start: today,
             stop: today + 365,
             step: 1
+        },
+        settings: {
+            showOverdrafts: true,
         }
     } as SaveState;
 };

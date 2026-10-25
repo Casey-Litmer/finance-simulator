@@ -20,6 +20,7 @@ export type SaveState = {
     groups: Record<UUID, EventGroupJSON>;
     filter?: FilterJSON;
     xDomain: { start: number, stop: number, step: number };
+    settings: { showOverdrafts: boolean };
 };
 
 // Data

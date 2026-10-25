@@ -1,9 +1,10 @@
 import { UUID } from "crypto";
-import { Account } from "src/simulation/accounts";
+import { Account, AccountArguments } from "src/simulation/accounts";
 import { AccountConstructorMap, EventConstructorMap } from "src/simulation/ConstructorMaps";
 import { EventJSON, SaveState, SimParameters } from "src/types";
 import { NULL_MARKER_ID } from "src/globals/CONSTANTS";
 import { convertTime } from "src/utils";
+import { EventArguments } from "../events";
 
 
 /*Converts JSON to valid simulation parameters involving dynamic objects.*/
@@ -25,7 +26,11 @@ function initAccounts(saveState: SaveState) {
     Object.entries(saveState.accounts).forEach(([_id, account]) => {
         const id = _id as UUID;
         const accountType = AccountConstructorMap[account.accountType];
-        const args = account.args;
+
+        const args = {
+            ...account.args,
+            name: account.args.name ?? account.accountType
+        } as AccountArguments;
 
         accounts[id] = new accountType({ ...args, id: id });
     });
@@ -61,15 +66,16 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
             // Build args
             const args = {
                 ...event.args,
+                name: event.args.name ?? event.eventType,
                 breakpoints: breakpoints,
-            // Apply marker controllers
+                // Apply marker controllers
                 eventTime: (startMarkerId !== NULL_MARKER_ID)
                     ? applyEventTimeMarker(event, saveState)
                     : event.args.eventTime,
                 endTime: (endMarkerId !== NULL_MARKER_ID)
                     ? saveState.markers[markerControl.endMarkerId].time
                     : event.args.endTime
-            };
+            } as EventArguments;
 
             return new _EventType({
                 ...args,
@@ -82,8 +88,8 @@ function initEvents(saveState: SaveState, accounts: Record<UUID, Account>) {
 
 function applyEventTimeMarker(event: EventJSON, saveState: SaveState) {
     const markerControl = event.markerControl;
-    const clampDayOfMonth = event.args.periodMode === 'monthly' 
-        && event.eventType.includes('Periodic')  && event.markerControl.clampToMonthlyDate;
+    const clampDayOfMonth = event.args.periodMode === 'monthly'
+        && event.eventType.includes('Periodic') && event.markerControl.clampToMonthlyDate;
     let markerTime = saveState.markers[markerControl.startMarkerId].time;
 
     // Clamp to day of month

@@ -158,7 +158,8 @@ export const SimPlot = () => {
 
     for (const accountId in metadata) {
       const accountMetadata = metadata[accountId as UUID];
-      const accountName = simulation.saveState.accounts[accountId as UUID].args.name;
+      const account = simulation.saveState.accounts[accountId as UUID];
+      const accountName = account.args.name ?? account.accountType;
 
       for (const time in accountMetadata) {
         let traceString = "";
@@ -168,7 +169,8 @@ export const SimPlot = () => {
 
           if (balanceStatus !== undefined) {
             const { eventId } = balanceStatus;
-            const eventName = simulation.saveState.events[eventId as UUID].args.name;
+            const event = simulation.saveState.events[eventId as UUID];
+            const eventName = event.args.name ?? event.eventType;
             traceString += `<br>- ${eventName}`;
           };
         };
@@ -209,7 +211,7 @@ export const SimPlot = () => {
 
   const { metadataShapes, metadataTraces } = useMemo(() => 
     formatMetadata(simulation.simData?.metadata ?? {}), 
-    [JSON.stringify(simulation.simData?.metadata)],
+    [JSON.stringify(simulation.simData?.metadata), simulation.saveState.settings.showOverdrafts],
   );
 
   //=========================================================================================
@@ -229,7 +231,11 @@ export const SimPlot = () => {
   return (
     <Plot
       style={{ color: 'black', transform: `translateX(${plotTranslateX}px)` }}
-      data={[...traces, ...markerTraces, ...metadataTraces]}
+      data={[
+        ...traces, 
+        ...markerTraces, 
+        ...(simulation.saveState.settings.showOverdrafts ? metadataTraces : []),
+      ]}
       onClick={handleClick}
       config={{ displayModeBar: false }}
       layout={{
@@ -273,7 +279,10 @@ export const SimPlot = () => {
         //=================================================================================
         // Markers
         //=================================================================================
-        shapes: [...markerShapes, ...metadataShapes]
+        shapes: [
+          ...markerShapes, 
+          ...(simulation.saveState.settings.showOverdrafts ? metadataShapes : [])
+        ]
       }}
     />
   );

@@ -1,4 +1,4 @@
-import { EventTable } from "../types";
+import { EventTable } from "src/types";
 import { Account } from "./Account";
 
 

@@ -24,10 +24,11 @@ function migrate_0_1_0_to_0_1_1(data: SaveState): SaveState {
 
 // 0.1.1 -> 0.1.2
 // - Add onFirstperiod
-//
+// - Add settings: { showOverdrafts } to saveState
 function migrate_0_1_1_to_0_1_2(data: SaveState): SaveState {
     for (const id in data.events) {
         data.events[id as UUID].args.onFirstPeriod = true;
     };
+    data.settings = { showOverdrafts: true };
     return data;
 };
