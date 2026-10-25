@@ -4,13 +4,12 @@ import { BreakpointJSON, EventJSON, SaveState } from "src/types";
 
 
 //=================================================================================
-
 /**
-   * Updates all accounts' eventIds with changes in event-account relations.
-   * This ensures no duplicate or residual ids when an event references a new account.
-   * @param saveState previous state (same signature as the reducer)
-   * @param eventsPartial new partial: Record<UUID, EventJSON>
-   */
+ * Updates all accounts' eventIds with changes in event-account relations.
+ * This ensures no duplicate or residual ids when an event references a new account.
+ * @param saveState previous state (same signature as the reducer)
+ * @param eventsPartial new partial: Record<UUID, EventJSON>
+ */
 export function updateAccountEventIds(saveState: SaveState, eventsPartial: Record<UUID, EventJSON>) {
     // For each event in the partial,
     Object.entries(eventsPartial).forEach(([_eventId, event]) => {
@@ -53,21 +52,22 @@ export function updateEventBreakpointIds(saveState: SaveState, breakpointsPartia
 export function updateGroupEventIds(saveState: SaveState, eventsPartial: Record<UUID, EventJSON>) {
     Object.entries(eventsPartial).forEach(([_eventId, event]) => {
         const eventId = _eventId as UUID;
-        const groupId = event.eventGroupId as UUID;
-        if (groupId !== undefined) {
-            if (groupId !== NULL_GROUP_ID) {
-                // Add event id to group if not included and not null group
-                const group = saveState.groups[groupId];
-                if (!group.eventIds.includes(eventId))
-                    group.eventIds.push(eventId);
-            } else {
-                // Remove event id from group that includes it if null group
-                const groupId = Object.keys(saveState.groups)
-                    .find(id => saveState.groups[id as UUID].eventIds.includes(eventId)); 
-                if (groupId === undefined) return;
-                const group = saveState.groups[groupId as UUID];
-                saveState.groups[groupId as UUID].eventIds = group.eventIds.filter(id => id !== eventId);
+        const groupId = event.eventGroupId as UUID | undefined;
+        if (groupId === undefined) return;
+
+        const currentGroupId = saveState.events[eventId]?.eventGroupId as UUID | undefined;
+
+        if (currentGroupId !== undefined && currentGroupId !== NULL_GROUP_ID && currentGroupId !== groupId) {
+            const currentGroup = saveState.groups[currentGroupId];
+            if (currentGroup) {
+                currentGroup.eventIds = currentGroup.eventIds.filter(id => id !== eventId);
             };
+        };
+
+        if (groupId !== NULL_GROUP_ID) {
+            const group = saveState.groups[groupId];
+            if (group && !group.eventIds.includes(eventId))
+                group.eventIds.push(eventId);
         };
     });
 };

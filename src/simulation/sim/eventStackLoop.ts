@@ -2,9 +2,7 @@ import { AccountMetadata } from "src/types";
 import { Account } from "../accounts";
 import { AccountEvent, OpenAccount } from "../events";
 import { AccountState } from "./accountState";
-import { convertTime, Deque } from "src/utils";
-
-
+import { Deque } from "src/utils";
 
 
 export const READOUT_LIST = [];
@@ -16,15 +14,13 @@ export function eventStackLoop(pendingEvents: Deque<AccountEvent>, E: AccountSta
 
     while (pendingEvents && loopState.continue) {
         const event = pendingEvents.popLeft();
-        
+
         if (!event) break;
 
         // An AccountState must be open to use a functor (unless it is the OpenAccount functor)
         if ((E.open || event instanceof OpenAccount) && event.isActive) {
-            // && !event.skipFirstperiod()
             loopState = event.Functor(E, account);
-            console.log(convertTime(event.eventTime, 'Date'), event.constructor.name, loopState, E.bal)
-        }; 
+        };
 
         // Add response to metadata
         const eventTime = event.eventTime;
